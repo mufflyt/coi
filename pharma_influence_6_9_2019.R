@@ -369,39 +369,6 @@ nda2segments <- read_csv("~/Downloads/National Drug Code Directory/nda2segments.
 
 #Open Payments 2017 data from web but needs zip  #Make sure that we have the DTL_GNRL data  and NOT the DTL_RSRCH file
 # PGYR17_P011819 <- download.file(url = "http://download.cms.gov/openpayments/PGYR17_P011819.ZIP", destfile = "PGYR17_P011819.ZIP", method = "auto", cacheOK = TRUE)
-
-library(tidyverse)
-library(Hmisc)
-
-#2017
-OP_DTL_GNRL_PGYR2017_P06292018 <- read_csv("~/Dropbox/Pharma_Influence/data/Open Payments/OP_DTL_GNRL_PGYR2017_P06292018.csv")
-
-OP_DTL_GNRL_PGYR2017_P06292018 <- OP_DTL_GNRL_PGYR2017_P06292018 %>%
-  select(-Change_Type, -Covered_Recipient_Type, -Teaching_Hospital_CCN, -Teaching_Hospital_ID, -Teaching_Hospital_Name) %>%
-  mutate(Physician_Profile_ID = factor(Physician_Profile_ID)) %>%
-  filter(Recipient_Country != "United States Minor Outlying Islands") %>%
-  select(-Recipient_Country, everything()) %>%
-  select(-Recipient_Province, -Recipient_Postal_Code, -Delay_in_Publication_Indicator, -Dispute_Status_for_Publication, -Recipient_Country, -Recipient_Primary_Business_Street_Address_Line2) %>%
-  filter(Physician_Primary_Type != c("Chiropractor", "Doctor of Dentistry", "Doctor of Optometry", "Doctor of Podiatric Medicine")) %>%
-  select(-Physician_License_State_code2, -Physician_License_State_code3, -Physician_License_State_code4, -Physician_License_State_code5) %>%
-  mutate(Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_ID = factor(Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_ID)) %>%
-  select(-Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_State, -Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Country) %>%
-  # THIS MAY BE THE PROBLEM OF THE NDC PACKAGE AND DRUGS NOT MATCHING UP, https://www.idmedicaid.com/Reference/NDC%20Format%20for%20Billing%20PAD.pdf, may need all numbers to be in a 5-4-2 pattern
-  rename(NDC_1_Package_Code = Associated_Drug_or_Biological_NDC_1) %>%
-  # Limit COI to only drugs
-  filter(Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1 == "Drug") %>%
-  select(-Physician_Middle_Name, -Physician_Name_Suffix, -Recipient_Primary_Business_Street_Address_Line1, -Recipient_City, -Recipient_Zip_Code, -Physician_Primary_Type, -Physician_Specialty, -Physician_License_State_code1, -Date_of_Payment, -Record_ID, -Related_Product_Indicator, -Covered_or_Noncovered_Indicator_1, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1, -Product_Category_or_Therapeutic_Area_1, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_1, -Covered_or_Noncovered_Indicator_2, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_2, -Product_Category_or_Therapeutic_Area_2, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_2, -Associated_Drug_or_Biological_NDC_2, -Covered_or_Noncovered_Indicator_3, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_3, -Product_Category_or_Therapeutic_Area_3, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_3, -Associated_Drug_or_Biological_NDC_3, -Covered_or_Noncovered_Indicator_4, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_4, -Product_Category_or_Therapeutic_Area_4, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_4, -Associated_Drug_or_Biological_NDC_4, -Covered_or_Noncovered_Indicator_5, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_5, -Product_Category_or_Therapeutic_Area_5, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_5, -Associated_Drug_or_Biological_NDC_5, -Program_Year) %>%
-  select(-Physician_First_Name, -Physician_Last_Name, -Recipient_State, -Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_ID, everything()) %>%
-  select(-Submitting_Applicable_Manufacturer_or_Applicable_GPO_Name) %>%
-  select(NDC_1_Package_Code, everything()) %>%
-  drop_na(NDC_1_Package_Code) %>%
-  filter(Total_Amount_of_Payment_USDollars >= 1) %>%
-  separate(NDC_1_Package_Code, into = c("5", "4", "2 NDC"), sep = "\\s*\\-\\s*", remove = FALSE, convert = TRUE) %>%
-  mutate_at(vars(`4`, `5`, `2 NDC`), funs(as.character)) %>%
-  mutate(`5` = str_pad(`5`, pad="0", side="left", width=5), `4` = str_pad(`4`, pad="0", side="left", width=4), `2 NDC` = str_pad(`2 NDC`, pad="0", side="left", width=2)) %>%
-  unite(`5_4_2_NDC`, `5`, `4`, `2 NDC`, sep = "-", remove = FALSE) %>%
-  mutate (year = "2017")
-
 # 
 # #Open Payments 2016 data
 # PGYR16_P011819 <- PGYR17_P011819 <- download.file(url = "http://download.cms.gov/openpayments/PGYR16_P011819.ZIP", destfile = "PGYR17_P011819.ZIP", method = "auto", cacheOK = TRUE)
@@ -415,15 +382,20 @@ OP_DTL_GNRL_PGYR2017_P06292018 <- OP_DTL_GNRL_PGYR2017_P06292018 %>%
 # #Open Payments 2013 data
 # PGYR13_P011819 <- download.file(url = "http://download.cms.gov/openpayments/PGYR13_P011819.ZIP", destfile = "PGYR13_P011819.ZIP", method = "auto", cacheOK = TRUE)
 
+dbc <- cache_filesystem("~/Dropbox/Pharma_Influence/.rcache")
+mrunif <- memoise(runif, cache = dbc)
+mrunif(20) # Results stored in Dropbox .rcache folder which will be synced between computers.
 
 #2017
-OP_DTL_GNRL_PGYR2017_P06292018 <- read_csv("~/Dropbox/Pharma_Influence/data/Open Payments/OP_DTL_GNRL_PGYR2017_P06292018.csv") %>%
+OP_DTL_GNRL_PGYR2017_P06292018 <- read_csv("~/Dropbox/Pharma_Influence/data/Open Payments/OP_DTL_GNRL_PGYR2017_P06292018.csv") 
+
+OP_DTL_GNRL_PGYR2017_P06292018 %>%
   select(-Change_Type, -Covered_Recipient_Type, -Teaching_Hospital_CCN, -Teaching_Hospital_ID, -Teaching_Hospital_Name) %>%
   mutate(Physician_Profile_ID = factor(Physician_Profile_ID)) %>%
-  filter(Recipient_Country != "United States Minor Outlying Islands") %>%
+  filter(Recipient_Country %nin% "United States Minor Outlying Islands") %>%
   select(-Recipient_Country, everything()) %>%
   select(-Recipient_Province, -Recipient_Postal_Code, -Delay_in_Publication_Indicator, -Dispute_Status_for_Publication, -Recipient_Country, -Recipient_Primary_Business_Street_Address_Line2) %>%
-  filter(Physician_Primary_Type != c("Chiropractor", "Doctor of Dentistry", "Doctor of Optometry", "Doctor of Podiatric Medicine")) %>%
+  filter(Physician_Primary_Type %nin%c("Chiropractor", "Doctor of Dentistry", "Doctor of Optometry", "Doctor of Podiatric Medicine")) %>%
   select(-Physician_License_State_code2, -Physician_License_State_code3, -Physician_License_State_code4, -Physician_License_State_code5) %>%
   mutate(Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_ID = factor(Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_ID)) %>%
   select(-Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_State, -Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Country) %>%
@@ -431,7 +403,7 @@ OP_DTL_GNRL_PGYR2017_P06292018 <- read_csv("~/Dropbox/Pharma_Influence/data/Open
   rename(NDC_1_Package_Code = Associated_Drug_or_Biological_NDC_1) %>%
   # Limit COI to only drugs
   filter(Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1 == "Drug") %>%
-  select(-Physician_Middle_Name, -Physician_Name_Suffix, -Recipient_Primary_Business_Street_Address_Line1, -Recipient_City, -Recipient_Zip_Code, -Physician_Primary_Type, -Physician_Specialty, -Physician_License_State_code1, -Date_of_Payment, -Record_ID, -Related_Product_Indicator, -Covered_or_Noncovered_Indicator_1, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1, -Product_Category_or_Therapeutic_Area_1, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_1, -Covered_or_Noncovered_Indicator_2, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_2, -Product_Category_or_Therapeutic_Area_2, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_2, -Associated_Drug_or_Biological_NDC_2, -Covered_or_Noncovered_Indicator_3, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_3, -Product_Category_or_Therapeutic_Area_3, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_3, -Associated_Drug_or_Biological_NDC_3, -Covered_or_Noncovered_Indicator_4, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_4, -Product_Category_or_Therapeutic_Area_4, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_4, -Associated_Drug_or_Biological_NDC_4, -Covered_or_Noncovered_Indicator_5, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_5, -Product_Category_or_Therapeutic_Area_5, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_5, -Associated_Drug_or_Biological_NDC_5, -Program_Year) %>%
+  select(-Physician_Middle_Name, -Physician_Name_Suffix, -Recipient_Primary_Business_Street_Address_Line1, -Recipient_City, -Recipient_Zip_Code, -Physician_Primary_Type, -Physician_Specialty, -Physician_License_State_code1, -Date_of_Payment, -Record_ID, -Related_Product_Indicator, -Covered_or_Noncovered_Indicator_1, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1, -Product_Category_or_Therapeutic_Area_1, Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_1, -Covered_or_Noncovered_Indicator_2, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_2, -Product_Category_or_Therapeutic_Area_2, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_2, -Associated_Drug_or_Biological_NDC_2, -Covered_or_Noncovered_Indicator_3, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_3, -Product_Category_or_Therapeutic_Area_3, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_3, -Associated_Drug_or_Biological_NDC_3, -Covered_or_Noncovered_Indicator_4, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_4, -Product_Category_or_Therapeutic_Area_4, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_4, -Associated_Drug_or_Biological_NDC_4, -Covered_or_Noncovered_Indicator_5, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_5, -Product_Category_or_Therapeutic_Area_5, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_5, -Associated_Drug_or_Biological_NDC_5, -Program_Year) %>%
   select(-Physician_First_Name, -Physician_Last_Name, -Recipient_State, -Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_ID, everything()) %>%
   select(-Submitting_Applicable_Manufacturer_or_Applicable_GPO_Name) %>%
   select(NDC_1_Package_Code, everything()) %>%
@@ -442,6 +414,16 @@ OP_DTL_GNRL_PGYR2017_P06292018 <- read_csv("~/Dropbox/Pharma_Influence/data/Open
   mutate(`5` = str_pad(`5`, pad="0", side="left", width=5), `4` = str_pad(`4`, pad="0", side="left", width=4), `2 NDC` = str_pad(`2 NDC`, pad="0", side="left", width=2)) %>%
   unite(`5_4_2_NDC`, `5`, `4`, `2 NDC`, sep = "-", remove = FALSE) %>%
   mutate (year = "2017")
+
+brand_drug_count <- OP_DTL_GNRL_PGYR2017_P06292018 %>% 
+  #as.factor(drug_name) %>%
+  arrange(desc(drug_name)) %>%
+  group_by(drug_name) %>%
+  dplyr::summarize(count=n()) %>%
+  arrange(desc(count)) %>%
+  #str_to_title(drug_name) %>%
+  as.data.table() 
+drug_count %>% View()
 
 
 #2016
@@ -479,14 +461,14 @@ OP_DTL_GNRL_PGYR2015_P06292018 <- read_csv("~/Dropbox/Pharma_Influence/data/Open
   filter(Recipient_Country != "United States Minor Outlying Islands") %>%
   select(-Recipient_Country, everything()) %>%
   select(-Recipient_Province, -Recipient_Postal_Code, -Delay_in_Publication_Indicator, -Dispute_Status_for_Publication, -Recipient_Country, -Recipient_Primary_Business_Street_Address_Line2) %>%
-  filter(Physician_Primary_Type != c("Chiropractor", "Doctor of Dentistry", "Doctor of Optometry", "Doctor of Podiatric Medicine")) %>%
+  filter(Physician_Primary_Type %nin% c("Chiropractor", "Doctor of Dentistry", "Doctor of Optometry", "Doctor of Podiatric Medicine")) %>%
   select(-Physician_License_State_code2, -Physician_License_State_code3, -Physician_License_State_code4, -Physician_License_State_code5) %>%
   mutate(Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_ID = factor(Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_ID)) %>%
   select(-Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_State, -Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Country) %>%
   # THIS MAY BE THE PROBLEM OF THE NDC PACKAGE AND DRUGS NOT MATCHING UP, https://www.idmedicaid.com/Reference/NDC%20Format%20for%20Billing%20PAD.pdf, may need all numbers to be in a 5-4-2 pattern
-  rename(NDC_1_Package_Code = Associated_Drug_or_Biological_NDC_1) %>%
+  #rename(NDC_1_Package_Code = Associated_Drug_or_Biological_NDC_1) %>%
   # Limit COI to only drugs
-  filter(Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1 == "Drug") %>%
+  #filter(Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1 == "Drug") %>%
   select(-Physician_Middle_Name, -Physician_Name_Suffix, -Recipient_Primary_Business_Street_Address_Line1, -Recipient_City, -Recipient_Zip_Code, -Physician_Primary_Type, -Physician_Specialty, -Physician_License_State_code1, -Date_of_Payment, -Record_ID, -Related_Product_Indicator, -Covered_or_Noncovered_Indicator_1, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1, -Product_Category_or_Therapeutic_Area_1, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_1, -Covered_or_Noncovered_Indicator_2, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_2, -Product_Category_or_Therapeutic_Area_2, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_2, -Associated_Drug_or_Biological_NDC_2, -Covered_or_Noncovered_Indicator_3, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_3, -Product_Category_or_Therapeutic_Area_3, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_3, -Associated_Drug_or_Biological_NDC_3, -Covered_or_Noncovered_Indicator_4, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_4, -Product_Category_or_Therapeutic_Area_4, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_4, -Associated_Drug_or_Biological_NDC_4, -Covered_or_Noncovered_Indicator_5, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_5, -Product_Category_or_Therapeutic_Area_5, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_5, -Associated_Drug_or_Biological_NDC_5, -Program_Year) %>%
   select(-Physician_First_Name, -Physician_Last_Name, -Recipient_State, -Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_ID, everything()) %>%
   select(-Submitting_Applicable_Manufacturer_or_Applicable_GPO_Name) %>%
@@ -515,7 +497,7 @@ OP_DTL_GNRL_PGYR2014_P06292018 <- read_csv("~/Dropbox/Pharma_Influence/data/Open
   rename(NDC_1_Package_Code = Associated_Drug_or_Biological_NDC_1) %>%
   # Limit COI to only drugs
   filter(Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1 == "Drug") %>%
-  select(-Physician_Middle_Name, -Physician_Name_Suffix, -Recipient_Primary_Business_Street_Address_Line1, -Recipient_City, -Recipient_Zip_Code, -Physician_Primary_Type, -Physician_Specialty, -Physician_License_State_code1, -Date_of_Payment, -Record_ID, -Related_Product_Indicator, -Covered_or_Noncovered_Indicator_1, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1, -Product_Category_or_Therapeutic_Area_1, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_1, -Covered_or_Noncovered_Indicator_2, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_2, -Product_Category_or_Therapeutic_Area_2, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_2, -Associated_Drug_or_Biological_NDC_2, -Covered_or_Noncovered_Indicator_3, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_3, -Product_Category_or_Therapeutic_Area_3, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_3, -Associated_Drug_or_Biological_NDC_3, -Covered_or_Noncovered_Indicator_4, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_4, -Product_Category_or_Therapeutic_Area_4, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_4, -Associated_Drug_or_Biological_NDC_4, -Covered_or_Noncovered_Indicator_5, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_5, -Product_Category_or_Therapeutic_Area_5, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_5, -Associated_Drug_or_Biological_NDC_5, -Program_Year) %>%
+  select(-Physician_Middle_Name, -Physician_Name_Suffix, -Recipient_Primary_Business_Street_Address_Line1, -Recipient_City, -Recipient_Zip_Code, -Physician_Primary_Type, -Physician_Specialty, -Physician_License_State_code1, -Date_of_Payment, -Record_ID, -Covered_or_Noncovered_Indicator_1, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1, -Product_Category_or_Therapeutic_Area_1, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_1, -Covered_or_Noncovered_Indicator_2, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_2, -Product_Category_or_Therapeutic_Area_2, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_2, -Associated_Drug_or_Biological_NDC_2, -Covered_or_Noncovered_Indicator_3, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_3, -Product_Category_or_Therapeutic_Area_3, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_3, -Associated_Drug_or_Biological_NDC_3, -Covered_or_Noncovered_Indicator_4, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_4, -Product_Category_or_Therapeutic_Area_4, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_4, -Associated_Drug_or_Biological_NDC_4, -Covered_or_Noncovered_Indicator_5, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_5, -Product_Category_or_Therapeutic_Area_5, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_5, -Associated_Drug_or_Biological_NDC_5, -Program_Year) %>%
   select(-Physician_First_Name, -Physician_Last_Name, -Recipient_State, -Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_ID, everything()) %>%
   select(-Submitting_Applicable_Manufacturer_or_Applicable_GPO_Name) %>%
   select(NDC_1_Package_Code, everything()) %>%
@@ -579,25 +561,154 @@ summary(all_open_payments, text=T, title='Table 1:  Characteristics of Physician
 
 
 ##################################
-#Add in the classes, https://www.pbm.va.gov/PBM/clinicalguidance/drugclassreviews/HormoneTherapyCombinedEstrogenProgestinAbbreviatedDrugClassReview.pdf
+#Add in the Drug Classes, https://www.pbm.va.gov/PBM/clinicalguidance/drugclassreviews/HormoneTherapyCombinedEstrogenProgestinAbbreviatedDrugClassReview.pdf
 
-Oral_Bisphosphonates = c("Alendronate", "Risedronate") #Generic names
-
-Oral_Combined_Estrogen_and_Progestin_Products_for_Hormone_Therapy <- (c("Activella", "Combipatch", "Prefest", "Femhrt", "Premphase", "Prempro", "Estratest"))
-
-Hormone_therapy_single_ingredient_therapy <- (c("Alora", "Climara", "Esclim", "Estraderm", "Vivelle", "Vivelle-Dot", "Premarin", "Provera", "Medroxyprogesterone acetate"))
+Bisphosphonates = c("Fosamax", "Risedronate", "Boniva", "Atelvia", "Prolia") #Need to specify po Boniva as it comes in IV as well.  #####
 
 Anticholinergics_for_overactive_bladder <- (c("Ditropan", "Ditropan XL", "Oxytrol", "Gelnique", "Detrol", "Detrol LA", "Sanctura", "Sanctura XR", "Vesicare", "Enablex", "Toviaz"))
+
+Oral_Combined_Estrogen_and_Progestin_Products_for_Hormone_Therapy <- (c("Activella", "Combipatch", "Femhrt", "Premphase", "Prempro", "Menest"))
+
+Transdermal_estrogen = (c("Alora", "Climara", "Climara Pro", "Vivelle", "Vivelle-Dot", "Menostar"))
+Gel_estrogens = (c("Divigel", "Estrogel", "Elestrin"))
+
+Hormone_therapy_single_ingredient_therapy <- (c("Alora", "Climara", "Esclim", "Estraderm", "Vivelle", "Vivelle-Dot", "Premarin", "Provera", "Medroxyprogesterone acetate"))
 
 LHRH_Agonists <- (c("Goserelin", "Leuprolide"))
 
 COCPs <- (c("Alesse", "Loestrin", "Levlite", "Mircette", "Demulen", "Desogen", "Levlen", "Nordette", "Ortho-Cept", "Ortho-Cyclen", "Ortho Tri-Cyclen", "Brevicon", "Demulen", "Modicon", "Ovcon"))   #https://www.aafp.org/afp/1999/1101/p2073.html
 
-COCP_modern <- (c("Yaz", "Yasmin", "Loestrin", "Aviane", "Lessina", "Lutera", "Ortho Tri-cyclen Lo", "Trinessa", "Tri-Previfem", "Tri-Sprintec", "Enpresse", "Trivora", "Mononessa", "Previfem", "Sprintec", "Balziva", "Zenchent", "Necon", "Nortrel", "Aranelle", "Leena", "Cryselle", "Low-Ogestrel", "Nuvaring", "Altavera", "Levora", "Portia", "Jolessa", "Quasense", "Kelnor 1-35", "Zovia 1-35e", "Caziant", "Velivet", "Azurette", "Kariva", "Tri-Legest Fe", "Microgestin", "Microgestin Fe", "Apri", "Reclipsen", "Ogestrel", "Ocella", "Zarah", "Gianvi", "Ortho Evra", "Yuvafem"))  #https://www.kff.org/womens-health-policy/fact-sheet/oral-contraceptive-pills/
+COCP_modern <- (c("Yaz", "Yasmin", "Loestrin", "Aviane", "Lessina", "Lutera", "Ortho Tri-cyclen Lo", "Trinessa", "Tri-Previfem", "Tri-Sprintec", "Enpresse", "Trivora", "Mononessa", "Previfem", "Sprintec", "Balziva", "NECON 1/35–28", "NECON 10/11–28","NECON 7/7/7",
+"NECON 0.5/35–28", "Nortrel", "Aranelle", "Leena", "Cryselle", "Low-Ogestrel", "Nuvaring", "Altavera", "Levora", "Portia", "Jolessa", "Quasense", "Kelnor 1-35", "Zovia 1-35e", "Caziant", "Velivet", "Azurette", "Kariva", "Tri-Legest Fe", "Microgestin", "Microgestin Fe", "Apri", "Reclipsen", "Ogestrel", "Ocella", "Zarah", "Gianvi", "Ortho Evra", "Yuvafem", "Lo Loestrin Fe", "BREVICON-28"))  #https://www.kff.org/womens-health-policy/fact-sheet/oral-contraceptive-pills/
 
 Progestin_only_pills <- (c("Micronor", "Norgestrel"))
 
 Extended_use_pills <- (c("Seasonale", "Seasonique", "Lybre"))  #https://www.nhpri.org/Portals/0/Uploads/Documents/NOTE_2_TABS_Contraceptive_Comparison_Chart_01_2012_2.pdf
 
-Vaginal_Estrogen_Hormone_Therapy <- (c("Premarin", "Estrace", "Vagifem", "Estring"))
+Vaginal_Estrogen_Hormone_Therapy <- (c("Premarin", "Estrace", "Vagifem", "Estring", "Yuvafem", "Osphena", "Intrarosa"))  #Need to make sure premarin is vaginal  #Reference: https://www.empr.com/home/clinical-charts/oral-and-transdermal-estrogen-dose-equivalents/
 
+
+
+IUD = (c("Mirena", "Paragard", "Liletta", "Kyleena"))
+Antiviral = (c("Valtex", "Zovirax"))
+Anti-infective = (c("Flagyl", "Tindamax"))
+Hypoactive_sexual_desire = (c("Addyi"))
+
+
+#Data checked from: https://www.empr.com.  Would be great if we could scrape it.  
+target_drug_manufacturer <- c(
+      'Fosamax'   = 'Merck', #Bisphosphonates
+      'Actonel'   = 'Allergan', #Bisphosphonates
+      "Boniva" = "Genentech, Inc.", #Bisphosphonates
+      "Atelvia" = "Allergan", #Bisphosphonates
+      "Prolia" = "Amgen, Inc.", #Note that Prolia is IV and others are PO
+      
+      
+      "Ditropan" = "Pfizer", #Anticholinergics_for_overactive_bladder
+      "Ditropan XL" = "Pfizer", #Anticholinergics_for_overactive_bladder  
+      "Vesicare" = "Astellas",  #Anticholinergics_for_overactive_bladder
+      "Enablex" = "Novartis", #Anticholinergics_for_overactive_bladder
+      "Toviaz"= "Pfizer", #Anticholinergics_for_overactive_bladder
+      "Myrbetriq" = "Astellas", #Anticholinergics_for_overactive_bladder ##????
+      "Ditropan" = "", #Anticholinergics_for_overactive_bladder
+      "Oxytrol" = "Merck", #Anticholinergics_for_overactive_bladder
+      "Gelnique" = "Allergan", #Anticholinergics_for_overactive_bladder
+      "Detrol" = "Pfizer", #Anticholinergics_for_overactive_bladder
+      "Detrol LA" = "Pfizer", #Anticholinergics_for_overactive_bladder
+      "Sanctura" = "Allergan",#Anticholinergics_for_overactive_bladder
+      "Sanctura XR" = "Allergan", #Anticholinergics_for_overactive_bladder
+      
+      'Premarin'   = 'Pfizer', #Vaginal_Estrogen_Hormone_Therapy
+      'Estrace'    = 'Allergan',#Vaginal_Estrogen_Hormone_Therapy
+      'Vagifem'  = 'Novo Nordisk',#Vaginal_Estrogen_Hormone_Therapy
+      'Yuvafem'   = 'Amneal',#Vaginal_Estrogen_Hormone_Therapy
+      "Osphena" = "Duchesnay USA, Inc.",
+      "Intrarosa" = "AMAG Pharmaceuticals",
+
+      
+      'Yaz'    = 'Bayer', #COCP_modern
+      'Yasmin'   = 'Bayer', #COCP_modern
+      'Loestrin' = 'Allergan', #COCP_modern
+      'Lo Loestrin Fe' = 'Allergan', #COCP_modern
+      'Aviane'   = 'Teva Pharmaceuticals', #COCP_modern
+      'Lessina' = 'Teva Pharmaceuticals', #COCP_modern
+      'Lutera' = 'Mayne Pharma US', #COCP_modern
+      'Ortho Tri-cyclen Lo' = 'Janssen Pharmaceuticals, Inc.', #COCP_modern
+      "Trinessa" = 'Teva Pharmaceuticals',  #COCP_modern
+      "Tri-Previfem" = 'Teva Pharmaceuticals', #COCP_modern
+      "Tri-Sprintec" = "Teva Pharmaceuticals", #COCP_modern
+      "Enpresse" = "Teva Pharmaceuticals", #COCP_modern
+      "Trivora" = "Mayne Pharma US", #COCP_modern
+      "Mononessa" = "Teva Pharmaceuticals", #COCP_modern
+      "Previfem" = "Teva Pharmaceuticals", #COCP_modern
+      "Tri-Previfem" = "Teva Pharmaceuticals",       #COCP_modern
+      "Sprintec" = "Teva Pharmaceuticals", #COCP_modern
+      "Balziva" = "Teva Pharmaceuticals", #COCP_modern
+      "NECON 1/35–28" = "Actavis", #COCP_modern
+      "NECON 10/11–28" = "Actavis", #COCP_modern
+      "NECON 7/7/7"= "Actavis", #COCP_modern
+      "NECON 0.5/35–28"= "Actavis", #COCP_modern
+      "Nortrel" =  "Teva Pharmaceuticals", #COCP_modern
+      "Aranelle" = "Teva Pharmaceuticals", #COCP_modern
+      "Leena" = "Mayne Pharma US", #COCP_modern
+      "Cryselle" = "Teva Pharmaceuticals", #COCP_modern
+      "BREVICON-28" = "Allergan",
+      "Nuvaring" = "Merck",
+      
+      "Activella" = "Novo Nordisk", #Oral_Combined_Estrogen_and_Progestin_
+      "Combipatch" = "Noven Therapeutics", #Oral_Combined_Estrogen_and_Progestin_
+      "Femhrt" = "Allergan",#Oral_Combined_Estrogen_and_Progestin_
+      "Premphase" = "Pfizer",#Oral_Combined_Estrogen_and_Progestin_
+      "Prempro" = "Pfizer",#Oral_Combined_Estrogen_and_Progestin_
+      "Menest" = "Pfizer",
+      
+      "Mirena" = "Bayer Healthcare Pharmaceuticals Inc.", #IUD, these are devices FYI
+      "Paragard" = "The Cooper Companies", #IUD
+      "Liletta" = "Allergan", #IUD
+      "Kyleena" = "Bayer", #IUD
+      
+      "Valtrex" =  "GlaxoSmithKline", #Herpes treatment
+      "Zovirax" = "Mylan Inc.", #Herpes treatment
+
+      "Flagyl" = "Pfizer",  #Bacterial vaginosis treatment
+       "Tindamax" = "Mission Pharmacal Company", #Bacterial vaginosis treatment
+      
+      "Addyi" = "Sprout Pharmaceuticals", #Hypoactive sexual desire
+      
+      "Alora" = "Allergan", #Transdermal_estrogen
+      "Climara" = "Bayer", #Transdermal_estrogen
+      "Climara Pro" = "Bayer",   #Transdermal_estrogen
+      "Vivelle" = "Novartis", #Transdermal_estrogen
+      "Vivelle-Dot" = "Novartis", #Transdermal_estrogen
+      "Menostar" = "Bayer", #Transdermal_estrogen
+      
+      "Divigel" = "Vertical Pharmaceuticals",  #Gel_estrogens
+      "Estrogel" = "Ascend Therapeutics",  #Gel_estrogens
+      "Elestrin" = "Mylan Inc." #Gel_estrogens
+      ) 
+
+"Enablex" = "Novartis", #Anticholinergics_for_overactive_bladder
+"Toviaz"= "Pfizer", #Anticholinergics_for_overactive_bladder
+"Myrbetriq" = "Astellas", #Anticholinergics_for_overactive_bladder ##????
+"Ditropan" = "", #Anticholinergics_for_overactive_bladder
+"Oxytrol" = "Merck", #Anticholinergics_for_overactive_bladder
+"Gelnique" = "Allergan", #Anticholinergics_for_overactive_bladder
+"Detrol" = "Pfizer", #Anticholinergics_for_overactive_bladder
+"Detrol LA" = "Pfizer", #Anticholinergics_for_overactive_bladder
+"Sanctura" = "Allergan",#Anticholinergics_for_overactive_bladder
+"Sanctura XR" = "Allergan", #Anticholinergics_for_overactive_bladder
+
+partd_target = c(
+  'Fosamax'   = 'Alendronate',
+  'Actonel'     = 'Risedronate',
+  'Boniva'   = 'Ibandronate',
+  'Atelvia'    = 'Risedronate',
+  'Prolia'  = 'Denosumab',
+  
+  'Ditropan'   = 'Oxybutynin chloride',
+  'Ditropan XL'    = 'Oxybutynin chloride', #Need to make sure this is the extended release
+  'Vesicare'   = 'Solifenacin succinate',
+  'Enablex' = 'Darifenacin',
+  'estrace'   = 'ESTRACE',
+  'oxycontin' = 'OXYCONTIN'
+),
