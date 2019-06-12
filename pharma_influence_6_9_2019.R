@@ -40,7 +40,12 @@ token <- drop_auth()
 saveRDS(token, file = "token.rds")
 drop_acc() %>% data.frame()
 drop_dir() %>% 
-  filter(.tag == "folder") 
+  filter(.tag == "folder") %>%
+  arrange(name) %>%
+  View()
+
+drop_dir("Pharma_Influence/data/National Drug Code Directory/") %>% View()
+drop_download("Pharma_Influence/data/National Drug Code Directory/package.xls", overwrite = TRUE, progress=TRUE)
 
 ##################################################################
 # Set data file locations ----
@@ -63,9 +68,7 @@ results_folder <- paste0(getwd(),"~/R Projects/Results/")
 #2014 year
 # download.file("https://www.dropbox.com/s/pakz20fn1u8m5v2/PartD_Prescriber_PUF_NPI_Drug_14.txt?raw=1", destfile = "PartD_Prescriber_PUF_NPI_Drug_14.txt", method = "auto")
 
-drop_download("/Pharma_Influence/nda2segments.csv")
-
-PartD_Prescriber_PUF_NPI_Drug_17 <- read_delim("~/Dropbox/Pharma_Influence/data/Medicare Part D data/PartD_Prescriber_PUF_NPI_DRUG_17/PartD_Prescriber_PUF_NPI_Drug_17.txt", "\t", escape_double = FALSE, trim_ws = TRUE) %>% #tab deliminated file
+PartD_Prescriber_PUF_NPI_Drug_14 <- read_delim("~/Dropbox/Pharma_Influence/data/Medicare Part D data/PartD_Prescriber_PUF_NPI_DRUG_14/PartD_Prescriber_PUF_NPI_Drug_14.txt", "\t", escape_double = FALSE, trim_ws = TRUE) %>% #tab deliminated file
   filter(specialty_description %in% c("Obstetrics & Gynecology", "Obstetrics/Gynecology", "Gynecological Oncology")) %>%
   # Make all OBGYN the same factor with "Obstetrics & Gynecology"
   mutate(npi = factor(npi), specialty_description = recode(specialty_description, `Gynecological Oncology` = "Obstetrics & Gynecology", `Obstetrics/Gynecology` = "Obstetrics & Gynecology")) %>%
@@ -73,7 +76,7 @@ PartD_Prescriber_PUF_NPI_Drug_17 <- read_delim("~/Dropbox/Pharma_Influence/data/
   select(generic_name, everything()) %>%
   mutate(npi = factor(npi)) %>%
   mutate(specialty_description = fct_drop(specialty_description), npi = fct_drop(npi)) %>%
-  mutate (year = "2017") %>%
+  mutate (year = "2014") %>%
   filter(nppes_provider_state %nin% c("GU", "VI", "ZZ", "AP", "AE"))
 
 #2015 year  
@@ -118,20 +121,48 @@ PartD_Prescriber_PUF_NPI_Drug_17 <- read_delim("PartD_Prescriber_PUF_NPI_Drug_17
   filter(nppes_provider_state %nin% c("GU", "VI", "ZZ", "AP", "AE"))
 
 all_PUF_NPI_Drug <- dplyr::bind_rows(PartD_Prescriber_PUF_NPI_Drug_14, PartD_Prescriber_PUF_NPI_Drug_15, PartD_Prescriber_PUF_NPI_Drug_16, PartD_Prescriber_PUF_NPI_Drug_17) 
-unique(all_PUF_NPI_Drug$year)
+unique(all_PUF_NPI_Drug$year)  #check to make sure that all data sets are labeled by year
 
 all_PUF_NPI_Drug <- all_PUF_NPI_Drug %>%
   filter(specialty_description == "Obstetrics & Gynecology") %>%
   mutate(npi = factor(npi)) %>%
   select(-specialty_description) %>%
   mutate(year = factor(year)) %>%
-  filter(nppes_provider_state %nin% c("GU", "VI", "ZZ", "AP", "AE")) %>%
-  reorder_cols(generic_name, drug_name, npi, nppes_provider_last_org_name, nppes_provider_first_name, nppes_provider_city, nppes_provider_state, bene_count, total_claim_count, total_30_day_fill_count, total_day_supply, total_drug_cost, bene_count_ge65, bene_count_ge65_suppress_flag, total_claim_count_ge65, ge65_suppress_flag, total_30_day_fill_count_ge65, total_day_supply_ge65, total_drug_cost_ge65, description_flag, year) %>%
-  write_rds(all_PUF_NPI_Drug, "all_PUF_NPI_Drug.rds") 
+  filter(nppes_provider_state %nin% c("GU", "VI", "ZZ", "AP", "AE"))
+
+write_rds(all_PUF_NPI_Drug, "~/Dropbox/Pharma_Influence/data/all_PUF_NPI_Drug.rds") 
+colnames(all_PUF_NPI_Drug)
+
+drug_count <- all_PUF_NPI_Drug %>% 
+  #as.factor(drug_name) %>%
+  arrange(desc(drug_name)) %>%
+  group_by(drug_name) %>%
+  dplyr::summarize(count=n()) %>%
+  arrange(desc(count)) %>%
+  #str_to_title(drug_name) %>%
+  as.data.table() 
+drug_count %>% View()
+
+drug_count[[1,1]]
+drug_count[[1,2]]
+
+drug_count_top_20 <- drug_count %>% 
+  top_n(20) 
+  #transform(count = reorder(count, -count))
+drug_count_top_20
+
+ggplot(data = drug_count_top_20) +
+  aes(x = drug_name, weight = count) +
+  geom_bar(fill = '#0c4c8a') +
+  labs(title = 'What are the Top 20 Drugs Prescribed by OBGYNS prescribed by OBGYNs from 2014 to 2018',
+    x = 'Drug names',
+    y = 'Count of Prescriptions') +
+  coord_flip()
+
 
 
 #Write to a postgresql database????????????????????????
-RPostgreSQL::dbWriteTable(conn=con, name = "all_PUF_NPI_Drug", value= all_PUF_NPI_Drug, row.names=FALSE, overwrite = TRUE)
+# RPostgreSQL::dbWriteTable(conn=con, name = "all_PUF_NPI_Drug", value= all_PUF_NPI_Drug, row.names=FALSE, overwrite = TRUE)
 
 
 cat("\n","----- Initial Structure of data frame -----","\n")
@@ -260,7 +291,7 @@ summary(table1_PartD_Prescriber_PUF_NPI_15, text=T, title='Table 1:  Characteris
 # Steps to produce physician_compare fore more physician demographics
 download.file("https://www.dropbox.com/s/zzag6xbnak60ytq/Physician_Compare_National_Downloadable_File.csv?raw=1", destfile = "Physician_Compare_National_Downloadable_File.csv", method="auto")
 
-physician_compare <- read_csv("~/Downloads/Physician_Compare_National_Downloadable_File.csv") %>%
+physician_compare <- read_csv("~/Dropbox/Pharma_Influence/data/Physician_Compare/Physician_Compare_National_Downloadable_File.csv") %>%
   mutate(NPI = factor(NPI), `PAC ID` = factor(`PAC ID`), `Professional Enrollment ID` = factor(`Professional Enrollment ID`)) %>%
   filter(Credential %in% c("MD", "DO") & `Primary specialty` %in% c("OBSTETRICS/GYNECOLOGY", "GYNECOLOGICAL ONCOLOGY")) %>%
   select(-`Line 2 Street Address`, -`Phone Number`, -`Secondary specialty 1`, -`Secondary specialty 2`, -`Secondary specialty 3`, -`Secondary specialty 4`, -`All secondary specialties`) %>%
@@ -381,7 +412,6 @@ open_payments_2017 <- read_csv("~/Dropbox/Pharma_Influence/data/Open Payments/OP
   select(-Physician_License_State_code2, -Physician_License_State_code3, -Physician_License_State_code4, -Physician_License_State_code5) %>%
   mutate(Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_ID = factor(Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_ID)) %>%
   select(-Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_State, -Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Country) %>%
-  
   # THIS MAY BE THE PROBLEM OF THE NDC PACKAGE AND DRUGS NOT MATCHING UP, https://www.idmedicaid.com/Reference/NDC%20Format%20for%20Billing%20PAD.pdf, may need all numbers to be in a 5-4-2 pattern
   rename(NDC_1_Package_Code = Associated_Drug_or_Biological_NDC_1) %>%
   # Limit COI to only drugs
