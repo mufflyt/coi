@@ -574,24 +574,12 @@ Gel_estrogens = (c("Divigel", "Estrogel", "Elestrin"))
 
 Hormone_therapy_single_ingredient_therapy <- (c("Alora", "Climara", "Esclim", "Estraderm", "Vivelle", "Vivelle-Dot", "Premarin", "Provera", "Medroxyprogesterone acetate"))
 
-LHRH_Agonists <- (c("Goserelin", "Leuprolide"))
-
-COCPs <- (c("Alesse", "Loestrin", "Levlite", "Mircette", "Demulen", "Desogen", "Levlen", "Nordette", "Ortho-Cept", "Ortho-Cyclen", "Ortho Tri-Cyclen", "Brevicon", "Demulen", "Modicon", "Ovcon"))   #https://www.aafp.org/afp/1999/1101/p2073.html
-
-COCP_modern <- (c("Yaz", "Yasmin", "Loestrin", "Aviane", "Lessina", "Lutera", "Ortho Tri-cyclen Lo", "Trinessa", "Tri-Previfem", "Tri-Sprintec", "Enpresse", "Trivora", "Mononessa", "Previfem", "Sprintec", "Balziva", "NECON 1/35–28", "NECON 10/11–28","NECON 7/7/7",
-"NECON 0.5/35–28", "Nortrel", "Aranelle", "Leena", "Cryselle", "Low-Ogestrel", "Nuvaring", "Altavera", "Levora", "Portia", "Jolessa", "Quasense", "Kelnor 1-35", "Zovia 1-35e", "Caziant", "Velivet", "Azurette", "Kariva", "Tri-Legest Fe", "Microgestin", "Microgestin Fe", "Apri", "Reclipsen", "Ogestrel", "Ocella", "Zarah", "Gianvi", "Ortho Evra", "Yuvafem", "Lo Loestrin Fe", "BREVICON-28"))  #https://www.kff.org/womens-health-policy/fact-sheet/oral-contraceptive-pills/
-
-Progestin_only_pills <- (c("Micronor", "Norgestrel"))
-
-Extended_use_pills <- (c("Seasonale", "Seasonique", "Lybre"))  #https://www.nhpri.org/Portals/0/Uploads/Documents/NOTE_2_TABS_Contraceptive_Comparison_Chart_01_2012_2.pdf
-
 Vaginal_Estrogen_Hormone_Therapy <- (c("Premarin", "Estrace", "Vagifem", "Estring", "Yuvafem", "Osphena", "Intrarosa"))  #Need to make sure premarin is vaginal  #Reference: https://www.empr.com/home/clinical-charts/oral-and-transdermal-estrogen-dose-equivalents/
 
 IUD = (c("Mirena", "Paragard T 380A", "Liletta", "Kyleena"))
 Antiviral = (c("Valtex", "Zovirax"))
 Anti-infective = (c("Flagyl", "Tindamax"))
 Hypoactive_sexual_desire = (c("Addyi"))
-
 
 #Data checked from: https://www.empr.com.  Would be great if we could scrape it.  
 #https://www.accessdata.fda.gov/scripts/cder/ndc/index.cfm
@@ -621,36 +609,6 @@ target_drug_manufacturer <- c(
       'Yuvafem'   = 'Amneal',#Vaginal_Estrogen_Hormone_Therapy
       "Osphena" = (c("Duchesnay USA, Inc.", "Shionogi Inc.")),
       "Intrarosa" = "AMAG Pharmaceuticals",
-
-      # 
-      # 'Yaz'    = 'Bayer HealthCare Pharmaceuticals Inc.', #COCP_modern
-      # 'Yasmin'   = 'Bayer HealthCare Pharmaceuticals Inc.', #COCP_modern
-      # 'Loestrin' = 'Allergan', #COCP_modern
-      # 'Lo Loestrin Fe' = 'Allergan', #COCP_modern
-      # 'Aviane'   = 'Teva Pharmaceuticals', #COCP_modern
-      # 'Lessina' = 'Teva Pharmaceuticals', #COCP_modern
-      # 'Lutera' = 'Mayne Pharma US', #COCP_modern
-      # 'Ortho Tri-cyclen Lo' = 'Janssen Pharmaceuticals, Inc.', #COCP_modern
-      # "Trinessa" = 'Teva Pharmaceuticals',  #COCP_modern
-      # "Tri-Previfem" = 'Teva Pharmaceuticals', #COCP_modern
-      # "Tri-Sprintec" = "Teva Pharmaceuticals", #COCP_modern
-      # "Enpresse" = "Teva Pharmaceuticals", #COCP_modern
-      # "Trivora" = "Mayne Pharma US", #COCP_modern
-      # "Mononessa" = "Teva Pharmaceuticals", #COCP_modern
-      # "Previfem" = "Teva Pharmaceuticals", #COCP_modern
-      # "Tri-Previfem" = "Teva Pharmaceuticals",       #COCP_modern
-      # "Sprintec" = "Teva Pharmaceuticals", #COCP_modern
-      # "Balziva" = "Teva Pharmaceuticals", #COCP_modern
-      # "NECON 1/35–28" = "Actavis", #COCP_modern
-      # "NECON 10/11–28" = "Actavis", #COCP_modern
-      # "NECON 7/7/7"= "Actavis", #COCP_modern
-      # "NECON 0.5/35–28"= "Actavis", #COCP_modern
-      # "Nortrel" =  "Teva Pharmaceuticals", #COCP_modern
-      # "Aranelle" = "Teva Pharmaceuticals", #COCP_modern
-      # "Leena" = "Mayne Pharma US", #COCP_modern
-      # "Cryselle" = "Teva Pharmaceuticals", #COCP_modern
-      # "BREVICON-28" = "Allergan",
-      # "Nuvaring" = "Merck",
       
       "Activella" = "Novo Nordisk", #Oral_Combined_Estrogen_and_Progestin_
       "Combipatch" = "Noven Therapeutics", #Oral_Combined_Estrogen_and_Progestin_
