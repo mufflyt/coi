@@ -567,9 +567,9 @@ Bisphosphonates = c("Fosamax", "Risedronate", "Boniva", "Atelvia", "Prolia") #Ne
 
 Anticholinergics_for_overactive_bladder <- (c("Ditropan", "Ditropan XL", "Oxytrol", "Gelnique", "Detrol", "Detrol LA", "Sanctura", "Sanctura XR", "Vesicare", "Enablex", "Toviaz"))
 
-Oral_Combined_Estrogen_and_Progestin_Products_for_Hormone_Therapy <- (c("Activella", "Combipatch", "Femhrt", "Premphase", "Prempro", "Menest"))
+Oral_Combined_Estrogen_and_Progestin_Products_for_Hormone_Therapy <- (c("Activella", "Combipatch", "Femhrt", "Premphase", "Prempro", "Menest", "Climara Pro"))
 
-Transdermal_estrogen = (c("Alora", "Climara", "Climara Pro", "Vivelle", "Vivelle-Dot", "Menostar"))
+Transdermal_estrogen = (c("Alora", "Climara", "Vivelle", "Vivelle-Dot", "Menostar"))
 Gel_estrogens = (c("Divigel", "Estrogel", "Elestrin"))
 
 Hormone_therapy_single_ingredient_therapy <- (c("Alora", "Climara", "Esclim", "Estraderm", "Vivelle", "Vivelle-Dot", "Premarin", "Provera", "Medroxyprogesterone acetate"))
@@ -587,116 +587,102 @@ Extended_use_pills <- (c("Seasonale", "Seasonique", "Lybre"))  #https://www.nhpr
 
 Vaginal_Estrogen_Hormone_Therapy <- (c("Premarin", "Estrace", "Vagifem", "Estring", "Yuvafem", "Osphena", "Intrarosa"))  #Need to make sure premarin is vaginal  #Reference: https://www.empr.com/home/clinical-charts/oral-and-transdermal-estrogen-dose-equivalents/
 
-
-
-IUD = (c("Mirena", "Paragard", "Liletta", "Kyleena"))
+IUD = (c("Mirena", "Paragard T 380A", "Liletta", "Kyleena"))
 Antiviral = (c("Valtex", "Zovirax"))
 Anti-infective = (c("Flagyl", "Tindamax"))
 Hypoactive_sexual_desire = (c("Addyi"))
 
 
 #Data checked from: https://www.empr.com.  Would be great if we could scrape it.  
+#https://www.accessdata.fda.gov/scripts/cder/ndc/index.cfm
 target_drug_manufacturer <- c(
-      'Fosamax'   = 'Merck', #Bisphosphonates
-      'Actonel'   = 'Allergan', #Bisphosphonates
+      'Fosamax'   = 'Merck Sharp & Dohme Corp.', #Bisphosphonates
+      'Actonel'   = 'Allergan, Inc.', #Bisphosphonates
       "Boniva" = "Genentech, Inc.", #Bisphosphonates
-      "Atelvia" = "Allergan", #Bisphosphonates
-      "Prolia" = "Amgen, Inc.", #Note that Prolia is IV and others are PO
-      
+      "Atelvia" = "Allergan, Inc.", #Bisphosphonates
+      "Prolia" = "Amgen Inc", #Note that Prolia is IV and others are PO
       
       "Ditropan" = "Pfizer", #Anticholinergics_for_overactive_bladder
-      "Ditropan XL" = "Pfizer", #Anticholinergics_for_overactive_bladder  
-      "Vesicare" = "Astellas",  #Anticholinergics_for_overactive_bladder
+      "Ditropan XL" = "Pfizer", #Anticholinergics_for_overactive_bladder  #make sure XR
+      "VESIcare" = "Astellas Pharma US, Inc.",  #Anticholinergics_for_overactive_bladder
       "Enablex" = "Novartis", #Anticholinergics_for_overactive_bladder
       "Toviaz"= "Pfizer", #Anticholinergics_for_overactive_bladder
       "Myrbetriq" = "Astellas", #Anticholinergics_for_overactive_bladder ##????
-      "Ditropan" = "", #Anticholinergics_for_overactive_bladder
-      "Oxytrol" = "Merck", #Anticholinergics_for_overactive_bladder
-      "Gelnique" = "Allergan", #Anticholinergics_for_overactive_bladder
+      "Oxytrol" = "Merck Sharp & Dohme Corp.", #Anticholinergics_for_overactive_bladder #Make sure this is patch
+      "Gelnique" = "Allergan, Inc.", #Anticholinergics_for_overactive_bladder #needs to be gel
       "Detrol" = "Pfizer", #Anticholinergics_for_overactive_bladder
-      "Detrol LA" = "Pfizer", #Anticholinergics_for_overactive_bladder
-      "Sanctura" = "Allergan",#Anticholinergics_for_overactive_bladder
-      "Sanctura XR" = "Allergan", #Anticholinergics_for_overactive_bladder
+      "Detrol LA" = "Pfizer", #Anticholinergics_for_overactive_bladder #make sure XR
+      "Sanctura" = "Allergan, Inc.",#Anticholinergics_for_overactive_bladder
+      "Sanctura XR" = "Allergan, Inc.", #Anticholinergics_for_overactive_bladder #make sure XR
       
       'Premarin'   = 'Pfizer', #Vaginal_Estrogen_Hormone_Therapy
-      'Estrace'    = 'Allergan',#Vaginal_Estrogen_Hormone_Therapy
+      'Estrace'    = 'Allergan, Inc.',#Vaginal_Estrogen_Hormone_Therapy
       'Vagifem'  = 'Novo Nordisk',#Vaginal_Estrogen_Hormone_Therapy
       'Yuvafem'   = 'Amneal',#Vaginal_Estrogen_Hormone_Therapy
-      "Osphena" = "Duchesnay USA, Inc.",
+      "Osphena" = (c("Duchesnay USA, Inc.", "Shionogi Inc.")),
       "Intrarosa" = "AMAG Pharmaceuticals",
 
-      
-      'Yaz'    = 'Bayer', #COCP_modern
-      'Yasmin'   = 'Bayer', #COCP_modern
-      'Loestrin' = 'Allergan', #COCP_modern
-      'Lo Loestrin Fe' = 'Allergan', #COCP_modern
-      'Aviane'   = 'Teva Pharmaceuticals', #COCP_modern
-      'Lessina' = 'Teva Pharmaceuticals', #COCP_modern
-      'Lutera' = 'Mayne Pharma US', #COCP_modern
-      'Ortho Tri-cyclen Lo' = 'Janssen Pharmaceuticals, Inc.', #COCP_modern
-      "Trinessa" = 'Teva Pharmaceuticals',  #COCP_modern
-      "Tri-Previfem" = 'Teva Pharmaceuticals', #COCP_modern
-      "Tri-Sprintec" = "Teva Pharmaceuticals", #COCP_modern
-      "Enpresse" = "Teva Pharmaceuticals", #COCP_modern
-      "Trivora" = "Mayne Pharma US", #COCP_modern
-      "Mononessa" = "Teva Pharmaceuticals", #COCP_modern
-      "Previfem" = "Teva Pharmaceuticals", #COCP_modern
-      "Tri-Previfem" = "Teva Pharmaceuticals",       #COCP_modern
-      "Sprintec" = "Teva Pharmaceuticals", #COCP_modern
-      "Balziva" = "Teva Pharmaceuticals", #COCP_modern
-      "NECON 1/35–28" = "Actavis", #COCP_modern
-      "NECON 10/11–28" = "Actavis", #COCP_modern
-      "NECON 7/7/7"= "Actavis", #COCP_modern
-      "NECON 0.5/35–28"= "Actavis", #COCP_modern
-      "Nortrel" =  "Teva Pharmaceuticals", #COCP_modern
-      "Aranelle" = "Teva Pharmaceuticals", #COCP_modern
-      "Leena" = "Mayne Pharma US", #COCP_modern
-      "Cryselle" = "Teva Pharmaceuticals", #COCP_modern
-      "BREVICON-28" = "Allergan",
-      "Nuvaring" = "Merck",
+      # 
+      # 'Yaz'    = 'Bayer HealthCare Pharmaceuticals Inc.', #COCP_modern
+      # 'Yasmin'   = 'Bayer HealthCare Pharmaceuticals Inc.', #COCP_modern
+      # 'Loestrin' = 'Allergan', #COCP_modern
+      # 'Lo Loestrin Fe' = 'Allergan', #COCP_modern
+      # 'Aviane'   = 'Teva Pharmaceuticals', #COCP_modern
+      # 'Lessina' = 'Teva Pharmaceuticals', #COCP_modern
+      # 'Lutera' = 'Mayne Pharma US', #COCP_modern
+      # 'Ortho Tri-cyclen Lo' = 'Janssen Pharmaceuticals, Inc.', #COCP_modern
+      # "Trinessa" = 'Teva Pharmaceuticals',  #COCP_modern
+      # "Tri-Previfem" = 'Teva Pharmaceuticals', #COCP_modern
+      # "Tri-Sprintec" = "Teva Pharmaceuticals", #COCP_modern
+      # "Enpresse" = "Teva Pharmaceuticals", #COCP_modern
+      # "Trivora" = "Mayne Pharma US", #COCP_modern
+      # "Mononessa" = "Teva Pharmaceuticals", #COCP_modern
+      # "Previfem" = "Teva Pharmaceuticals", #COCP_modern
+      # "Tri-Previfem" = "Teva Pharmaceuticals",       #COCP_modern
+      # "Sprintec" = "Teva Pharmaceuticals", #COCP_modern
+      # "Balziva" = "Teva Pharmaceuticals", #COCP_modern
+      # "NECON 1/35–28" = "Actavis", #COCP_modern
+      # "NECON 10/11–28" = "Actavis", #COCP_modern
+      # "NECON 7/7/7"= "Actavis", #COCP_modern
+      # "NECON 0.5/35–28"= "Actavis", #COCP_modern
+      # "Nortrel" =  "Teva Pharmaceuticals", #COCP_modern
+      # "Aranelle" = "Teva Pharmaceuticals", #COCP_modern
+      # "Leena" = "Mayne Pharma US", #COCP_modern
+      # "Cryselle" = "Teva Pharmaceuticals", #COCP_modern
+      # "BREVICON-28" = "Allergan",
+      # "Nuvaring" = "Merck",
       
       "Activella" = "Novo Nordisk", #Oral_Combined_Estrogen_and_Progestin_
       "Combipatch" = "Noven Therapeutics", #Oral_Combined_Estrogen_and_Progestin_
-      "Femhrt" = "Allergan",#Oral_Combined_Estrogen_and_Progestin_
+      "Femhrt" = "Allergan, Inc.",#Oral_Combined_Estrogen_and_Progestin_
       "Premphase" = "Pfizer",#Oral_Combined_Estrogen_and_Progestin_
       "Prempro" = "Pfizer",#Oral_Combined_Estrogen_and_Progestin_
       "Menest" = "Pfizer",
+      "Climara Pro" = "Bayer HealthCare Pharmaceuticals Inc.",   #Transdermal_estrogen
       
       "Mirena" = "Bayer Healthcare Pharmaceuticals Inc.", #IUD, these are devices FYI
-      "Paragard" = "The Cooper Companies", #IUD
-      "Liletta" = "Allergan", #IUD
-      "Kyleena" = "Bayer", #IUD
+      "Paragard T 380A" = (c("CooperSurgical, Inc.", "Teva Women's Health, Inc.")), #IUD
+      "Liletta" = (c("Allergan, Inc.", "Actavis Pharma, Inc.")),#IUD
+      "Kyleena" = "Bayer HealthCare Pharmaceuticals Inc.", #IUD
       
       "Valtrex" =  "GlaxoSmithKline", #Herpes treatment
-      "Zovirax" = "Mylan Inc.", #Herpes treatment
+      "Zovirax" = "Prestium Pharma, Inc.", #Herpes treatment
 
       "Flagyl" = "Pfizer",  #Bacterial vaginosis treatment
        "Tindamax" = "Mission Pharmacal Company", #Bacterial vaginosis treatment
       
       "Addyi" = "Sprout Pharmaceuticals", #Hypoactive sexual desire
       
-      "Alora" = "Allergan", #Transdermal_estrogen
-      "Climara" = "Bayer", #Transdermal_estrogen
-      "Climara Pro" = "Bayer",   #Transdermal_estrogen
+      "Alora" = (c("Allergan, Inc.", "Actavis Pharma, Inc.")), #Transdermal_estrogen
+      "Climara" = "Bayer HealthCare Pharmaceuticals Inc.", #Transdermal_estrogen
       "Vivelle" = "Novartis", #Transdermal_estrogen
       "Vivelle-Dot" = "Novartis", #Transdermal_estrogen
-      "Menostar" = "Bayer", #Transdermal_estrogen
+      "Menostar" = "Bayer HealthCare Pharmaceuticals Inc.", #Transdermal_estrogen
       
-      "Divigel" = "Vertical Pharmaceuticals",  #Gel_estrogens
+      "Divigel" = "Vertical Pharmaceuticals, LLC",  #Gel_estrogens
       "Estrogel" = "Ascend Therapeutics",  #Gel_estrogens
       "Elestrin" = "Mylan Inc." #Gel_estrogens
       ) 
-
-"Enablex" = "Novartis", #Anticholinergics_for_overactive_bladder
-"Toviaz"= "Pfizer", #Anticholinergics_for_overactive_bladder
-"Myrbetriq" = "Astellas", #Anticholinergics_for_overactive_bladder ##????
-"Ditropan" = "", #Anticholinergics_for_overactive_bladder
-"Oxytrol" = "Merck", #Anticholinergics_for_overactive_bladder
-"Gelnique" = "Allergan", #Anticholinergics_for_overactive_bladder
-"Detrol" = "Pfizer", #Anticholinergics_for_overactive_bladder
-"Detrol LA" = "Pfizer", #Anticholinergics_for_overactive_bladder
-"Sanctura" = "Allergan",#Anticholinergics_for_overactive_bladder
-"Sanctura XR" = "Allergan", #Anticholinergics_for_overactive_bladder
 
 partd_target = c(
   'Fosamax'   = 'Alendronate',
@@ -707,8 +693,112 @@ partd_target = c(
   
   'Ditropan'   = 'Oxybutynin chloride',
   'Ditropan XL'    = 'Oxybutynin chloride', #Need to make sure this is the extended release
-  'Vesicare'   = 'Solifenacin succinate',
+  'VESIcare'   = 'Solifenacin succinate',
   'Enablex' = 'Darifenacin',
-  'estrace'   = 'ESTRACE',
-  'oxycontin' = 'OXYCONTIN'
-),
+  'Toviaz'   = 'Fesoterodine fumarate',
+  'Myrbetriq' = 'Mirabegron',
+  'Oxytrol' = 'Oxybutynin', #Patch needed
+  'Gelnique' = "Oxybutynin chloride 10%", #needs to be a gel
+  'Detrol' = 'Tolterodine tartrate',
+  'Detrol LA' = 'Tolterodine tartrate', #needs to be extended release
+  "Sanctura" = "Trospium chloride",#Anticholinergics_for_overactive_bladder
+  "Sanctura XR" = "Trospium chloride", #Anticholinergics_for_overactive_bladder
+  
+   'Premarin'   = 'Conjugated estrogens', #make sure it is the vaginal cream
+   'Estrace'    = 'Estradiol',#cream needed
+   'Vagifem'  = 'Estradiol',#vaginal insert needed
+   'Yuvafem'   = 'Estradiol ',#vaginal insert needed
+   "Osphena" = "Ospemifene",
+   "Intrarosa" = "Prasterone",
+  
+  "Activella" = "Estradiol", #Oral_Combined_Estrogen_and_Progestin_
+  "Combipatch" = "Estradiol 0.05mg + norethindrone acetate", #Patch
+  "Femhrt" = "Norethindrone acetate 0.5mg, ethinyl estradiol 2.5mcg",#Oral_Combined_Estrogen_and_Progestin_
+  "Premphase" = "conjugated estrogens and medroxyprogesterone acetate",#Oral_Combined_Estrogen_and_Progestin_
+  "Prempro" = "CONJUGATED ESTROGENS and MEDROXYPROGESTERONE ACETATE",#Oral_Combined_Estrogen_and_Progestin_
+  "Menest" = "esterified estrogens",
+  "Climara Pro" = "Estradiol and Levonorgestrel",   #Transdermal_estrogen+Progesterone
+  
+  "Mirena" = "Levonorgestrel", #IUD, these are devices FYI
+  "Paragard T 380A" = "Copper", #IUD
+  "Liletta" = "Levonorgestrel", #IUD
+  "Kyleena" = "Levonorgestrel", #IUD
+  
+  "Valtrex" =  "valacyclovir hydrochloride", #Herpes treatment
+  "Zovirax" = "ACYCLOVIR", #Herpes treatment
+  
+  "Flagyl" = "Metronidazole",  #Bacterial vaginosis treatment
+  "Tindamax" = "tinidazole", #Bacterial vaginosis treatment
+  
+  "Addyi" = "flibanserin", #Hypoactive sexual desire
+  
+  "Alora" = "Estradiol Transdermal System", #Transdermal_estrogen
+  "Climara" = "estradiol", #Transdermal_estrogen
+  "Vivelle" = "estradiol", #Transdermal_estrogen
+  "Vivelle-Dot" = "estradiol", #Transdermal_estrogen
+  "Menostar" = "estradiol", #Transdermal_estrogen
+  
+  "Divigel" = "estradiol",  #Gel_estrogens
+  "Estrogel" = "estradiol",  #Gel_estrogens
+  "Elestrin" = "estradiol" #Gel_estrogens
+) 
+
+ndc_package_code_targets = c(
+  'Fosamax'   = (c('0006-0031-44', "0006-0270-21", "0006-0270-44", "0006-0710-44")),
+  'Actonel'     = (c("0430-0470-15", "0430-0471-15", "0430-0472-03", "0430-0472-07", "0430-0478-01", "0430-0478-02")),
+  'Boniva'   = (c("0004-0186-83", "0004-0191-09")),
+  'Atelvia'    = '0430-0979-03',
+  'Prolia'  = '55513-710-01',
+  
+  'Ditropan'   = '????????????????',
+  'Ditropan XL'    = (c('50458-805-01', "50458-810-01")), #Need to make sure this is the extended release
+  'VESIcare'   = (c('51248-150-01', "51248-151-03", "51248-150-03", "51248-150-52", "51248-151-52", "51248-151-01")),
+  'Enablex' = (c("0430-0170-00", "0430-0170-15", "0430-0170-23", "0430-0170-96", "0430-0171-00", "0430-0171-15", "0430-0171-23", "0430-0171-96")),
+  'Toviaz'   = (c("0069-0242-30", "0069-0244-30")),
+  'Myrbetriq' = (c("0469-2601-30", "0469-2601-71", "0469-2601-90", "0469-2602-30", "0469-2602-71", "0469-2602-90")),
+  'Oxytrol' = (c("0023-6153-08", "0023-9637-04")), #Patch needed
+  'Gelnique' = (c("0023-5812-30", "0023-5861-11")), #needs to be a gel
+  'Detrol' = (c("0009-4541-02", "0009-4544-02", "0009-4544-03")),
+  'Detrol LA' = (c("0009-5190-01", "0009-5190-02", "0009-5190-03", "0009-5190-04", "0009-5191-01", "0009-5191-02", "0009-5191-03", "0009-5191-04", "0009-5191-99")), #needs to be extended release
+  "Sanctura" = (c("60505-3454-5", "60505-3454-8", "60505-3454-6")),#Anticholinergics_for_overactive_bladder
+  "Sanctura XR" = (c("0591-3636-05", "0591-3636-30", "0591-3636-60")), #Anticholinergics_for_overactive_bladder
+  
+  'Premarin'   = (c("0046-0872-04", "0046-0872-21")), 
+  'Estrace'    = (c("0430-3754-14")),
+  'Vagifem'  = (c("0169-5176-03", "0169-5176-04", "0169-5176-99")),
+  'Yuvafem'   = (c("69238-1524-8", "69238-1524-7")),
+  "Osphena" = (c("59630-580-55", "59630-580-90", "59630-580-18")),
+  "Intrarosa" = (c("64011-601-28", "64011-601-14")),
+  
+  "Activella" = (c("60846-202-01", "60846-201-01", "60846-231-01", "60846-232-01")), #Oral_Combined_Estrogen_and_Progestin_
+  "Combipatch" = (c("68968-0514-8", "68968-0525-8")), #Patch
+  "Femhrt" = ("0430-0145-14"),#Oral_Combined_Estrogen_and_Progestin_
+  "Premphase" = ("0046-2575-12"),#Oral_Combined_Estrogen_and_Progestin_
+  "Prempro" = (c("0046-1105-11", "0046-1106-11", "0046-1107-11", "0046-1108-11")),#Oral_Combined_Estrogen_and_Progestin_
+  "Menest" = (c("61570-074-01", "61570-073-01", "61570-072-01", "61570-075-50")),
+  "Mirena" = (c("50419-423-08", "50419-423-01")), #IUD, these are devices FYI
+  "Paragard T 380A" = (c("59365-5128-1", "51285-204-01")), #IUD
+  "Liletta" = (c("52544-035-54", "0023-5858-01")), #IUD
+  "Kyleena" = (c("50419-424-71", "50419-424-01", "50419-424-08")), #IUD
+  
+  "Valtrex" =  (c("0173-0933-08", "0173-0933-10", "0173-0933-56", "0173-0565-04", "0173-0565-10")), #Herpes treatment
+  "Zovirax" = (c("40076-949-55", "40076-945-55")), #Herpes treatment
+  
+  "Flagyl" = (c("0025-1821-31", "0025-1821-50", "0025-1831-31", "0025-1831-50")),  #Bacterial vaginosis treatment
+  "Tindamax" = (c("0178-8250-40", "0178-8500-20", "0178-8500-60")), #Bacterial vaginosis treatment
+  
+  "Addyi" = "58604-214-30", #Hypoactive sexual desire
+  
+  "Alora" = (c("0023-5885-12", "0023-5886-15", "0023-5887-17", "0023-5888-11", "52544-472-08", "52544-473-08", "52544-884-08", "52544-471-08")), #Transdermal_estrogen
+  "Climara" = (c("50419-453-04", "50419-456-04", "50419-459-04", "50419-452-04", "50419-451-04", "50419-454-04")), #Transdermal_estrogen
+  "Climara Pro" = (c("50419-491-73", "50419-491-04")),   #Transdermal_estrogen
+  "Vivelle-Dot" = (c("0078-0343-45", "0078-0344-45", "0078-0345-42", "0078-0345-45", "0078-0346-42", "0078-0346-45", "0078-0365-42", "0078-0365-45")), #Transdermal_estrogen
+  "Menostar" = "50419-455-04", #Transdermal_estrogen
+  
+  "Divigel" = (c("68025-066-30", "68025-067-07", "68025-065-07", "68025-067-30", "68025-083-07", "68025-065-30", "68025-083-30", "68025-066-07")),  #Gel_estrogens
+  "Estrogel" = "A17139-617-40",  #Gel_estrogens
+  "Elestrin" = (c("0037-4801-70", "0037-4802-35")))
+  
+
+
+
