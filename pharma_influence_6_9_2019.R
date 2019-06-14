@@ -45,7 +45,7 @@ drop_dir() %>%
   View()
 
 drop_dir("Pharma_Influence/data/National Drug Code Directory/") %>% View()
-drop_download("Pharma_Influence/data/National Drug Code Directory/package.xls", overwrite = TRUE, progress=TRUE)
+drop_download("Pharma_Influence/data/National Drug Code Directory/package.txt", overwrite = TRUE, progress=TRUE)
 
 ##################################################################
 # Set data file locations ----
@@ -164,9 +164,6 @@ ggplot(data = drug_count_top_20) +
   coord_flip() +
   geom_text(aes(label = count, y = count), size = 3, position = position_stack(vjust = 0.5))
 
-#Write to a postgresql database????????????????????????
-# RPostgreSQL::dbWriteTable(conn=con, name = "all_PUF_NPI_Drug", value= all_PUF_NPI_Drug, row.names=FALSE, overwrite = TRUE)
-
 
 cat("\n","----- Initial Structure of data frame -----","\n")
 # examine the structure of the initial data frame
@@ -218,15 +215,15 @@ summary(table1_all_PUF_NPI_Drug, text=T, title='Table 1:  PartD_Prescriber_PUF_N
 #2014 year
 download.file("https://www.dropbox.com/s/pakz20fn1u8m5v2/PartD_Prescriber_PUF_NPI_14.txt?raw=1", destfile = "PartD_Prescriber_PUF_NPI_Drug_15.txt", method = "auto")
 
-# PartD_Prescriber_PUF_NPI_14 <- read_delim("PartD_Prescriber_PUF_NPI_14.txt", "\t", escape_double = FALSE, trim_ws = TRUE)  %>%
-#   filter(specialty_description %in% c("Obstetrics & Gynecology", "Obstetrics/Gynecology", "Gynecological Oncology")) %>%
-#   mutate(npi = factor(npi)) %>%
-#   mutate(specialty_description = fct_drop(specialty_description), npi = fct_drop(npi)) %>%
-#   arrange(npi) %>%
-#   filter(nppes_entity_code != "O") %>%
-#   filter(nppes_provider_country =="US") %>%
-#   filter(nppes_provider_state != c("ZZ", "AA", "AE", "AP", "AS", "GU", "MP", "VI"))%>%
-#   mutate (year = "2014")
+PartD_Prescriber_PUF_NPI_14 <- read_delim("PartD_Prescriber_PUF_NPI_14.txt", "\t", escape_double = FALSE, trim_ws = TRUE)  %>%
+  filter(specialty_description %in% c("Obstetrics & Gynecology", "Obstetrics/Gynecology", "Gynecological Oncology")) %>%
+  mutate(npi = factor(npi)) %>%
+  mutate(specialty_description = fct_drop(specialty_description), npi = fct_drop(npi)) %>%
+  arrange(npi) %>%
+  filter(nppes_entity_code != "O") %>%
+  filter(nppes_provider_country =="US") %>%
+  filter(nppes_provider_state != c("ZZ", "AA", "AE", "AP", "AS", "GU", "MP", "VI"))%>%
+  mutate (year = "2014")
 
 #2015 year
 download.file("https://www.dropbox.com/s/4xt8epb06xvnigo/PartD_Prescriber_PUF_NPI_15.txt?raw=1", destfile = "PartD_Prescriber_PUF_NPI_15.txt", method = "auto")
@@ -241,21 +238,21 @@ PartD_Prescriber_PUF_NPI_15 <- read_delim("PartD_Prescriber_PUF_NPI_15.txt", "\t
 write_rds(PartD_Prescriber_PUF_NPI_15, "PartD_Prescriber_PUF_NPI_15.rds")
 
 #2016 year
-# download.file("https://www.dropbox.com/s/xzjxw5etettxjas/PartD_Prescriber_PUF_NPI_16.txt?raw=1", destfile = "PartD_Prescriber_PUF_NPI_Drug_16.txt", method = "auto")
-# 
-# PartD_Prescriber_PUF_NPI_16 <- read_delim("PartD_Prescriber_PUF_NPI_15.txt", "\t", escape_double = FALSE, trim_ws = TRUE)  %>%
-#   filter(specialty_description %in% c("Obstetrics & Gynecology", "Obstetrics/Gynecology", "Gynecological Oncology")) %>%
-#   mutate(npi = factor(npi)) %>%
-#   mutate(specialty_description = fct_drop(specialty_description), npi = fct_drop(npi)) %>%
-#   arrange(npi) %>%
-#   filter(nppes_entity_code != "O") %>%
-#   filter(nppes_provider_country =="US") %>%
-#   filter(nppes_provider_state != c("ZZ", "AA", "AE", "AP", "AS", "GU", "MP", "VI"))%>%
-#   mutate (year = "2016")
+download.file("https://www.dropbox.com/s/xzjxw5etettxjas/PartD_Prescriber_PUF_NPI_16.txt?raw=1", destfile = "PartD_Prescriber_PUF_NPI_Drug_16.txt", method = "auto")
+
+PartD_Prescriber_PUF_NPI_16 <- read_delim("PartD_Prescriber_PUF_NPI_15.txt", "\t", escape_double = FALSE, trim_ws = TRUE)  %>%
+  filter(specialty_description %in% c("Obstetrics & Gynecology", "Obstetrics/Gynecology", "Gynecological Oncology")) %>%
+  mutate(npi = factor(npi)) %>%
+  mutate(specialty_description = fct_drop(specialty_description), npi = fct_drop(npi)) %>%
+  arrange(npi) %>%
+  filter(nppes_entity_code != "O") %>%
+  filter(nppes_provider_country =="US") %>%
+  filter(nppes_provider_state != c("ZZ", "AA", "AE", "AP", "AS", "GU", "MP", "VI"))%>%
+  mutate (year = "2016")
 # 
 # #2017 year
-# download.file("https://www.dropbox.com/s/7ovqho9pp6g6kft/PartD_Prescriber_PUF_NPI_17.txt?raw=1", destfile = "PartD_Prescriber_PUF_NPI_Drug_17.txt", method = "auto")
-# 
+download.file("https://www.dropbox.com/s/7ovqho9pp6g6kft/PartD_Prescriber_PUF_NPI_17.txt?raw=1", destfile = "PartD_Prescriber_PUF_NPI_Drug_17.txt", method = "auto")
+
 PartD_Prescriber_PUF_NPI_17 <- read_delim("/Volumes/MUFFLYPROJ/Data/PartD_Prescriber_PUF_NPI_17.txt", "\t", escape_double = FALSE, trim_ws = TRUE)  %>%
   filter(specialty_description %in% c("Obstetrics & Gynecology", "Obstetrics/Gynecology", "Gynecological Oncology")) %>%
   mutate(npi = factor(npi)) %>%
@@ -266,15 +263,9 @@ PartD_Prescriber_PUF_NPI_17 <- read_delim("/Volumes/MUFFLYPROJ/Data/PartD_Prescr
   filter(nppes_provider_state != c("ZZ", "AA", "AE", "AP", "AS", "GU", "MP", "VI"))%>%
   mutate (year = "2017")
 # 
-# all_PartD_Prescriber_PUF_NPI <- bind_rows(PartD_Prescriber_PUF_NPI_14, PartD_Prescriber_PUF_NPI_15, PartD_Prescriber_PUF_NPI_16, PartD_Prescriber_PUF_NPI_17)
+all_PartD_Prescriber_PUF_NPI <- bind_rows(PartD_Prescriber_PUF_NPI_14, PartD_Prescriber_PUF_NPI_15, PartD_Prescriber_PUF_NPI_16, PartD_Prescriber_PUF_NPI_17)
 # 
 # write_rds(all_PartD_Prescriber_PUF_NPI, "all_PartD_Prescriber_PUF_NPI.rds")
-
-#Write to a postgresql database
-RPostgreSQL::dbWriteTable(conn=con, name = "all_PartD_Prescriber_PUF_NPI", value= all_PartD_Prescriber_PUF_NPI, row.names=FALSE, overwrite = TRUE)
-
-#Get table
-PartD_Prescriber_PUF_NPI_15_db <- tbl(con, "PartD_Prescriber_PUF_NPI_15")
 
 cat("\n","----- Initial Structure of data frame -----","\n")
 # examine the structure of the initial data frame
@@ -317,9 +308,9 @@ physician_compare <- read_csv("~/Dropbox/Pharma_Influence/data/Physician_Compare
 # ProductNDC – Link to the product.csv file
 # NDCPackageCode - https://www.nber.org/data/ndc-to-labelercode-productcode-packagesize-crosswalk.html This describes the package code. I think we should split up the package code into the 5,4,2 version (first 5 digits then middle 4 then last 2 digits) and then pad the numbers as needed.  I think that we could do a 5,4,2 NDC join with with the open payments data field “PRODUCTNDC”.  
 # https://www.idmedicaid.com/Reference/NDC%20Format%20for%20Billing%20PAD.pdf
-download.file("https://www.dropbox.com/s/nsh62v24zl13l77/product.xls?raw=1", destfile = "product.xls", method="auto")
+download.file("https://www.dropbox.com/s/nsh62v24zl13l77/product.xls?raw=1", destfile = "product.txt", method="auto")
 
-product <- read_delim("product.xls", 
+product <- read_delim("product.txt", 
                       "\t", escape_double = FALSE, trim_ws = TRUE) %>%
   select(-DOSAGEFORMNAME, -ROUTENAME, -APPLICATIONNUMBER) %>%
   distinct(NONPROPRIETARYNAME, .keep_all = TRUE) %>%
@@ -334,9 +325,9 @@ product <- read_delim("product.xls",
 RPostgreSQL::dbWriteTable(conn=con, name = "product", value= product, row.names=FALSE, overwrite = TRUE)
 
 #NDC package files
-download.file("https://www.dropbox.com/s/5gbrm7tpjup5lfd/package.xls?dl=0?raw=1", destfile = "package.xls", method="auto")
+download.file("https://www.dropbox.com/s/5gbrm7tpjup5lfd/package.txt?dl=0?raw=1", destfile = "package.xls", method="auto")
 
-package <- read_delim("package.xls", 
+package <- read_delim("package.txt", 
                       "\t", escape_double = FALSE, trim_ws = TRUE) %>%
   distinct(PRODUCTNDC, .keep_all = TRUE) %>%
   distinct(NDCPACKAGECODE, .keep_all = TRUE) %>%
@@ -563,23 +554,23 @@ summary(all_open_payments, text=T, title='Table 1:  Characteristics of Physician
 ##################################
 #Add in the Drug Classes, https://www.pbm.va.gov/PBM/clinicalguidance/drugclassreviews/HormoneTherapyCombinedEstrogenProgestinAbbreviatedDrugClassReview.pdf
 
-Bisphosphonates = c("Fosamax", "Risedronate", "Boniva", "Atelvia", "Prolia") #Need to specify po Boniva as it comes in IV as well.  #####
+class_Bisphosphonates = c("Fosamax", "Risedronate", "Boniva", "Atelvia", "Prolia") #Need to specify po Boniva as it comes in IV as well.  #####
 
-Anticholinergics_for_overactive_bladder <- (c("Ditropan", "Ditropan XL", "Oxytrol", "Gelnique", "Detrol", "Detrol LA", "Sanctura", "Sanctura XR", "Vesicare", "Enablex", "Toviaz"))
+class_Anticholinergics_for_overactive_bladder <- (c("Ditropan", "Ditropan XL", "Oxytrol", "Gelnique", "Detrol", "Detrol LA", "Sanctura", "Sanctura XR", "Vesicare", "Enablex", "Toviaz"))
 
-Oral_Combined_Estrogen_and_Progestin_Products_for_Hormone_Therapy <- (c("Activella", "Combipatch", "Femhrt", "Premphase", "Prempro", "Menest", "Climara Pro"))
+class_Oral_Combined_Estrogen_and_Progestin_Products_for_Hormone_Therapy <- (c("Activella", "Combipatch", "Femhrt", "Premphase", "Prempro", "Menest", "Climara Pro"))
 
-Transdermal_estrogen = (c("Alora", "Climara", "Vivelle", "Vivelle-Dot", "Menostar"))
-Gel_estrogens = (c("Divigel", "Estrogel", "Elestrin"))
+class_Transdermal_estrogen = (c("Alora", "Climara", "Vivelle", "Vivelle-Dot", "Menostar"))
+class_Gel_estrogens = (c("Divigel", "Estrogel", "Elestrin"))
 
-Hormone_therapy_single_ingredient_therapy <- (c("Alora", "Climara", "Esclim", "Estraderm", "Vivelle", "Vivelle-Dot", "Premarin", "Provera", "Medroxyprogesterone acetate"))
+class_Hormone_therapy_single_ingredient_therapy <- (c("Alora", "Climara", "Esclim", "Estraderm", "Vivelle", "Vivelle-Dot", "Premarin", "Provera", "Medroxyprogesterone acetate"))
 
-Vaginal_Estrogen_Hormone_Therapy <- (c("Premarin", "Estrace", "Vagifem", "Estring", "Yuvafem", "Osphena", "Intrarosa"))  #Need to make sure premarin is vaginal  #Reference: https://www.empr.com/home/clinical-charts/oral-and-transdermal-estrogen-dose-equivalents/
+class_Vaginal_Estrogen_Hormone_Therapy <- (c("Premarin", "Estrace", "Vagifem", "Estring", "Yuvafem", "Osphena", "Intrarosa"))  #Need to make sure premarin is vaginal  #Reference: https://www.empr.com/home/clinical-charts/oral-and-transdermal-estrogen-dose-equivalents/
 
-IUD = (c("Mirena", "Paragard T 380A", "Liletta", "Kyleena"))
-Antiviral = (c("Valtex", "Zovirax"))
-Anti-infective = (c("Flagyl", "Tindamax"))
-Hypoactive_sexual_desire = (c("Addyi"))
+class_IUD_device = (c("Mirena", "Paragard T 380A", "Liletta", "Kyleena"))
+class_Antiviral = (c("Valtex", "Zovirax"))
+class_Anti_infective = (c("Flagyl", "Tindamax"))
+class_Hypoactive_sexual_desire = (c("Addyi"))
 
 #Data checked from: https://www.empr.com.  Would be great if we could scrape it.  
 #https://www.accessdata.fda.gov/scripts/cder/ndc/index.cfm
@@ -593,9 +584,9 @@ target_drug_manufacturer <- c(
       "Ditropan" = "Pfizer", #Anticholinergics_for_overactive_bladder
       "Ditropan XL" = "Pfizer", #Anticholinergics_for_overactive_bladder  #make sure XR
       "VESIcare" = "Astellas Pharma US, Inc.",  #Anticholinergics_for_overactive_bladder
-      "Enablex" = "Novartis", #Anticholinergics_for_overactive_bladder
-      "Toviaz"= "Pfizer", #Anticholinergics_for_overactive_bladder
-      "Myrbetriq" = "Astellas", #Anticholinergics_for_overactive_bladder ##????
+      "Enablex" = "Allergan, Inc.", #Anticholinergics_for_overactive_bladder
+      "Toviaz"= (c("Pfizer Laboratories Div Pfizer Inc", "U.S. Pharmaceuticals", "Cardinal Health")),#Anticholinergics_for_overactive_bladder
+      "Myrbetriq" = (c("Astellas Pharma US, Inc.", "Cardinal Health")),#Anticholinergics_for_overactive_bladder ##????
       "Oxytrol" = "Merck Sharp & Dohme Corp.", #Anticholinergics_for_overactive_bladder #Make sure this is patch
       "Gelnique" = "Allergan, Inc.", #Anticholinergics_for_overactive_bladder #needs to be gel
       "Detrol" = "Pfizer", #Anticholinergics_for_overactive_bladder
@@ -642,7 +633,7 @@ target_drug_manufacturer <- c(
       "Elestrin" = "Mylan Inc." #Gel_estrogens
       ) 
 
-partd_target = c(
+target_partd = c(
   'Fosamax'   = 'Alendronate',
   'Actonel'     = 'Risedronate',
   'Boniva'   = 'Ibandronate',
@@ -701,14 +692,15 @@ partd_target = c(
   "Elestrin" = "estradiol" #Gel_estrogens
 ) 
 
-ndc_package_code_targets = c(
+target_ndc_package_code = c(
   'Fosamax'   = (c('0006-0031-44', "0006-0270-21", "0006-0270-44", "0006-0710-44")),
   'Actonel'     = (c("0430-0470-15", "0430-0471-15", "0430-0472-03", "0430-0472-07", "0430-0478-01", "0430-0478-02")),
   'Boniva'   = (c("0004-0186-83", "0004-0191-09")),
   'Atelvia'    = '0430-0979-03',
   'Prolia'  = '55513-710-01',
   
-  'Ditropan'   = '????????????????',
+  'Ditropan'   = (c("0603-4975-02", "0603-4975-04", "0603-4975-16", "0603-4975-20",
+                    "0603-4975-21", "0603-4975-22", "0603-4975-28", "0603-4975-32")),
   'Ditropan XL'    = (c('50458-805-01', "50458-810-01")), #Need to make sure this is the extended release
   'VESIcare'   = (c('51248-150-01', "51248-151-03", "51248-150-03", "51248-150-52", "51248-151-52", "51248-151-01")),
   'Enablex' = (c("0430-0170-00", "0430-0170-15", "0430-0170-23", "0430-0170-96", "0430-0171-00", "0430-0171-15", "0430-0171-23", "0430-0171-96")),
