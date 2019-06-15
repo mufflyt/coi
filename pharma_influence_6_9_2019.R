@@ -68,74 +68,75 @@ results_folder <- paste0(getwd(),"~/R Projects/Results/")
 #2014 year
 # download.file("https://www.dropbox.com/s/pakz20fn1u8m5v2/PartD_Prescriber_PUF_NPI_Drug_14.txt?raw=1", destfile = "PartD_Prescriber_PUF_NPI_Drug_14.txt", method = "auto")
 
-PartD_Prescriber_PUF_NPI_Drug_14 <- read_delim("~/Dropbox/Pharma_Influence/data/Medicare Part D data/PartD_Prescriber_PUF_NPI_DRUG_14/PartD_Prescriber_PUF_NPI_Drug_14.txt", "\t", escape_double = FALSE, trim_ws = TRUE) %>% #tab deliminated file
-  filter(specialty_description %in% c("Obstetrics & Gynecology", "Obstetrics/Gynecology", "Gynecological Oncology")) %>%
-  # Make all OBGYN the same factor with "Obstetrics & Gynecology"
-  mutate(npi = factor(npi), specialty_description = recode(specialty_description, `Gynecological Oncology` = "Obstetrics & Gynecology", `Obstetrics/Gynecology` = "Obstetrics & Gynecology")) %>%
-  select(-description_flag, everything()) %>%
-  select(generic_name, everything()) %>%
-  mutate(npi = factor(npi)) %>%
-  mutate(specialty_description = fct_drop(specialty_description), npi = fct_drop(npi)) %>%
-  mutate (year = "2014") %>%
-  filter(nppes_provider_state %nin% c("GU", "VI", "ZZ", "AP", "AE"))
+# PartD_Prescriber_PUF_NPI_Drug_14 <- read_delim("~/Dropbox/Pharma_Influence/data/Medicare Part D data/PartD_Prescriber_PUF_NPI_DRUG_14/PartD_Prescriber_PUF_NPI_Drug_14.txt", "\t", escape_double = FALSE, trim_ws = TRUE) %>% #tab deliminated file
+#   filter(specialty_description %in% c("Obstetrics & Gynecology", "Obstetrics/Gynecology", "Gynecological Oncology")) %>%
+#   # Make all OBGYN the same factor with "Obstetrics & Gynecology"
+#   mutate(npi = factor(npi), specialty_description = recode(specialty_description, `Gynecological Oncology` = "Obstetrics & Gynecology", `Obstetrics/Gynecology` = "Obstetrics & Gynecology")) %>%
+#   select(-description_flag, everything()) %>%
+#   select(generic_name, everything()) %>%
+#   mutate(npi = factor(npi)) %>%
+#   mutate(specialty_description = fct_drop(specialty_description), npi = fct_drop(npi)) %>%
+#   mutate (year = "2014") %>%
+#   filter(nppes_provider_state %nin% c("GU", "VI", "ZZ", "AP", "AE"))
+# 
+# #2015 year  
+# # download.file("https://www.dropbox.com/s/4xt8epb06xvnigo/PartD_Prescriber_PUF_NPI_Drug_15.txt?raw=1", destfile = "PartD_Prescriber_PUF_NPI_Drug_15.txt", method = "auto", cacheOK = TRUE)
+# 
+# PartD_Prescriber_PUF_NPI_Drug_15 <- read_delim("~/Dropbox/Pharma_Influence/data/Medicare Part D data/PartD_Prescriber_PUF_NPI_DRUG_15/PartD_Prescriber_PUF_NPI_Drug_15.txt", "\t", escape_double = FALSE, trim_ws = TRUE) %>% #tab deliminated file
+#   filter(specialty_description %in% c("Obstetrics & Gynecology", "Obstetrics/Gynecology", "Gynecological Oncology")) %>%
+#   # Make all OBGYN the same factor with "Obstetrics & Gynecology"
+#   mutate(npi = factor(npi), specialty_description = recode(specialty_description, `Gynecological Oncology` = "Obstetrics & Gynecology", `Obstetrics/Gynecology` = "Obstetrics & Gynecology")) %>%
+#   select(-description_flag, everything()) %>%
+#   select(generic_name, everything()) %>%
+#   mutate(specialty_description = fct_drop(specialty_description), npi = fct_drop(npi)) %>%
+#   mutate (year = "2015") %>%
+#   filter(nppes_provider_state %nin% c("GU", "VI", "ZZ", "AP", "AE"))
+# 
+# #2016 year 
+# download.file("https://www.dropbox.com/s/xzjxw5etettxjas/PartD_Prescriber_PUF_NPI_Drug_16.txt?raw=1", destfile = "PartD_Prescriber_PUF_NPI_Drug_16.txt", method = "wget")
+# 
+# PartD_Prescriber_PUF_NPI_Drug_16 <- read_delim("~/Dropbox/Pharma_Influence/data/Medicare Part D data/PartD_Prescriber_PUF_NPI_DRUG_16/PartD_Prescriber_PUF_NPI_Drug_16.txt", "\t", escape_double = FALSE, trim_ws = TRUE) %>% #tab deliminated file
+#   filter(specialty_description %in% c("Obstetrics & Gynecology", "Obstetrics/Gynecology", "Gynecological Oncology")) %>%
+#   # Make all OBGYN the same factor with "Obstetrics & Gynecology"
+#   mutate(npi = factor(npi), specialty_description = recode(specialty_description, `Gynecological Oncology` = "Obstetrics & Gynecology", `Obstetrics/Gynecology` = "Obstetrics & Gynecology")) %>%
+#   select(-description_flag, everything()) %>%
+#   select(generic_name, everything()) %>%
+#   mutate(npi = factor(npi)) %>%
+#   mutate(specialty_description = fct_drop(specialty_description), npi = fct_drop(npi)) %>%
+#   mutate (year = "2016") %>%
+#   filter(nppes_provider_state %nin% c("GU", "VI", "ZZ", "AP", "AE"))
+# 
+# #2017 year
+# download.file("https://www.dropbox.com/s/7ovqho9pp6g6kft/PartD_Prescriber_PUF_NPI_Drug_17.txt?raw=1", destfile = "PartD_Prescriber_PUF_NPI_Drug_17.txt", method = "auto")
+# 
+# PartD_Prescriber_PUF_NPI_Drug_17 <- read_delim("PartD_Prescriber_PUF_NPI_Drug_17.txt", "\t", escape_double = FALSE, trim_ws = TRUE) %>% #tab deliminated file
+#   filter(specialty_description %in% c("Obstetrics & Gynecology", "Obstetrics/Gynecology", "Gynecological Oncology")) %>%
+#   # Make all OBGYN the same factor with "Obstetrics & Gynecology"
+#   mutate(npi = factor(npi), specialty_description = recode(specialty_description, `Gynecological Oncology` = "Obstetrics & Gynecology", `Obstetrics/Gynecology` = "Obstetrics & Gynecology")) %>%
+#   select(-description_flag, everything()) %>%
+#   select(generic_name, everything()) %>%
+#   mutate(npi = factor(npi)) %>%
+#   mutate(specialty_description = fct_drop(specialty_description), npi = fct_drop(npi)) %>%
+#   mutate (year = "2017") %>% 
+#   filter(nppes_provider_state %nin% c("GU", "VI", "ZZ", "AP", "AE"))
+# 
+# all_PUF_NPI_Drug <- dplyr::bind_rows(PartD_Prescriber_PUF_NPI_Drug_14, PartD_Prescriber_PUF_NPI_Drug_15, PartD_Prescriber_PUF_NPI_Drug_16, PartD_Prescriber_PUF_NPI_Drug_17) %>% as.data.frame()
+# unique(all_PUF_NPI_Drug$year)  #check to make sure that all data sets are labeled by year
 
-#2015 year  
-# download.file("https://www.dropbox.com/s/4xt8epb06xvnigo/PartD_Prescriber_PUF_NPI_Drug_15.txt?raw=1", destfile = "PartD_Prescriber_PUF_NPI_Drug_15.txt", method = "auto", cacheOK = TRUE)
+# all_PUF_NPI_Drug <- all_PUF_NPI_Drug %>%
+#   filter(specialty_description == "Obstetrics & Gynecology") %>%
+#   mutate(npi = factor(npi)) %>%
+#   select(-specialty_description) %>%
+#   mutate(year = factor(year)) %>%
+#   filter(nppes_provider_state %nin% c("GU", "VI", "ZZ", "AP", "AE"))
 
-PartD_Prescriber_PUF_NPI_Drug_15 <- read_delim("~/Dropbox/Pharma_Influence/data/Medicare Part D data/PartD_Prescriber_PUF_NPI_DRUG_15/PartD_Prescriber_PUF_NPI_Drug_15.txt", "\t", escape_double = FALSE, trim_ws = TRUE) %>% #tab deliminated file
-  filter(specialty_description %in% c("Obstetrics & Gynecology", "Obstetrics/Gynecology", "Gynecological Oncology")) %>%
-  # Make all OBGYN the same factor with "Obstetrics & Gynecology"
-  mutate(npi = factor(npi), specialty_description = recode(specialty_description, `Gynecological Oncology` = "Obstetrics & Gynecology", `Obstetrics/Gynecology` = "Obstetrics & Gynecology")) %>%
-  select(-description_flag, everything()) %>%
-  select(generic_name, everything()) %>%
-  mutate(specialty_description = fct_drop(specialty_description), npi = fct_drop(npi)) %>%
-  mutate (year = "2015") %>%
-  filter(nppes_provider_state %nin% c("GU", "VI", "ZZ", "AP", "AE"))
+#write_rds(all_PUF_NPI_Drug, "~/Dropbox/Pharma_Influence/data/all_PUF_NPI_Drug.rds") 
+# #Delete drug files once they are all combined to the all_PUF_NPI_Drug
+# remove(PartD_Prescriber_PUF_NPI_Drug_14, PartD_Prescriber_PUF_NPI_Drug_15, PartD_Prescriber_PUF_NPI_Drug_16, PartD_Prescriber_PUF_NPI_Drug_17)
+# gc()
 
-#2016 year 
-download.file("https://www.dropbox.com/s/xzjxw5etettxjas/PartD_Prescriber_PUF_NPI_Drug_16.txt?raw=1", destfile = "PartD_Prescriber_PUF_NPI_Drug_16.txt", method = "wget")
-
-PartD_Prescriber_PUF_NPI_Drug_16 <- read_delim("~/Dropbox/Pharma_Influence/data/Medicare Part D data/PartD_Prescriber_PUF_NPI_DRUG_16/PartD_Prescriber_PUF_NPI_Drug_16.txt", "\t", escape_double = FALSE, trim_ws = TRUE) %>% #tab deliminated file
-  filter(specialty_description %in% c("Obstetrics & Gynecology", "Obstetrics/Gynecology", "Gynecological Oncology")) %>%
-  # Make all OBGYN the same factor with "Obstetrics & Gynecology"
-  mutate(npi = factor(npi), specialty_description = recode(specialty_description, `Gynecological Oncology` = "Obstetrics & Gynecology", `Obstetrics/Gynecology` = "Obstetrics & Gynecology")) %>%
-  select(-description_flag, everything()) %>%
-  select(generic_name, everything()) %>%
-  mutate(npi = factor(npi)) %>%
-  mutate(specialty_description = fct_drop(specialty_description), npi = fct_drop(npi)) %>%
-  mutate (year = "2016") %>%
-  filter(nppes_provider_state %nin% c("GU", "VI", "ZZ", "AP", "AE"))
-
-#2017 year
-download.file("https://www.dropbox.com/s/7ovqho9pp6g6kft/PartD_Prescriber_PUF_NPI_Drug_17.txt?raw=1", destfile = "PartD_Prescriber_PUF_NPI_Drug_17.txt", method = "auto")
-
-PartD_Prescriber_PUF_NPI_Drug_17 <- read_delim("PartD_Prescriber_PUF_NPI_Drug_17.txt", "\t", escape_double = FALSE, trim_ws = TRUE) %>% #tab deliminated file
-  filter(specialty_description %in% c("Obstetrics & Gynecology", "Obstetrics/Gynecology", "Gynecological Oncology")) %>%
-  # Make all OBGYN the same factor with "Obstetrics & Gynecology"
-  mutate(npi = factor(npi), specialty_description = recode(specialty_description, `Gynecological Oncology` = "Obstetrics & Gynecology", `Obstetrics/Gynecology` = "Obstetrics & Gynecology")) %>%
-  select(-description_flag, everything()) %>%
-  select(generic_name, everything()) %>%
-  mutate(npi = factor(npi)) %>%
-  mutate(specialty_description = fct_drop(specialty_description), npi = fct_drop(npi)) %>%
-  mutate (year = "2017") %>% 
-  filter(nppes_provider_state %nin% c("GU", "VI", "ZZ", "AP", "AE"))
-
-all_PUF_NPI_Drug <- dplyr::bind_rows(PartD_Prescriber_PUF_NPI_Drug_14, PartD_Prescriber_PUF_NPI_Drug_15, PartD_Prescriber_PUF_NPI_Drug_16, PartD_Prescriber_PUF_NPI_Drug_17) %>% as.data.frame()
-unique(all_PUF_NPI_Drug$year)  #check to make sure that all data sets are labeled by year
-
-all_PUF_NPI_Drug <- all_PUF_NPI_Drug %>%
-  filter(specialty_description == "Obstetrics & Gynecology") %>%
-  mutate(npi = factor(npi)) %>%
-  select(-specialty_description) %>%
-  mutate(year = factor(year)) %>%
-  filter(nppes_provider_state %nin% c("GU", "VI", "ZZ", "AP", "AE"))
-
-write_rds(all_PUF_NPI_Drug, "~/Dropbox/Pharma_Influence/data/all_PUF_NPI_Drug.rds") 
+all_PUF_NPI_Drug <- readr::read_rds("~/Dropbox/Pharma_Influence/data/all_PUF_NPI_Drug.rds")
 colnames(all_PUF_NPI_Drug)
-
-#Delete drug files once they are all combined to the all_PUF_NPI_Drug
-remove(PartD_Prescriber_PUF_NPI_Drug_14, PartD_Prescriber_PUF_NPI_Drug_15, PartD_Prescriber_PUF_NPI_Drug_16, PartD_Prescriber_PUF_NPI_Drug_17)
-gc()
 
 drug_count <- all_PUF_NPI_Drug %>% 
   #as.factor(drug_name) %>%
@@ -147,8 +148,8 @@ drug_count <- all_PUF_NPI_Drug %>%
   as.data.table() 
 drug_count %>% View()
 
-drug_count[[1,1]]
-drug_count[[1,2]]
+drug_count[[1,1]]  #Name of the top drug
+drug_count[[1,2]]   #Number of the top drugs
 
 drug_count_top_20 <- drug_count %>% 
   top_n(20) 
@@ -379,6 +380,7 @@ mrunif(20) # Results stored in Dropbox .rcache folder which will be synced betwe
 
 #2017
 OP_DTL_GNRL_PGYR2017_P06292018 <- read_csv("~/Dropbox/Pharma_Influence/data/Open Payments/OP_DTL_GNRL_PGYR2017_P06292018.csv") 
+colnames(OP_DTL_GNRL_PGYR2017_P06292018)
 
 OP_DTL_GNRL_PGYR2017_P06292018 %>%
   select(-Change_Type, -Covered_Recipient_Type, -Teaching_Hospital_CCN, -Teaching_Hospital_ID, -Teaching_Hospital_Name) %>%
@@ -386,7 +388,7 @@ OP_DTL_GNRL_PGYR2017_P06292018 %>%
   filter(Recipient_Country %nin% "United States Minor Outlying Islands") %>%
   select(-Recipient_Country, everything()) %>%
   select(-Recipient_Province, -Recipient_Postal_Code, -Delay_in_Publication_Indicator, -Dispute_Status_for_Publication, -Recipient_Country, -Recipient_Primary_Business_Street_Address_Line2) %>%
-  filter(Physician_Primary_Type %nin%c("Chiropractor", "Doctor of Dentistry", "Doctor of Optometry", "Doctor of Podiatric Medicine")) %>%
+  filter(Physician_Primary_Type %nin% c("Chiropractor", "Doctor of Dentistry", "Doctor of Optometry", "Doctor of Podiatric Medicine")) %>%
   select(-Physician_License_State_code2, -Physician_License_State_code3, -Physician_License_State_code4, -Physician_License_State_code5) %>%
   mutate(Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_ID = factor(Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_ID)) %>%
   select(-Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_State, -Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Country) %>%
@@ -446,30 +448,30 @@ OP_DTL_GNRL_PGYR2016_P06292018 <- read_csv("~/Dropbox/Pharma_Influence/data/Open
 
 
 #2015
-OP_DTL_GNRL_PGYR2015_P06292018 <- read_csv("~/Dropbox/Pharma_Influence/data/Open Payments/OP_DTL_GNRL_PGYR2015_P06292018.csv") %>%
-  select(-Change_Type, -Covered_Recipient_Type, -Teaching_Hospital_CCN, -Teaching_Hospital_ID, -Teaching_Hospital_Name) %>%
+OP_DTL_GNRL_PGYR2015_P06292018 <- read_csv("~/Dropbox/Pharma_Influence/data/Open Payments/OP_DTL_GNRL_PGYR2015_P06292018.csv") 
+
+OP2015 <- OP_DTL_GNRL_PGYR2015_P06292018 %>%
+  select(-Change_Type, -Covered_Recipient_Type, -Teaching_Hospital_CCN, -Teaching_Hospital_ID, -Teaching_Hospital_Name, -Recipient_Province, -Recipient_Postal_Code, -Delay_in_Publication_Indicator, -Dispute_Status_for_Publication, -Recipient_Primary_Business_Street_Address_Line2, -Physician_License_State_code2, -Physician_License_State_code3, -Physician_License_State_code4, -Physician_License_State_code5) %>%
   mutate(Physician_Profile_ID = factor(Physician_Profile_ID)) %>%
   filter(Recipient_Country != "United States Minor Outlying Islands") %>%
   select(-Recipient_Country, everything()) %>%
-  select(-Recipient_Province, -Recipient_Postal_Code, -Delay_in_Publication_Indicator, -Dispute_Status_for_Publication, -Recipient_Country, -Recipient_Primary_Business_Street_Address_Line2) %>%
   filter(Physician_Primary_Type %nin% c("Chiropractor", "Doctor of Dentistry", "Doctor of Optometry", "Doctor of Podiatric Medicine")) %>%
-  select(-Physician_License_State_code2, -Physician_License_State_code3, -Physician_License_State_code4, -Physician_License_State_code5) %>%
   mutate(Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_ID = factor(Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_ID)) %>%
-  select(-Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_State, -Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Country) %>%
+  #select(-Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_State, -Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Country) %>%
   # THIS MAY BE THE PROBLEM OF THE NDC PACKAGE AND DRUGS NOT MATCHING UP, https://www.idmedicaid.com/Reference/NDC%20Format%20for%20Billing%20PAD.pdf, may need all numbers to be in a 5-4-2 pattern
   #rename(NDC_1_Package_Code = Associated_Drug_or_Biological_NDC_1) %>%
   # Limit COI to only drugs
   #filter(Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1 == "Drug") %>%
-  select(-Physician_Middle_Name, -Physician_Name_Suffix, -Recipient_Primary_Business_Street_Address_Line1, -Recipient_City, -Recipient_Zip_Code, -Physician_Primary_Type, -Physician_Specialty, -Physician_License_State_code1, -Date_of_Payment, -Record_ID, -Related_Product_Indicator, -Covered_or_Noncovered_Indicator_1, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1, -Product_Category_or_Therapeutic_Area_1, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_1, -Covered_or_Noncovered_Indicator_2, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_2, -Product_Category_or_Therapeutic_Area_2, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_2, -Associated_Drug_or_Biological_NDC_2, -Covered_or_Noncovered_Indicator_3, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_3, -Product_Category_or_Therapeutic_Area_3, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_3, -Associated_Drug_or_Biological_NDC_3, -Covered_or_Noncovered_Indicator_4, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_4, -Product_Category_or_Therapeutic_Area_4, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_4, -Associated_Drug_or_Biological_NDC_4, -Covered_or_Noncovered_Indicator_5, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_5, -Product_Category_or_Therapeutic_Area_5, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_5, -Associated_Drug_or_Biological_NDC_5, -Program_Year) %>%
-  select(-Physician_First_Name, -Physician_Last_Name, -Recipient_State, -Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_ID, everything()) %>%
+  #select(-Physician_Middle_Name, -Physician_Name_Suffix, -Recipient_Primary_Business_Street_Address_Line1, -Recipient_City, -Recipient_Zip_Code, -Physician_Primary_Type, -Physician_Specialty, -Physician_License_State_code1, -Date_of_Payment, -Record_ID, -Covered_or_Noncovered_Indicator_2, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_2, -Product_Category_or_Therapeutic_Area_2, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_2, -Associated_Drug_or_Biological_NDC_2, -Covered_or_Noncovered_Indicator_3, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_3, -Product_Category_or_Therapeutic_Area_3, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_3, -Associated_Drug_or_Biological_NDC_3, -Covered_or_Noncovered_Indicator_4, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_4, -Product_Category_or_Therapeutic_Area_4, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_4, -Associated_Drug_or_Biological_NDC_4, -Covered_or_Noncovered_Indicator_5, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_5, -Product_Category_or_Therapeutic_Area_5, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_5, -Associated_Drug_or_Biological_NDC_5, -Program_Year) %>%
+  # select(-Physician_First_Name, -Physician_Last_Name, -Recipient_State, -Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_ID, everything()) %>%
   select(-Submitting_Applicable_Manufacturer_or_Applicable_GPO_Name) %>%
   select(NDC_1_Package_Code, everything()) %>%
   drop_na(NDC_1_Package_Code) %>%
   filter(Total_Amount_of_Payment_USDollars >= 1) %>%
-  separate(NDC_1_Package_Code, into = c("5", "4", "2 NDC"), sep = "\\s*\\-\\s*", remove = FALSE, convert = TRUE) %>%
-  mutate_at(vars(`4`, `5`, `2 NDC`), funs(as.character)) %>%
-  mutate(`5` = str_pad(`5`, pad="0", side="left", width=5), `4` = str_pad(`4`, pad="0", side="left", width=4), `2 NDC` = str_pad(`2 NDC`, pad="0", side="left", width=2)) %>%
-  unite(`5_4_2_NDC`, `5`, `4`, `2 NDC`, sep = "-", remove = FALSE) %>%
+  # separate(NDC_1_Package_Code, into = c("5", "4", "2 NDC"), sep = "\\s*\\-\\s*", remove = FALSE, convert = TRUE) %>%
+  # mutate_at(vars(`4`, `5`, `2 NDC`), funs(as.character)) %>%
+  # mutate(`5` = str_pad(`5`, pad="0", side="left", width=5), `4` = str_pad(`4`, pad="0", side="left", width=4), `2 NDC` = str_pad(`2 NDC`, pad="0", side="left", width=2)) %>%
+  # unite(`5_4_2_NDC`, `5`, `4`, `2 NDC`, sep = "-", remove = FALSE) %>%
   mutate (year = "2015")
 
 
