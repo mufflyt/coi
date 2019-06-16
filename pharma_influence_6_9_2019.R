@@ -338,6 +338,7 @@ package <- read_delim("package.txt",
   unite(NDCPACKAGECODE_1_NDCPACKAGECODE_2_last2, NDCPACKAGECODE_1, NDCPACKAGECODE_2, last2, sep = "-", remove = FALSE) %>%
   rename(`5,4,2versionofNDCpackagecode` = NDCPACKAGECODE_1_NDCPACKAGECODE_2_last2) %>%
   mutate(`5,4,2versionofNDCpackagecode` = factor(`5,4,2versionofNDCpackagecode`))
+
 #Write to a postgresql database
 RPostgreSQL::dbWriteTable(conn=con, name = "package", value= package, row.names=FALSE, overwrite = TRUE)
 
@@ -345,9 +346,7 @@ RPostgreSQL::dbWriteTable(conn=con, name = "package", value= package, row.names=
 download.file(url = "https://www.dropbox.com/s/281b7xf8xiyq3m9/nda2segments.csv?raw=1", destfile = "nda2segments.csv", method = "auto", cacheOK = TRUE)
 
 #Also could bring in NDA segments instead of doing it ourselves
-nda2segments <- read_csv("~/Downloads/National Drug Code Directory/nda2segments.csv")
-
-
+nda2segments <- read_csv("data/National Drug Code Directory/nda2segments.csv")
 
 
 # Directory:  Dropbox/Pharma_Influence/Data/Open Payments/PGYR17_P011819
@@ -382,7 +381,8 @@ mrunif(20) # Results stored in Dropbox .rcache folder which will be synced betwe
 OP_DTL_GNRL_PGYR2017_P06292018 <- read_csv("~/Dropbox/Pharma_Influence/data/Open Payments/OP_DTL_GNRL_PGYR2017_P06292018.csv") 
 colnames(OP_DTL_GNRL_PGYR2017_P06292018)
 
-OP_DTL_GNRL_PGYR2017_P06292018 %>%
+OP2017 <- OP_DTL_GNRL_PGYR2017_P06292018 %>%
+  filter(Physician_Specialty %in% c("Allopathic & Osteopathic Physicians|Obstetrics & Gynecology", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Critical Care Medicine", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Female Pelvic Medicine and Reconstructive Surgery", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Gynecologic Oncology", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Gynecology", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Hospice and Palliative Medicine", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Maternal & Fetal Medicine", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Obesity Medicine", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Obstetrics", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Reproductive Endocrinology")) %>%
   select(-Change_Type, -Covered_Recipient_Type, -Teaching_Hospital_CCN, -Teaching_Hospital_ID, -Teaching_Hospital_Name) %>%
   mutate(Physician_Profile_ID = factor(Physician_Profile_ID)) %>%
   filter(Recipient_Country %nin% "United States Minor Outlying Islands") %>%
@@ -393,6 +393,7 @@ OP_DTL_GNRL_PGYR2017_P06292018 %>%
   mutate(Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_ID = factor(Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_ID)) %>%
   select(-Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_State, -Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Country) %>%
   # THIS MAY BE THE PROBLEM OF THE NDC PACKAGE AND DRUGS NOT MATCHING UP, https://www.idmedicaid.com/Reference/NDC%20Format%20for%20Billing%20PAD.pdf, may need all numbers to be in a 5-4-2 pattern
+  
   rename(NDC_1_Package_Code = Associated_Drug_or_Biological_NDC_1) %>%
   # Limit COI to only drugs
   filter(Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1 == "Drug") %>%
@@ -417,24 +418,29 @@ brand_drug_count <- OP_DTL_GNRL_PGYR2017_P06292018 %>%
   #str_to_title(drug_name) %>%
   as.data.table() 
 drug_count %>% View()
-
+rm(OP_DTL_GNRL_PGYR2017_P06292018)
+gc()
 
 #2016
-OP_DTL_GNRL_PGYR2016_P06292018 <- read_csv("~/Dropbox/Pharma_Influence/data/Open Payments/OP_DTL_GNRL_PGYR2016_P06292018.csv") %>%
+OP_DTL_GNRL_PGYR2016_P06292018 <- read_csv("~/Dropbox/Pharma_Influence/data/Open Payments/OP_DTL_GNRL_PGYR2016_P06292018.csv") 
+
+OP2016 <- OP_DTL_GNRL_PGYR2016_P06292018 %>%
+  filter(Physician_Specialty %in% c("Allopathic & Osteopathic Physicians|Obstetrics & Gynecology", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Critical Care Medicine", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Female Pelvic Medicine and Reconstructive Surgery", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Gynecologic Oncology", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Gynecology", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Hospice and Palliative Medicine", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Maternal & Fetal Medicine", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Obesity Medicine", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Obstetrics", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Reproductive Endocrinology")) %>%
   select(-Change_Type, -Covered_Recipient_Type, -Teaching_Hospital_CCN, -Teaching_Hospital_ID, -Teaching_Hospital_Name) %>%
   mutate(Physician_Profile_ID = factor(Physician_Profile_ID)) %>%
-  filter(Recipient_Country != "United States Minor Outlying Islands") %>%
+  filter(Recipient_Country %nin% "United States Minor Outlying Islands") %>%
   select(-Recipient_Country, everything()) %>%
   select(-Recipient_Province, -Recipient_Postal_Code, -Delay_in_Publication_Indicator, -Dispute_Status_for_Publication, -Recipient_Country, -Recipient_Primary_Business_Street_Address_Line2) %>%
-  filter(Physician_Primary_Type != c("Chiropractor", "Doctor of Dentistry", "Doctor of Optometry", "Doctor of Podiatric Medicine")) %>%
+  filter(Physician_Primary_Type %nin% c("Chiropractor", "Doctor of Dentistry", "Doctor of Optometry", "Doctor of Podiatric Medicine")) %>%
   select(-Physician_License_State_code2, -Physician_License_State_code3, -Physician_License_State_code4, -Physician_License_State_code5) %>%
   mutate(Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_ID = factor(Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_ID)) %>%
   select(-Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_State, -Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Country) %>%
   # THIS MAY BE THE PROBLEM OF THE NDC PACKAGE AND DRUGS NOT MATCHING UP, https://www.idmedicaid.com/Reference/NDC%20Format%20for%20Billing%20PAD.pdf, may need all numbers to be in a 5-4-2 pattern
+  
   rename(NDC_1_Package_Code = Associated_Drug_or_Biological_NDC_1) %>%
   # Limit COI to only drugs
   filter(Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1 == "Drug") %>%
-  select(-Physician_Middle_Name, -Physician_Name_Suffix, -Recipient_Primary_Business_Street_Address_Line1, -Recipient_City, -Recipient_Zip_Code, -Physician_Primary_Type, -Physician_Specialty, -Physician_License_State_code1, -Date_of_Payment, -Record_ID, -Related_Product_Indicator, -Covered_or_Noncovered_Indicator_1, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1, -Product_Category_or_Therapeutic_Area_1, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_1, -Covered_or_Noncovered_Indicator_2, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_2, -Product_Category_or_Therapeutic_Area_2, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_2, -Associated_Drug_or_Biological_NDC_2, -Covered_or_Noncovered_Indicator_3, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_3, -Product_Category_or_Therapeutic_Area_3, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_3, -Associated_Drug_or_Biological_NDC_3, -Covered_or_Noncovered_Indicator_4, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_4, -Product_Category_or_Therapeutic_Area_4, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_4, -Associated_Drug_or_Biological_NDC_4, -Covered_or_Noncovered_Indicator_5, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_5, -Product_Category_or_Therapeutic_Area_5, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_5, -Associated_Drug_or_Biological_NDC_5, -Program_Year) %>%
+  select(-Physician_Middle_Name, -Physician_Name_Suffix, -Recipient_Primary_Business_Street_Address_Line1, -Recipient_City, -Recipient_Zip_Code, -Physician_Primary_Type, -Physician_Specialty, -Physician_License_State_code1, -Date_of_Payment, -Record_ID, -Related_Product_Indicator, -Covered_or_Noncovered_Indicator_1, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1, -Product_Category_or_Therapeutic_Area_1, Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_1, -Covered_or_Noncovered_Indicator_2, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_2, -Product_Category_or_Therapeutic_Area_2, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_2, -Associated_Drug_or_Biological_NDC_2, -Covered_or_Noncovered_Indicator_3, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_3, -Product_Category_or_Therapeutic_Area_3, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_3, -Associated_Drug_or_Biological_NDC_3, -Covered_or_Noncovered_Indicator_4, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_4, -Product_Category_or_Therapeutic_Area_4, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_4, -Associated_Drug_or_Biological_NDC_4, -Covered_or_Noncovered_Indicator_5, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_5, -Product_Category_or_Therapeutic_Area_5, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_5, -Associated_Drug_or_Biological_NDC_5, -Program_Year) %>%
   select(-Physician_First_Name, -Physician_Last_Name, -Recipient_State, -Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_ID, everything()) %>%
   select(-Submitting_Applicable_Manufacturer_or_Applicable_GPO_Name) %>%
   select(NDC_1_Package_Code, everything()) %>%
@@ -445,12 +451,14 @@ OP_DTL_GNRL_PGYR2016_P06292018 <- read_csv("~/Dropbox/Pharma_Influence/data/Open
   mutate(`5` = str_pad(`5`, pad="0", side="left", width=5), `4` = str_pad(`4`, pad="0", side="left", width=4), `2 NDC` = str_pad(`2 NDC`, pad="0", side="left", width=2)) %>%
   unite(`5_4_2_NDC`, `5`, `4`, `2 NDC`, sep = "-", remove = FALSE) %>%
   mutate (year = "2016")
-
+rm(OP_DTL_GNRL_PGYR2016_P06292018)
+gc()
 
 #2015
 OP_DTL_GNRL_PGYR2015_P06292018 <- read_csv("~/Dropbox/Pharma_Influence/data/Open Payments/OP_DTL_GNRL_PGYR2015_P06292018.csv") 
 
 OP2015 <- OP_DTL_GNRL_PGYR2015_P06292018 %>%
+  filter(Physician_Specialty %in% c("Allopathic & Osteopathic Physicians|Obstetrics & Gynecology", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Critical Care Medicine", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Female Pelvic Medicine and Reconstructive Surgery", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Gynecologic Oncology", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Gynecology", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Hospice and Palliative Medicine", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Maternal & Fetal Medicine", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Obesity Medicine", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Obstetrics", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Reproductive Endocrinology")) %>%
   select(-Change_Type, -Covered_Recipient_Type, -Teaching_Hospital_CCN, -Teaching_Hospital_ID, -Teaching_Hospital_Name, -Recipient_Province, -Recipient_Postal_Code, -Delay_in_Publication_Indicator, -Dispute_Status_for_Publication, -Recipient_Primary_Business_Street_Address_Line2, -Physician_License_State_code2, -Physician_License_State_code3, -Physician_License_State_code4, -Physician_License_State_code5) %>%
   mutate(Physician_Profile_ID = factor(Physician_Profile_ID)) %>%
   filter(Recipient_Country != "United States Minor Outlying Islands") %>%
@@ -459,7 +467,7 @@ OP2015 <- OP_DTL_GNRL_PGYR2015_P06292018 %>%
   mutate(Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_ID = factor(Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_ID)) %>%
   #select(-Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_State, -Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Country) %>%
   # THIS MAY BE THE PROBLEM OF THE NDC PACKAGE AND DRUGS NOT MATCHING UP, https://www.idmedicaid.com/Reference/NDC%20Format%20for%20Billing%20PAD.pdf, may need all numbers to be in a 5-4-2 pattern
-  #rename(NDC_1_Package_Code = Associated_Drug_or_Biological_NDC_1) %>%
+  rename(NDC_1_Package_Code = Associated_Drug_or_Biological_NDC_1) %>%
   # Limit COI to only drugs
   #filter(Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1 == "Drug") %>%
   #select(-Physician_Middle_Name, -Physician_Name_Suffix, -Recipient_Primary_Business_Street_Address_Line1, -Recipient_City, -Recipient_Zip_Code, -Physician_Primary_Type, -Physician_Specialty, -Physician_License_State_code1, -Date_of_Payment, -Record_ID, -Covered_or_Noncovered_Indicator_2, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_2, -Product_Category_or_Therapeutic_Area_2, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_2, -Associated_Drug_or_Biological_NDC_2, -Covered_or_Noncovered_Indicator_3, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_3, -Product_Category_or_Therapeutic_Area_3, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_3, -Associated_Drug_or_Biological_NDC_3, -Covered_or_Noncovered_Indicator_4, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_4, -Product_Category_or_Therapeutic_Area_4, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_4, -Associated_Drug_or_Biological_NDC_4, -Covered_or_Noncovered_Indicator_5, -Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_5, -Product_Category_or_Therapeutic_Area_5, -Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_5, -Associated_Drug_or_Biological_NDC_5, -Program_Year) %>%
@@ -473,10 +481,14 @@ OP2015 <- OP_DTL_GNRL_PGYR2015_P06292018 %>%
   # mutate(`5` = str_pad(`5`, pad="0", side="left", width=5), `4` = str_pad(`4`, pad="0", side="left", width=4), `2 NDC` = str_pad(`2 NDC`, pad="0", side="left", width=2)) %>%
   # unite(`5_4_2_NDC`, `5`, `4`, `2 NDC`, sep = "-", remove = FALSE) %>%
   mutate (year = "2015")
-
+#write_rds(OP2015, "~/Dropbox/Pharma_Influence/data/Open Payments/OP2015.rds")
+rm(OP_DTL_GNRL_PGYR2015_P06292018)
 
 #2014
-OP_DTL_GNRL_PGYR2014_P06292018 <- read_csv("~/Dropbox/Pharma_Influence/data/Open Payments/OP_DTL_GNRL_PGYR2014_P06292018.csv") %>%
+OP_DTL_GNRL_PGYR2014_P06292018 <- read_csv("~/Dropbox/Pharma_Influence/data/Open Payments/OP_DTL_GNRL_PGYR2014_P06292018.csv") 
+
+OP2014 <- OP_DTL_GNRL_PGYR2014_P06292018 %>%
+  filter(Physician_Specialty %in% c("Allopathic & Osteopathic Physicians|Obstetrics & Gynecology", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Critical Care Medicine", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Female Pelvic Medicine and Reconstructive Surgery", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Gynecologic Oncology", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Gynecology", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Hospice and Palliative Medicine", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Maternal & Fetal Medicine", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Obesity Medicine", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Obstetrics", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Reproductive Endocrinology")) %>%
   select(-Change_Type, -Covered_Recipient_Type, -Teaching_Hospital_CCN, -Teaching_Hospital_ID, -Teaching_Hospital_Name) %>%
   mutate(Physician_Profile_ID = factor(Physician_Profile_ID)) %>%
   filter(Recipient_Country != "United States Minor Outlying Islands") %>%
@@ -501,11 +513,14 @@ OP_DTL_GNRL_PGYR2014_P06292018 <- read_csv("~/Dropbox/Pharma_Influence/data/Open
   mutate(`5` = str_pad(`5`, pad="0", side="left", width=5), `4` = str_pad(`4`, pad="0", side="left", width=4), `2 NDC` = str_pad(`2 NDC`, pad="0", side="left", width=2)) %>%
   unite(`5_4_2_NDC`, `5`, `4`, `2 NDC`, sep = "-", remove = FALSE) %>%
   mutate (year = "2014")
-
-
+rm(OP_DTL_GNRL_PGYR2014_P06292018)
+gc()
 
 #2013
-OP_DTL_GNRL_PGYR2013_P06292018 <- read_csv("~/Dropbox/Pharma_Influence/data/Open Payments/OP_DTL_GNRL_PGYR2013_P06292018.csv") %>%
+OP_DTL_GNRL_PGYR2013_P06292018 <- read_csv("~/Dropbox/Pharma_Influence/data/Open Payments/OP_DTL_GNRL_PGYR2013_P06292018.csv") 
+
+OP2013 <- OP_DTL_GNRL_PGYR2013_P06292018 %>%
+  filter(Physician_Specialty %in% c("Allopathic & Osteopathic Physicians|Obstetrics & Gynecology", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Critical Care Medicine", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Female Pelvic Medicine and Reconstructive Surgery", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Gynecologic Oncology", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Gynecology", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Hospice and Palliative Medicine", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Maternal & Fetal Medicine", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Obesity Medicine", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Obstetrics", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Reproductive Endocrinology")) %>%
   select(-Change_Type, -Covered_Recipient_Type, -Teaching_Hospital_CCN, -Teaching_Hospital_ID, -Teaching_Hospital_Name) %>%
   mutate(Physician_Profile_ID = factor(Physician_Profile_ID)) %>%
   filter(Recipient_Country != "United States Minor Outlying Islands") %>%
@@ -530,8 +545,10 @@ OP_DTL_GNRL_PGYR2013_P06292018 <- read_csv("~/Dropbox/Pharma_Influence/data/Open
   mutate(`5` = str_pad(`5`, pad="0", side="left", width=5), `4` = str_pad(`4`, pad="0", side="left", width=4), `2 NDC` = str_pad(`2 NDC`, pad="0", side="left", width=2)) %>%
   unite(`5_4_2_NDC`, `5`, `4`, `2 NDC`, sep = "-", remove = FALSE) %>%
   mutate (year = "2013")
+rm(OP_DTL_GNRL_PGYR2013_P06292018)
+gc()
 
-all_open_payments <- dplyr::bind_rows(OP_DTL_GNRL_PGYR2013_P06292018, OP_DTL_GNRL_PGYR2014_P06292018, OP_DTL_GNRL_PGYR2015_P06292018, OP_DTL_GNRL_PGYR2016_P06292018, OP_DTL_GNRL_PGYR2017_P06292018) 
+all_open_payments <- dplyr::bind_rows(OP2013, OP2014, OP2015, OP2016, OP2017) 
 unique(open_payments$year)  #check to make sure that all data sets are labeled by year
 
 write_rds(all_open_payments, "~/Dropbox/Pharma_Influence/data/all_open_payments.rds") 
