@@ -22,26 +22,9 @@
 # Set libPaths.
 .libPaths("/Users/tylermuffly/.exploratory/R/3.6")
 
-
 # Load required packages.
 if(!require(pacman))install.packages("pacman")
-pacman::p_load('janitor', 'lubridate', 'hms', 'tidyr', 'devtools', 'purrr', 'readr', 'ggplot2', 'dplyr', 'forcats', 'RcppRoll', 'lubridate', 'hms', 'tidyr', 'stringr', "bit64", "remotes", "tidylog","inspectdf", "DataExplorer", "arsenal", "RCurl", "RSQLite", "DBI", "sqldf", "qdapRegex", "dplyr", "dbplyr", "RPostgreSQL")
-
-##################################################################
-# Create an ephemeral in-memory RSQLite database
-con <- dbConnect(RSQLite::SQLite(), ":memory:")
-dbListTables(con)
-
-# create postgresql data base with the following commands in bash terminal
-# psql postgres
-# CREATE DATABASE pharma_influence;
-
-# Connect to or create data base to perform data manipulation on disk
-drv <- DBI::dbDriver("PostgreSQL")
-con <- dbConnect(drv, user="tylermuffly", password="",
-                 host="127.0.0.1", port=5432, dbname="pharma_influence")
-##################################################################
-
+pacman::p_load('janitor', 'lubridate', 'hms', 'tidyr', 'devtools', 'purrr', 'readr', 'ggplot2', 'dplyr', 'forcats', 'RcppRoll', 'lubridate', 'hms', 'tidyr', 'stringr', "bit64", "remotes", "tidylog","inspectdf", "DataExplorer", "arsenal", "RCurl")
 
 ##################################################################
 # Set data file locations ----
@@ -74,9 +57,8 @@ PartD_Prescriber_PUF_NPI_Drug_14 <- download.file("http://download.cms.gov/Resea
 PartD_Prescriber_PUF_NPI_Drug_13 <- download.file("http://download.cms.gov/Research-Statistics-Data-and-Systems/Statistics-Trends-and-Reports/Medicare-Provider-Charge-Data/Downloads/PartD_Prescriber_PUF_NPI_DRUG_14.zip", destfile = "PartD_Prescriber_PUF_NPI_Drug_14.zip", method = "auto")
 
 #Download 2015 file from Dropbox:  
-npi_drug_15 <- download.file("https://www.dropbox.com/s/4xt8epb06xvnigo/PartD_Prescriber_PUF_NPI_Drug_15.txt?raw=1", destfile = "PartD_Prescriber_PUF_NPI_Drug_15.txt", method = "auto", cacheOK = TRUE)
-
-PartD_Prescriber_PUF_NPI_Drug_15 <- read_delim("PartD_Prescriber_PUF_NPI_Drug_15.txt", "\t", escape_double = FALSE, trim_ws = TRUE) %>% #tab deliminated file
+download.file("https://www.dropbox.com/s/4xt8epb06xvnigo/PartD_Prescriber_PUF_NPI_Drug_15.txt?raw=1", destfile = "PartD_Prescriber_PUF_NPI_Drug_15.txt", method = "auto", cacheOK = TRUE)
+PartD_Prescriber_PUF_NPI_Drug_15 <- read_delim("~/Downloads/PartD_Prescriber_PUF_NPI_DRUG_15/PartD_Prescriber_PUF_NPI_Drug_15.txt", "\t", escape_double = FALSE, trim_ws = TRUE) %>% #tab deliminated file
     filter(specialty_description %in% c("Obstetrics & Gynecology", "Obstetrics/Gynecology", "Gynecological Oncology")) %>%
   # Make all OBGYN the same factor with "Obstetrics & Gynecology"
   mutate(npi = factor(npi), specialty_description = recode(specialty_description, `Gynecological Oncology` = "Obstetrics & Gynecology", `Obstetrics/Gynecology` = "Obstetrics & Gynecology")) %>%
@@ -85,10 +67,6 @@ PartD_Prescriber_PUF_NPI_Drug_15 <- read_delim("PartD_Prescriber_PUF_NPI_Drug_15
     mutate(npi = factor(npi)) %>%
     mutate(specialty_description = fct_drop(specialty_description), npi = fct_drop(npi)) %>%
     arrange(npi)
-
-#Write to a postgresql database
-RPostgreSQL::dbWriteTable(conn=con, name = "PartD_Prescriber_PUF_NPI_Drug_15", value= PartD_Prescriber_PUF_NPI_Drug_15, row.names=FALSE, overwrite = TRUE)
-
 
 cat("\n","----- Initial Structure of data frame -----","\n")
 # examine the structure of the initial data frame
