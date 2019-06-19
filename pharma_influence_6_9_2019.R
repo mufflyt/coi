@@ -445,11 +445,16 @@ View(OP2013)
 rm(OP_DTL_GNRL_PGYR2013_P06292018)
 gc()
 
-all_open_payments <- dplyr::bind_rows(OP2013, OP2014, OP2015, OP2016, OP2017) 
+all_open_payments <- dplyr::bind_rows(OP2013, OP2014, OP2015, OP2016, OP2017) %>%   
+filter(Recipient_State %nin% c("MP", "GU", "AE", "https://mirror.las.iastate.edu/CRAN/", "AE")) %>% #Keep Puerto Rico and DC in the sample
+  select(-Name_of_Associated_Covered_Drug_or_Biological4, -Name_of_Associated_Covered_Drug_or_Biological5, -NDC_of_Associated_Covered_Drug_or_Biological4, -NDC_of_Associated_Covered_Drug_or_Biological5, -Name_of_Associated_Covered_Device_or_Medical_Supply5)  #Removed all columns that have no data
+  readr::write_rds(all_open_payments, path="~/Dropbox/Pharma_Influence/all_open_payments.rds")
+  
 unique(all_open_payments$year)  #check to make sure that all data sets are labeled by year
+unique(all_open_payments$Recipient_State)
 describe(all_open_payments)
 
-write_rds(all_open_payments, "~/Dropbox/Pharma_Influence/data/all_open_payments.rds") 
+#write_rds(all_open_payments, "~/Dropbox/Pharma_Influence/data/all_open_payments.rds") 
 colnames(all_open_payments)
 
 
