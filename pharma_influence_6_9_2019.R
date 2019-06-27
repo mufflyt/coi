@@ -680,7 +680,64 @@ target_ndc_package_code = c(
   "Elestrin" = (c("0037-4801-70", "0037-4802-35")))
   
 
-
+date_off_patent = c(
+  'Fosamax'   = '2019',
+  'Actonel'     = 'Generic', #?????????????????
+  'Boniva'   = 'Generic',
+  'Atelvia'    = 'Generic',
+  'Prolia'  = 'Brand Only',
+  
+  'Ditropan'   = 'Generic',
+  'Ditropan XL'    = 'Generic', #Need to make sure this is the extended release
+  'VESIcare'   = 'Generic',
+  'Enablex' = 'Generic',
+  'Toviaz'   = 'Brand Only',
+  'Myrbetriq' = 'Brand Only',
+  'Oxytrol' = 'Generic', #Patch needed
+  'Gelnique' = "2020", #needs to be a gel
+  'Detrol' = 'Generic',
+  'Detrol LA' = 'Generic', #needs to be extended release
+  "Sanctura" = "2024????",#Anticholinergics_for_overactive_bladder
+  "Sanctura XR" = "2024????", #Anticholinergics_for_overactive_bladder
+  
+  'Premarin'   = 'Brand Only', #make sure it is the vaginal cream
+  'Estrace'    = 'Brand Only',#cream needed
+  'Vagifem'  = 'Brand Only',#vaginal insert needed
+  'Yuvafem'   = '2022',#vaginal insert needed
+  "Osphena" = "Brand Only",
+  "Intrarosa" = "Brand Only",
+  
+  "Activella" = "?????????????", #Oral_Combined_Estrogen_and_Progestin_
+  "Combipatch" = "2024", #Patch
+  "Femhrt" = "2015",#Oral_Combined_Estrogen_and_Progestin_
+  "Premphase" = "2024",#Oral_Combined_Estrogen_and_Progestin_
+  "Prempro" = "C???????????????",#Oral_Combined_Estrogen_and_Progestin_
+  "Menest" = "??????????????????",
+  "Climara Pro" = "2024",   #Transdermal_estrogen+Progesterone
+  
+  "Mirena" = "Brand Only", #IUD, these are devices FYI
+  "Paragard T 380A" = "Brand Only", #IUD
+  "Liletta" = "Brand Only", #IUD
+  "Kyleena" = "Brand Only", #IUD
+  
+  "Valtrex" =  "Generic", #Herpes treatment
+  "Zovirax" = "Generic", #Herpes treatment
+  
+  "Flagyl" = "2009",  #Bacterial vaginosis treatment
+  "Tindamax" = "2012", #Bacterial vaginosis treatment
+  
+  "Addyi" = "flibanserin", #Hypoactive sexual desire
+  
+  "Alora" = "?????", #Transdermal_estrogen
+  "Climara" = "2006", #Transdermal_estrogen
+  "Vivelle" = "2014", #Transdermal_estrogen
+  "Vivelle-Dot" = "2014", #Transdermal_estrogen
+  "Menostar" = "2014", #Transdermal_estrogen
+  
+  "Divigel" = "?2030",  #Gel_estrogens
+  "Estrogel" = "2030",  #Gel_estrogens
+  "Elestrin" = "2022" #Gel_estrogens
+) 
 
 
 
