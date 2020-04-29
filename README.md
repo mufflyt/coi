@@ -1,4 +1,5 @@
 # Do doctors prescribe more of a drug if they receive money from a pharmaceutical company tied to it?
+Muffly, Archer, Guido, Ferber
 
 *Hypotheses and Specific Aims:*
 
@@ -36,6 +37,8 @@ All together, these x drugs accounted for about y% of all prescriptions under Pa
 
 CONCLUSIONS AND RELEVANCE:
 Pending!
+Add this image.  
+https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fmarket-it.fr%2Fpharmacomplianceinfo%2Fwp-content%2Fuploads%2F2014%2F10%2FOpen-Payments-Sunshine-Act-CMS.gouv_.jpg&f=1&nofb=1
 
 Drug and Payments Data pull and preparation
 ==========
@@ -51,8 +54,6 @@ Physician Demographics
 ==========
 * [Physician Compare National Downloadable File](https://data.medicare.gov/Physician-Compare/Physician-Compare-National-Downloadable-File/mj5m-pzi6)
 * [National Uniform Claim Committee, Taxonomy Codes](http://www.nucc.org/index.php/code-sets-mainmenu-41/provider-taxonomy-mainmenu-40/csv-mainmenu-57)
-
-
 * https://www.youtube.com/watch?v=YQZ2UeOTO3I&feature=share
 
 
@@ -83,22 +84,33 @@ library('reshape2')
 ```
 
 ## Scripts: purpose for searching for NPPES
+### Path:  `/Pharma_Influence/Guido_Working_file`
 
 ### `1_Match PCND with OP.R`
-**Description**: These files are numbered in ordered of how they are to be used "1_", then "2_", then "3_".
-
-**Use**: Take the Physician_Compare_National_Downloadable_File.csv (abbreviated as PCND) and filters out APO/territories and selects the specialty of interest as `c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))` for primary and secondary specialties using the baller move of '|'.  The SQL codes removes duplicate NPI numbers.  Open Payment data is loaded from `OP_PH_PRFL_SPLMTL_P06282019.csv`.  All data is changed to lower case and `!=" "`.  Then the merge process starts based on 
+**Description**: These files are numbered in ordered of how they are to be used "1_", then "2_", then "3_".Take the Physician_Compare_National_Downloadable_File.csv (abbreviated as PCND) and filters out APO/territories and selects the specialty of interest as `c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))` for primary and secondary specialties using the baller move of '|'.  The SQL codes removes duplicate NPI numbers.  Open Payment data is loaded from `OP_PH_PRFL_SPLMTL_P06282019.csv`.  All data is changed to lower case and `!=" "`.  Then the merge process starts based on 
 * first, last, city, state creates matching payments (MP).  
 * check for matches using address
-Counts are taken throughout the project.  
+Counts are taken throughout the project.  Of note, `Physician_Profile_ID` is a unique identificaiton number for Open Payments doctors.  
+
+**Use**:   `source("1_Match PCND with OP.R")` 
 
 **Output**: 
 * `studygroupR2.csv` - Matching payments data is all matched based on the above criteria and written out.  
 * `PCND.csv` - Physician compare data left joined with the `MP` so this has the demographics of the doctors who had matching payments.  
 * `StudyGroupR2.rds` - 'MP' dataframe is saved so this is a list of the physicians matched with payments.  
 
+### `2_Load_Data.R`
 
+**Description**: Files starts with `StudyGroupR3.csv` defined as `StudyGroup` and I don't know where this comes from.  Reads in data for all years by reading txt file from the internet: `PartD_Prescriber_PUF_NPI_DRUG_xx.txt`.  Merge all the years of Prescriber Drug information together.  Read in the open payments data that was processed before:  `OP_DTL_GNRL_PGYR2017_P0629xxx.csv`.  Corrects the column names across all years.  `PaySum5` aggregates dollar amounts.  
 
+**Use**: `source("2_Load_Data.R")` 
+
+**Input**: 
+* `StudyGroupR3.csv` - Crosswalk of NPI number and matching PPI number from Open Payments.  I don't know where this came from.  
+* `PartD_Prescriber_PUF_NPI_DRUG_13.txt -> PartD_Prescriber_PUF_NPI_DRUG_17.txt`
+* `OP_DTL_GNRL_PGYR2013_P06292018.csv -> OP_DTL_GNRL_PGYR2017_P06292018.csv`
+
+**Output**: `paymentSummary.csv`
 
 ### `API access for NPPES.R`
 
