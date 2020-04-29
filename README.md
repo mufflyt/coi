@@ -74,6 +74,8 @@ library("readr")
 ```
 
 ### Get scripts into a new RStudio project:
-
 `New Project - Version Control - Git -` https://github.com/mufflyt/coi.git as `Repository URL`
 (Our use your preferred way of cloning/downloading from GitHub.)
+
+### Contact:
+Please contact me with any questions or concerns: tyler (dot) muffly (at) dhha (dot) org.  
