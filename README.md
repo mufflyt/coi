@@ -37,6 +37,7 @@ All together, these x drugs accounted for about y% of all prescriptions under Pa
 
 CONCLUSIONS AND RELEVANCE:
 Pending!
+
 Add this image.  
 https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fmarket-it.fr%2Fpharmacomplianceinfo%2Fwp-content%2Fuploads%2F2014%2F10%2FOpen-Payments-Sunshine-Act-CMS.gouv_.jpg&f=1&nofb=1
 
@@ -61,6 +62,8 @@ Drug Classes that Muffly created
 * Payment_Class.csv
 * Prescription_Class.csv
 * ClassList
+
+[![Matching name and NPI](https://github.com/mufflyt/coi/blob/master/op%20plus%20MPUPS.png?raw=true)](https://github.com/mufflyt/coi/blob/master/op%20plus%20MPUPS.png?raw=true)
 
 
 ## Installation and use
