@@ -92,6 +92,7 @@ library('reshape2')
 ## Scripts: purpose for searching for NPPES
 ### Path:  `/Pharma_Influence/Guido_Working_file`
 
+### Matching Physician Names to Open Payments Data Process
 ### `1_Match PCND with OP.R`
 **Description**: These files are numbered in ordered of how they are to be used "1_", then "2_", then "3_".Take the Physician_Compare_National_Downloadable_File.csv (abbreviated as PCND) and filters out APO/territories and selects the specialty of interest as `c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))` for primary and secondary specialties using the baller move of '|'.  The SQL codes removes duplicate NPI numbers.  Open Payment data is loaded from `OP_PH_PRFL_SPLMTL_P06282019.csv`.  All data is changed to lower case and `!=" "`.  Then the merge process starts based on 
 * first, last, city, state creates matching payments (MP).  
@@ -104,6 +105,29 @@ Counts are taken throughout the project.  Of note, `Physician_Profile_ID` is a u
 * `studygroupR2.csv` - Matching payments data is all matched based on the above criteria and written out.  
 * `PCND.csv` - Physician compare data left joined with the `MP` so this has the demographics of the doctors who had matching payments.  
 * `StudyGroupR2.rds` - 'MP' dataframe is saved so this is a list of the physicians matched with payments.  
+
+### Matching Physician Names to Open Payments Data Process
+### `Unfiltered_Match.R`
+
+**Description**: There are going to be a few rounds of physician name matching to Open Payments data.  
+Round 1:
+* `Prescriber_Name$MatchNMIZip` is a match based on first name, last name and zip code.
+* `Prescriber_Name$MatchNMI` is first name and last name.  
+* `Prescriber_Name$MatchMI` is the first name, middle initial, and last name.  
+
+Round 2:
+* no middle initial
+
+**Use**: `source(".R")` 
+
+**Input**: The file builds everything it needs from scratch without requiring inputs.  
+
+**Output**: 
+* Prescriber_Name_Matched_unfil.csv
+* Prescriber_Name_UnMatched_unfil.csv
+
+
+
 
 ### `2_Load_Data.R`
 
@@ -123,17 +147,19 @@ Counts are taken throughout the project.  Of note, `Physician_Profile_ID` is a u
 
 **Description**: Normalize column names, change drug names to lower case.  
 
-**Use**: `source("2_Load_Data.R")` 
+**Use**: `source("3_Buld_Output R1.R")` 
 
 **Input**: (in case this is run independently)
 * StudyGroupR3.csv [updated to R3 10/6/19], `StudyGroup`
 * prescriber.csv, `Prescriber`
-* PaySum.csv, `PaySum`
-* Payment_Class.csv
-* Prescription_Class.csv
+* PaySum.csv, `PaySum` 
+* Payment_Class.csv loaded in to the github repository
+* Prescription_Class.csv  loaded in to the github repository
 
 **Output**:
-
+* `write_rds(PaySum, "PaySum_wClass.rds"  )`
+* `write_rds(Prescriber, "Prescriber_wClass.rds")`
+* `write.csv(class_xyz,"class_xyz.csv",row.names = FALSE,na="")`
 
 ### `API access for NPPES.R`
 
@@ -162,3 +188,15 @@ Counts are taken throughout the project.  Of note, `Physician_Profile_ID` is a u
 
 ### Contact:
 Please contact me with any questions or concerns: tyler (dot) muffly (at) dhha (dot) org.  
+
+### Matching Physician Names to Open Payments Data Process
+### `.R`
+
+**Description**: 
+
+**Use**: `source(".R")` 
+
+**Input**: 
+
+
+**Output**: 
