@@ -38,23 +38,22 @@ All together, these x drugs accounted for about y% of all prescriptions under Pa
 CONCLUSIONS AND RELEVANCE:
 Pending!
 
-Add this image.  
-https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fmarket-it.fr%2Fpharmacomplianceinfo%2Fwp-content%2Fuploads%2F2014%2F10%2FOpen-Payments-Sunshine-Act-CMS.gouv_.jpg&f=1&nofb=1
+
 
 Drug and Payments Data pull and preparation
 ==========
-* [Open Payments Downloads, 2013 to 2018 available](https://www.cms.gov/OpenPayments/Explore-the-Data/Dataset-Downloads)
+* [Open Payments (The Sunshine Act) Downloads, 2013 to 2018 available](https://www.cms.gov/OpenPayments/Explore-the-Data/Dataset-Downloads)
 * [Medicare Part D prescribing data, 2013 to 2017](https://www.cms.gov/Research-Statistics-Data-and-Systems/Statistics-Trends-and-Reports/Medicare-Provider-Charge-Data/Part-D-Prescriber), This data documents Medicare’s Part B program and the individual doctors and other health professionals serving more than 33 million seniors and disabled. The data includes all services performed by doctors 11 or more times that year to Part B patients. 
 * [National Bureau of Economic Research, NDC crosswalk](https://data.nber.org/data/ndc-hcpcs-crosswalk-dme.html)
 * [National Drug Code Directory, Download NDC Database File - Excel Version (Zip Format)](https://www.fda.gov/drugs/drug-approvals-and-databases/national-drug-code-directory)
-* [NPPES, Full Replacement Monthly NPI File](https://download.cms.gov/nppes/NPI_Files.html)
+[![National Drug Code Directory](https://www.drugs.com/img/misc/ndc.png)](https://www.drugs.com/img/misc/ndc.png)
 
 
 Physician Demographics
 ==========
 * [Physician Compare National Downloadable File](https://data.medicare.gov/Physician-Compare/Physician-Compare-National-Downloadable-File/mj5m-pzi6)
 * [National Uniform Claim Committee, Taxonomy Codes](http://www.nucc.org/index.php/code-sets-mainmenu-41/provider-taxonomy-mainmenu-40/csv-mainmenu-57)
-* https://www.youtube.com/watch?v=YQZ2UeOTO3I&feature=share
+* [Marketing to Doctors: Last Week Tonight with John Oliver (HBO)](https://www.youtube.com/watch?v=YQZ2UeOTO3I&feature=share)
 
 
 Drug Classes that Muffly created
@@ -68,7 +67,6 @@ Drug Classes that Muffly created
 
 ## Installation and use
 ### Install packages 
-
 ```r
 rm(list = setdiff(ls(), lsf.str())). #cleans all environment except functions
 
@@ -177,9 +175,7 @@ Round 2:
 
 
 ### `GOBA_Compare.R`
-
 **Description**: Takes a file called `GOBA_unique.csv` of NPI numbers and merges it withe demographic data from `Physician Compare`.
-
 **Output**: Puts out a file called: "GOBA_Compare.csv".
 
 
@@ -192,6 +188,8 @@ Round 2:
 ### Contact:
 Please contact me with any questions or concerns: tyler (dot) muffly (at) dhha (dot) org.  
 
+
+TEMPLATE
 ### Matching Physician Names to Open Payments Data Process
 ### `.R`
 
