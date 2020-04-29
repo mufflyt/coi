@@ -49,12 +49,18 @@ Drug and Payments Data pull and preparation
 * [NPPES, Full Replacement Monthly NPI File](https://download.cms.gov/nppes/NPI_Files.html)
 
 
-
 Physician Demographics
 ==========
 * [Physician Compare National Downloadable File](https://data.medicare.gov/Physician-Compare/Physician-Compare-National-Downloadable-File/mj5m-pzi6)
 * [National Uniform Claim Committee, Taxonomy Codes](http://www.nucc.org/index.php/code-sets-mainmenu-41/provider-taxonomy-mainmenu-40/csv-mainmenu-57)
 * https://www.youtube.com/watch?v=YQZ2UeOTO3I&feature=share
+
+
+Drug Classes that Muffly created
+==========
+* Payment_Class.csv
+* Prescription_Class.csv
+* ClassList
 
 
 ## Installation and use
@@ -110,7 +116,24 @@ Counts are taken throughout the project.  Of note, `Physician_Profile_ID` is a u
 * `PartD_Prescriber_PUF_NPI_DRUG_13.txt -> PartD_Prescriber_PUF_NPI_DRUG_17.txt`
 * `OP_DTL_GNRL_PGYR2013_P06292018.csv -> OP_DTL_GNRL_PGYR2017_P06292018.csv`
 
-**Output**: `paymentSummary.csv`
+**Output**: `paymentSummary.csv` has the `Physician_Profile_ID` listed then the drug of interest (e.g. `NDC_of_Associated_Covered_Drug_or_Biological`) that doctor prescribed and how much they received in payments from that pharmaceutical company.  Very useful!
+
+
+### `3_Buld_Output R1.R`
+
+**Description**: Normalize column names, change drug names to lower case.  
+
+**Use**: `source("2_Load_Data.R")` 
+
+**Input**: (in case this is run independently)
+* StudyGroupR3.csv [updated to R3 10/6/19], `StudyGroup`
+* prescriber.csv, `Prescriber`
+* PaySum.csv, `PaySum`
+* Payment_Class.csv
+* Prescription_Class.csv
+
+**Output**:
+
 
 ### `API access for NPPES.R`
 
