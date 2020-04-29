@@ -41,9 +41,39 @@ Drug and Payments Data pull and preparation
 ==========
 * [Open Payments Downloads, 2013 to 2018 available](https://www.cms.gov/OpenPayments/Explore-the-Data/Dataset-Downloads)
 * [Medicare Part D prescribing data, 2013 to 2017](https://www.cms.gov/Research-Statistics-Data-and-Systems/Statistics-Trends-and-Reports/Medicare-Provider-Charge-Data/Part-D-Prescriber)
+* [National Bureau of Economic Research, NDC crosswalk](https://data.nber.org/data/ndc-hcpcs-crosswalk-dme.html)
+* [National Drug Code Directory, Download NDC Database File - Excel Version (Zip Format)](https://www.fda.gov/drugs/drug-approvals-and-databases/national-drug-code-directory)
+* [NPPES, Full Replacement Monthly NPI File](https://download.cms.gov/nppes/NPI_Files.html)
+
 
 
 Physician Demographics
 ==========
 * [Physician Compare National Downloadable File](https://data.medicare.gov/Physician-Compare/Physician-Compare-National-Downloadable-File/mj5m-pzi6)
 * [National Uniform Claim Committee, Taxonomy Codes](http://www.nucc.org/index.php/code-sets-mainmenu-41/provider-taxonomy-mainmenu-40/csv-mainmenu-57)
+
+
+* https://www.youtube.com/watch?v=YQZ2UeOTO3I&feature=share
+
+
+## Installation and use
+### Install packages 
+
+```r
+rm(list = setdiff(ls(), lsf.str())). #cleans all environment except functions
+
+# Installing
+install.packages("readr")
+install.packages("qdapRegex")
+install.packages("sqldf")
+# Loading
+library("sqldf")
+library("qdapRegex")
+library("sqldf")
+library("readr")
+```
+
+### Get scripts into a new RStudio project:
+
+`New Project - Version Control - Git -` https://github.com/mufflyt/coi.git as `Repository URL`
+(Our use your preferred way of cloning/downloading from GitHub.)
