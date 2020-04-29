@@ -65,12 +65,13 @@ Drug Classes that Muffly created
 ==========
 * Payment_Class.csv
 * Prescription_Class.csv
-* ClassList
+* ClassList - Two authors (TM and BB) developed a candidate list of drug classes based on use for common conditions, high cost, and presence of similarly effective, less expensive therapies.  These co-authors applied a priori criteria based on their clinical experience and the approved drugs database by the U.S. Food and Drug Administration to determine a list of drugs commonly prescribed by obstetrician-gynecologists.  
 
 [![Matching name and NPI](https://github.com/mufflyt/coi/blob/master/op%20plus%20MPUPS.png?raw=true)](https://github.com/mufflyt/coi/blob/master/op%20plus%20MPUPS.png?raw=true)
 
 [![Flow chart](https://github.com/mufflyt/coi/blob/master/Flow%20chart.png?raw=true)](https://github.com/mufflyt/coi/blob/master/Flow%20chart.png?raw=true)
 
+#OP_PPI_Specialties.R
 
 ## Installation and use
 ### Install packages 
@@ -220,6 +221,16 @@ head(locations)
 dim(locations)  
 View(locations)
 ```
+
+### `OP_PPI_Specialties.R`
+**Description**: Brings together Open Payments data 
+
+**Use**: `source("OP_PPI_Specialties.R")` 
+
+**Input**: `OP_DTL_GNRL_PGYR2013_P062920xx.csv`?Not sure?
+
+**Output**: write.csv(OPx_SP,"OP_AllSpecialty.csv", row.names = FALSE)
+
 
 
 ### Get scripts into a new RStudio project:
