@@ -43,7 +43,7 @@ https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fmarket-it.fr%2Fpharm
 Drug and Payments Data pull and preparation
 ==========
 * [Open Payments Downloads, 2013 to 2018 available](https://www.cms.gov/OpenPayments/Explore-the-Data/Dataset-Downloads)
-* [Medicare Part D prescribing data, 2013 to 2017](https://www.cms.gov/Research-Statistics-Data-and-Systems/Statistics-Trends-and-Reports/Medicare-Provider-Charge-Data/Part-D-Prescriber)
+* [Medicare Part D prescribing data, 2013 to 2017](https://www.cms.gov/Research-Statistics-Data-and-Systems/Statistics-Trends-and-Reports/Medicare-Provider-Charge-Data/Part-D-Prescriber), This data documents Medicare’s Part B program and the individual doctors and other health professionals serving more than 33 million seniors and disabled. The data includes all services performed by doctors 11 or more times that year to Part B patients. 
 * [National Bureau of Economic Research, NDC crosswalk](https://data.nber.org/data/ndc-hcpcs-crosswalk-dme.html)
 * [National Drug Code Directory, Download NDC Database File - Excel Version (Zip Format)](https://www.fda.gov/drugs/drug-approvals-and-databases/national-drug-code-directory)
 * [NPPES, Full Replacement Monthly NPI File](https://download.cms.gov/nppes/NPI_Files.html)
