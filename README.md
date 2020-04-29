@@ -66,12 +66,60 @@ rm(list = setdiff(ls(), lsf.str())). #cleans all environment except functions
 install.packages("readr")
 install.packages("qdapRegex")
 install.packages("sqldf")
+install.packages("Hmisc")
+install.packages('reshape')
+install.packages('reshape2')
+install.packages("tidyverse")
+
 # Loading
 library("sqldf")
 library("qdapRegex")
 library("sqldf")
 library("readr")
+library("Hmisc")
+library("tidyverse")
+library('reshape')
+library('reshape2')
 ```
+
+## Scripts: purpose for searching for NPPES
+
+### `1_Match PCND with OP.R`
+**Description**: These files are numbered in ordered of how they are to be used "1_", then "2_", then "3_".
+
+**Use**: Take the Physician_Compare_National_Downloadable_File.csv (abbreviated as PCND) and filters out APO/territories and selects the specialty of interest as `c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))` for primary and secondary specialties using the baller move of '|'.  The SQL codes removes duplicate NPI numbers.  Open Payment data is loaded from `OP_PH_PRFL_SPLMTL_P06282019.csv`.  All data is changed to lower case and `!=" "`.  Then the merge process starts based on 
+* first, last, city, state creates matching payments (MP).  
+* check for matches using address
+Counts are taken throughout the project.  
+
+**Output**: 
+* `studygroupR2.csv` - Matching payments data is all matched based on the above criteria and written out.  
+* `PCND.csv` - Physician compare data left joined with the `MP` so this has the demographics of the doctors who had matching payments.  
+* `StudyGroupR2.rds` - 'MP' dataframe is saved so this is a list of the physicians matched with payments.  
+
+
+
+
+### `API access for NPPES.R`
+
+**Description**: Takes a csv file and searches the NPPES database. I have a list of names that I would like to search for their NPI number using the NPI API (https://npiregistry.cms.hhs.gov/registry/help-api).  NPI number is a unique identifier number.  There are about 45,000 names that I want to see if there is a match in the csv file to the API.  There is documentation of the API listed above and this is also helpful (https://npiregistry.cms.hhs.gov/api/demo?version=2.1).  My goal is to get the correct NPI and all data as possible from the API.  The example API call would be: https://npiregistry.cms.hhs.gov/api/?number=&enumeration_type=NPI-1&taxonomy_description=&first_name=kale&use_first_name_alias=&last_name=turner&organization_name=&address_purpose=&city=&state=&postal_code=&country_code=&limit=&skip=&version=2.1.  Ultimately I want to use the location data for geocoding and to create a map.   
+
+**Use**: `source("API access for NPPES.R")` 
+
+**Output**: Address output.  
+
+### `Buld_Output.R`
+
+
+
+### `GOBA_Compare.R`
+
+**Description**: Takes a file called `GOBA_unique.csv` of NPI numbers and merges it withe demographic data from `Physician Compare`.
+
+**Output**: Puts out a file called: "GOBA_Compare.csv".
+
+
+
 
 ### Get scripts into a new RStudio project:
 `New Project - Version Control - Git -` https://github.com/mufflyt/coi.git as `Repository URL`
