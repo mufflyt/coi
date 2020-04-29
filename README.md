@@ -40,10 +40,14 @@ Pending!
 
 
 
-Drug and Payments Data pull and preparation
+Drug and Payments Data pull and preparation: This retrospective, cross-sectional study linked two large, publicly available datasets for 2013 to 2017: the Open Payment Database General Payments and the Medicare Part D Prescriber Public Use Files.  
 ==========
-* [Open Payments (The Sunshine Act) Downloads, 2013 to 2018 available](https://www.cms.gov/OpenPayments/Explore-the-Data/Dataset-Downloads)
-* [Medicare Part D prescribing data, 2013 to 2017](https://www.cms.gov/Research-Statistics-Data-and-Systems/Statistics-Trends-and-Reports/Medicare-Provider-Charge-Data/Part-D-Prescriber), This data documents Medicare’s Part B program and the individual doctors and other health professionals serving more than 33 million seniors and disabled. The data includes all services performed by doctors 11 or more times that year to Part B patients. 
+* [Open Payments Database General Payments (The Sunshine Act) Downloads, 2013 to 2018 available](https://www.cms.gov/OpenPayments/Explore-the-Data/Dataset-Downloads), The Physician Payment Sunshine Act was passed as part of the Affordable Care Act and collects information about payments made to physicians by drug and device companies. It contains all transactions over $10 for things like travel, research, meals, gifts, and speaking fees. Each case contains the dollar value and nature of the payment, identifying information about the payment recipient and industry sponsor, as well as the medications or devices associated with each payment.
+
+* [Medicare Part D Prescriber Public Use Files, 2013 to 2017](https://www.cms.gov/Research-Statistics-Data-and-Systems/Statistics-Trends-and-Reports/Medicare-Provider-Charge-Data/Part-D-Prescriber), The Centers for Medicare & Medicaid Services (CMS) Provider Utilization and Payment Data (Part D Prescriber) Public Use File (Part D PUF) is available and contains information on prescriptions prescribed to Medicare beneficiaries enrolled in Medicare’s prescription drug program.  For each prescriber and drug, it identifies the brand and generic name, the total days’ supply prescribed by that provider (which includes the original and refill prescriptions) as well as the drug cost dispensed at a provider’s direction for each calendar year. It contains information on the physician’s National Provider Identifier (NPI), full name, and specialty. To protect patient privacy, records derived from 10 or fewer claims are excluded. We identified all prescriptions made for the most commonly prescribed OBGYN medications from 2013 to 2017.  
+
+Each row is one prescriber.  The dataset identifies providers by their National Provider Identifier (NPI) and the specific prescriptions that were dispensed at their direction, listed by brand name (if applicable) and generic name.  For each prescriber and drug, the dataset includes the total number of prescriptions that were dispensed, which include original prescriptions and any refills, and the total drug cost.  The total drug cost includes the ingredient cost of the medication, dispensing fees, sales tax, and any applicable administration fees and is based on the amount paid by the Part D plan, Medicare beneficiary, government subsidies, and any other third-party payers.Each row is one drug prescribed by one provider.  So there are many rows with one provider who prescribed multiple drugs.
+
 * [National Bureau of Economic Research, NDC crosswalk](https://data.nber.org/data/ndc-hcpcs-crosswalk-dme.html)
 * [National Drug Code Directory, Download NDC Database File - Excel Version (Zip Format)](https://www.fda.gov/drugs/drug-approvals-and-databases/national-drug-code-directory)
 [![National Drug Code Directory](https://www.drugs.com/img/misc/ndc.png)](https://www.drugs.com/img/misc/ndc.png)
@@ -54,6 +58,7 @@ Physician Demographics
 * [Physician Compare National Downloadable File](https://data.medicare.gov/Physician-Compare/Physician-Compare-National-Downloadable-File/mj5m-pzi6)
 * [National Uniform Claim Committee, Taxonomy Codes](http://www.nucc.org/index.php/code-sets-mainmenu-41/provider-taxonomy-mainmenu-40/csv-mainmenu-57)
 * [Marketing to Doctors: Last Week Tonight with John Oliver (HBO)](https://www.youtube.com/watch?v=YQZ2UeOTO3I&feature=share)
+[![ACOG district map](https://acogpresident.files.wordpress.com/2013/03/districtmapupdated.jpg?w=608)](https://acogpresident.files.wordpress.com/2013/03/districtmapupdated.jpg?w=608) 
 
 
 Drug Classes that Muffly created
@@ -95,7 +100,9 @@ library('reshape2')
 ## Scripts: purpose for searching for NPPES
 ### Path:  `/Pharma_Influence/Guido_Working_file`
 
-### Matching Physician Names to Open Payments Data Process
+### Matching MPUPS Physician Names to Open Payments Data Process
+Due to the absence of a common variable, a two-step process linked Open Payment with Provider Utilization and Payment Data Public Use File. First, the Open Payments Database was linked to National Provider Identification database based on the physicians first and last name, city and state. Then Medicare Provider Utilization and Payment Data Public Use File was linked using the common variable NPI.  Prescriber groups that did not have prescriptive authority or were not eligible for payments from the pharmaceutical industry (e.g., nurse practitioners, physician assistants, and pharmacists) also were excluded. The final analytic file included physician name, gender, address, city, state, zip code, physician specialty, drug name, total drug cost, total days’ supply for the drug, total amount of payments received and amount of payment received by individual manufacturers.  
+
 ### `1_Match PCND with OP.R`
 **Description**: These files are numbered in ordered of how they are to be used "1_", then "2_", then "3_".Take the Physician_Compare_National_Downloadable_File.csv (abbreviated as PCND) and filters out APO/territories and selects the specialty of interest as `c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))` for primary and secondary specialties using the baller move of '|'.  The SQL codes removes duplicate NPI numbers.  Open Payment data is loaded from `OP_PH_PRFL_SPLMTL_P06282019.csv`.  All data is changed to lower case and `!=" "`.  Then the merge process starts based on 
 * first, last, city, state creates matching payments (MP).  
@@ -164,6 +171,9 @@ Round 2:
 * `write_rds(Prescriber, "Prescriber_wClass.rds")`
 * `write.csv(class_xyz,"class_xyz.csv",row.names = FALSE,na="")`
 
+### Adding Physician Demographics
+Covariables included gender, American Board of Obstetrics and Gynecology-approved (ABOG) subspecialty (general OBGYNs, female pelvic medicine and reconstructive surgeons, gynecologic oncologists, maternal-fetal medicine specialists, and reproductive endocrinology and infertility specialists), ACOG region, overall physician volume of prescribing and prescribing volume in the same therapeutic class.  The overall prescribing volume of a physician was calculated as the total days’ supply of all drugs of any category prescribed by that physician.  A log of overall prescribing volume of a physician and the therapeutic class prescribing volume were used for improved model specifications.  Secondary analyses tested the association of payment from the manufacturer of the selected drug with the primary outcome. 
+
 ### `API access for NPPES.R`
 
 **Description**: Takes a csv file and searches the NPPES database. I have a list of names that I would like to search for their NPI number using the NPI API (https://npiregistry.cms.hhs.gov/registry/help-api).  NPI number is a unique identifier number.  There are about 45,000 names that I want to see if there is a match in the csv file to the API.  There is documentation of the API listed above and this is also helpful (https://npiregistry.cms.hhs.gov/api/demo?version=2.1).  My goal is to get the correct NPI and all data as possible from the API.  The example API call would be: https://npiregistry.cms.hhs.gov/api/?number=&enumeration_type=NPI-1&taxonomy_description=&first_name=kale&use_first_name_alias=&last_name=turner&organization_name=&address_purpose=&city=&state=&postal_code=&country_code=&limit=&skip=&version=2.1.  Ultimately I want to use the location data for geocoding and to create a map.   
@@ -172,15 +182,44 @@ Round 2:
 
 **Output**: Address output.  
 
-### `Buld_Output.R`
-
-
 
 ### `GOBA_Compare.R`
-**Description**: Takes a file called `GOBA_unique.csv` of NPI numbers and merges it withe demographic data from `Physician Compare`.
-**Output**: Puts out a file called: "GOBA_Compare.csv".
+**Description**: Takes a file called `GOBA_unique.csv` of NPI numbers and merges it withe demographic data from `Physician Compare`.  `GOBA_unique.csv` can be matched to get subspecialties out of NPI.  
+**Output**: Puts out a file called: "GOBA_Compare.csv". 
 
+### Code fragment that we can use to create a map
+I had this from a separate project that I had done. I geocoded the street address, city, state of each FPMRS into lat and long using the Google geocoding API.  Zip codes were challenging to use and the street address, city, state information was accurate without zip codes.  Any non-matches were omitted.  These data were written to a file called locations.csv.  Many thanks to Jesse Adler for the great code.  I need to put google key.  
 
+[![Geocoding, how does it work](https://geospatialmedia.s3.amazonaws.com/wp-content/uploads/2018/05/geocoding-graph.jpg)](https://geospatialmedia.s3.amazonaws.com/wp-content/uploads/2018/05/geocoding-graph.jpg)
+
+```r
+# Google geocoding of FPMRS physician locations ----
+#Google map API, https://console.cloud.google.com/google/maps-apis/overview?pli=1
+
+#Allows us to map the FPMRS to street address, city, state
+library(ggmap)
+gc(verbose = FALSE)
+ggmap::register_google(key = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+ggmap::ggmap_show_api_key()
+ggmap::has_google_key()
+colnames(full_list)
+
+View(full_list$place_city_state)
+dim(full_list)
+sum(is.na(full_list$place_city_state))
+
+locations_df <- ggmap::mutate_geocode(data = full_list, location = place_city_state, output="more", source="google")
+locations <- tibble::as_tibble(locations_df) %>%
+   tidyr::separate(place_city_state, into = c("city", "state"), sep = "\\s*\\,\\s*", convert = TRUE) %>%
+   dplyr::mutate(state = statecode(state, output_type = "name"))
+ colnames(locations)
+ write_csv(locations, "locations.csv")
+locations <- readr::read_csv("/Users/tylermuffly/Dropbox/workforce/Rui_Project/locations.csv")
+
+head(locations)
+dim(locations)  
+View(locations)
+```
 
 
 ### Get scripts into a new RStudio project:
@@ -203,3 +242,7 @@ TEMPLATE
 
 
 **Output**: 
+
+### STROBE study
+The study was written using the STROBE checklist:
+https://www.strobe-statement.org/index.php?id=available-checklists
