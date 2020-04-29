@@ -257,15 +257,25 @@ filter(StudyGroup, Physician_Profile_State %nin% c("GU", "VI", "ZZ", "AP", "AE")
 
 **Output**: ```r write.csv(T2, "T2.csv"), write.csv(OP,"AllPaymentData.csv") ```
 
+### Start the Modeling!
+### `Model all classes 2020.01.30.R`
+
+**Description**: Runs a multi-response Poisson model model to determine the relationship between payments and prescribing.  Each class takes about 3 hours to run on my laptop and there are 8 classes.  `Cpay` stands for cumulative payments.  
+SUMMARY-----------------------------------------
+anti_inf:   cpay not sig, drug plots not great
+antichol:   cpay sig, some plots not great, most fine
+antiviral:  no cpay, see warning message, no payments in data
+hormone:    cpay sig but negative, a couple not great, most fine
+oral:       cpay sig but negative, plots perfect
+transderm:  no cpay, probably same warning message
+vaginal:    cpay sig, couple not great, most good
 
 
+**Use**: `source("Model all classes 2020.01.30.R")` 
 
-### Get scripts into a new RStudio project:
-`New Project - Version Control - Git -` https://github.com/mufflyt/coi.git as `Repository URL`
-(Our use your preferred way of cloning/downloading from GitHub.)
+**Input**: `class_Anti_infective.csv` for each class.  
 
-### Contact:
-Please contact me with any questions or concerns: tyler (dot) muffly (at) dhha (dot) org.  
+**Output**: `anti_inf.5000.50000.10.poisson.rds` is the output from the model.  
 
 
 TEMPLATE
@@ -284,6 +294,13 @@ TEMPLATE
 ### STROBE study
 The study was written using the STROBE checklist:
 https://www.strobe-statement.org/index.php?id=available-checklists
+
+### Get scripts into a new RStudio project:
+`New Project - Version Control - Git -` https://github.com/mufflyt/coi.git as `Repository URL`
+(Our use your preferred way of cloning/downloading from GitHub.)
+
+### Contact:
+Please contact me with any questions or concerns: tyler (dot) muffly (at) dhha (dot) org.  
 
 ### Target drug classes and Drug Manufacturers
 ```r
