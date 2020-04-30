@@ -93,9 +93,9 @@ library("qdapRegex")
 library("sqldf")
 library("readr")
 library("Hmisc")
-library("tidyverse")
 library('reshape')
 library('reshape2')
+library("tidyverse")
 ```
 
 ## Scripts: purpose for searching for NPPES
@@ -175,6 +175,11 @@ Round 2:
 ### Adding Physician Demographics
 Covariables included gender, American Board of Obstetrics and Gynecology-approved (ABOG) subspecialty (general OBGYNs, female pelvic medicine and reconstructive surgeons, gynecologic oncologists, maternal-fetal medicine specialists, and reproductive endocrinology and infertility specialists), ACOG region, overall physician volume of prescribing and prescribing volume in the same therapeutic class.  The overall prescribing volume of a physician was calculated as the total days’ supply of all drugs of any category prescribed by that physician.  A log of overall prescribing volume of a physician and the therapeutic class prescribing volume were used for improved model specifications.  Secondary analyses tested the association of payment from the manufacturer of the selected drug with the primary outcome. 
 
+### `GOBA_Compare.R`
+
+**Description**: Takes a file called `GOBA_unique.csv` of NPI numbers and merges it withe demographic data from `Physician Compare`.  `GOBA_unique.csv` can be matched to get subspecialties out of NPI.  
+**Output**: Puts out a file called: "GOBA_Compare.csv". 
+
 ### `API access for NPPES.R`
 
 **Description**: Takes a csv file and searches the NPPES database. I have a list of names that I would like to search for their NPI number using the NPI API (https://npiregistry.cms.hhs.gov/registry/help-api).  NPI number is a unique identifier number.  There are about 45,000 names that I want to see if there is a match in the csv file to the API.  There is documentation of the API listed above and this is also helpful (https://npiregistry.cms.hhs.gov/api/demo?version=2.1).  My goal is to get the correct NPI and all data as possible from the API.  The example API call would be: https://npiregistry.cms.hhs.gov/api/?number=&enumeration_type=NPI-1&taxonomy_description=&first_name=kale&use_first_name_alias=&last_name=turner&organization_name=&address_purpose=&city=&state=&postal_code=&country_code=&limit=&skip=&version=2.1.  Ultimately I want to use the location data for geocoding and to create a map.   
@@ -182,11 +187,6 @@ Covariables included gender, American Board of Obstetrics and Gynecology-approve
 **Use**: `source("API access for NPPES.R")` 
 
 **Output**: Address output.  
-
-
-### `GOBA_Compare.R`
-**Description**: Takes a file called `GOBA_unique.csv` of NPI numbers and merges it withe demographic data from `Physician Compare`.  `GOBA_unique.csv` can be matched to get subspecialties out of NPI.  
-**Output**: Puts out a file called: "GOBA_Compare.csv". 
 
 ### Code fragment that we can use to create a map
 I had this from a separate project that I had done. I geocoded the street address, city, state of each FPMRS into lat and long using the Google geocoding API.  Zip codes were challenging to use and the street address, city, state information was accurate without zip codes.  Any non-matches were omitted.  These data were written to a file called locations.csv.  Many thanks to Jesse Adler for the great code.  I need to put google key.  
@@ -269,6 +269,8 @@ hormone:    cpay sig but negative, a couple not great, most fine
 oral:       cpay sig but negative, plots perfect
 transderm:  no cpay, probably same warning message
 vaginal:    cpay sig, couple not great, most good
+
+* [MCMCglmm](https://cran.r-project.org/web/packages/MCMCglmm/vignettes/Overview.pdf)
 
 
 **Use**: `source("Model all classes 2020.01.30.R")` 
