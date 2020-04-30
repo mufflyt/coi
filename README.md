@@ -289,7 +289,11 @@ vaginal:    cpay sig, couple not great, most good
 
 **Use**: `source("Model all classes 2020.01.30.R")` 
 
-**Input**: `class_Anti_infective.csv` for each class.  
+**Input**: `class_Anti_infective.csv` for each class is the prescriptions and payments by NPI and by drug.  
+* `NPI number` is who wrote or did not write for a drug.  Including both allowed us to see a baseline for who wrote prescrptions and who did not.  
+* `Year` of payment is present so we can make sure that the prescription behavior follows the payment
+* `Pay_metrogel` is payments for the drug metrogel to this one provider for the `Year` specified.  The Pay_ prefix describes payments to the prescriber from that drug company who makes the prescription drug of choice.  
+* `Pre_metrogel` is the number of prescriptions for each year by each individual NPI number.  The Pre_ prefix means prescriptions written for that drug.  
 
 **Output**: `anti_inf.5000.50000.10.poisson.rds` is the output from the model.  
 
@@ -325,6 +329,7 @@ Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’
 
 [![Random Trace Plot of Anti-Infectives](https://github.com/mufflyt/coi/blob/master/fixed%20effects%20trace%20plot%20anti-infective.png?raw=true)](https://github.com/mufflyt/coi/blob/master/fixed%20effects%20trace%20plot%20anti-infective.png?raw=true)
 
+Tinidazole (dat_anti_inf,2) as a treatment for Bacterial vaginosis.  Y-axis is dollars to the physician form the manufacturer of tinidazole and X-axis is number of prescriptions.  Tinidazole does start increasing to meaningful numbers ($1500, 30 rx).  
 [![Prescriptions vs. Contributions to MD](https://github.com/mufflyt/coi/blob/master/tinidazole.png?raw=true)](https://github.com/mufflyt/coi/blob/master/tinidazole.png?raw=true)
 
 
