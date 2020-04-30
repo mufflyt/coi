@@ -13,7 +13,7 @@ Muffly, Archer, Guido, Ferber
 *Aim 3:  To identify if there is a measurable monetary threshold at which there is an association between pharmaceutical payments to OBGYN physicians and prescribing practices.*
 
 
-Drug and Payments Data pull and preparation: This retrospective, cross-sectional study linked two large, publicly available datasets for 2013 to 2017: the Open Payment Database General Payments and the Medicare Part D Prescriber Public Use Files.  
+Drug and Payments Data pull and preparation: This retrospective, cross-sectional study linked two large, publicly available datasets for 2013 to 2018: the Open Payment Database General Payments and the Medicare Part D Prescriber Public Use Files.  
 ==========
 * [Open Payments Database General Payments (The Sunshine Act) Downloads, 2013 to 2018 available](https://www.cms.gov/OpenPayments/Explore-the-Data/Dataset-Downloads), The Physician Payment Sunshine Act was passed as part of the Affordable Care Act and collects information about payments made to physicians by drug and device companies. It contains all transactions over $10 for things like travel, research, meals, gifts, and speaking fees. Each case contains the dollar value and nature of the payment, identifying information about the payment recipient and industry sponsor, as well as the medications or devices associated with each payment. This is NOT money for grants and research.  #downloaded April 30, 2020
 
@@ -45,6 +45,18 @@ Drug Classes that Muffly created
 [![Matching name and NPI](https://github.com/mufflyt/coi/blob/master/op%20plus%20MPUPS.png?raw=true)](https://github.com/mufflyt/coi/blob/master/op%20plus%20MPUPS.png?raw=true)
 
 [![Flow chart](https://github.com/mufflyt/coi/blob/master/Flow%20chart.png?raw=true)](https://github.com/mufflyt/coi/blob/master/Flow%20chart.png?raw=true)
+
+Table 1: Proposed types of medications for comparison.  											
+											
+Drug class,	Medication										
+* Bisphosphonates: 	Fosamax,	Actonel,	Boniva,	Atelvia,	Prolia						
+* Anticholinergics for overactive bladder:	Ditropan,	Ditropan XL,	Oxytrol,	Gelnique,	Detrol,	Detrol LA,	Sanctura,	Sanctura XR,	Vesicare,	Enablex,	Toviaz
+* Oral Combined Estrogen and Progestin Products for Hormone Replacement:	Activella,	Combipatch,	Femhrt,	Premphase,	Prempro,	Menest,	Climara Pro				
+* Transdermal estrogen: 	Alora,	Climara,	Vivelle,	Vivelle-Dot,	Menostar						
+* Gel estrogens: 	Divigel,	Estrogel,	Elestrin								
+* Vaginal Estrogen Hormone Therapy: 	Premarin,	Estrace,	Vagifem,	Estring,	Yuvafem,	Osphena,	Intrarosa				
+* Antiviral: 	Valtrex,	Zovirax									
+* Anti infective: 	Flagyl,	Tindamax									
 
 ## Installation and use
 ### Install packages 
