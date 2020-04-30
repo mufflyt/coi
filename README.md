@@ -1,4 +1,5 @@
 # Do doctors prescribe more of a drug if they receive money from a pharmaceutical company tied to it?
+# Association of Industry Payments to Obstetrician-Gynecologists and Prescription Behavior: an observational study using Open Payments and Medicare Part D Data
 Muffly, Archer, Guido, Ferber
 
 *Hypotheses and Specific Aims:*
@@ -12,41 +13,13 @@ Muffly, Archer, Guido, Ferber
 *Aim 3:  To identify if there is a measurable monetary threshold at which there is an association between pharmaceutical payments to OBGYN physicians and prescribing practices.*
 
 
-Working Abstract
+Drug and Payments Data pull and preparation: This retrospective, cross-sectional study linked two large, publicly available datasets for 2013 to 2018: the Open Payment Database General Payments and the Medicare Part D Prescriber Public Use Files.  
 ==========
-OBJECTIVE:
-To characterize industry payments to physician specialists who prescribe gynecologic drugs in the Medicare program.  Pharmacetical companies spend more than a billion dollars annually to maket their treatments, and a significant portion is targeted at doctors.  These interactions between doctors and pharmaceutical companies include sponsored meals, promotional speaking, consulting and travel expenses.  Other research has found correlations between industry interactions and prescribing for certain classes of drugs, including opioids, urology drugs, oncology treatments, inflammatory bowel disease treatments and heartburn medication. 
+* [Open Payments Database General Payments (The Sunshine Act) Downloads, 2013 to 2018 available](https://www.cms.gov/OpenPayments/Explore-the-Data/Dataset-Downloads), The Physician Payment Sunshine Act was passed as part of the Affordable Care Act and collects information about payments made to physicians by drug and device companies. It contains all transactions over $10 for things like travel, research, meals, gifts, and speaking fees. Each case contains the dollar value and nature of the payment, identifying information about the payment recipient and industry sponsor, as well as the medications or devices associated with each payment. This is NOT money for grants and research.  #downloaded April 30, 2020
 
-DESIGN, SETTING, AND PARTICIPANTS:
-This study was a cross-sectional analysis of Centers for Medicare & Medicaid Services 2015, 2016, 2017 Part D prescribing data linked to 2015, 2016, 2017 Open Payments data.  We utliized a Markov Chain Monte Carlo for a generalized linear mix model.  MCMCglmm::MCMCglmm(Pre~drug + Cpay, random = ~NPI2, family = "poisson", burnin=5000, nitt=50000000, thin = 10)
-The Pre~drug + Cpay is a formula to predict the number of prescriptions based on the drug class and cumulative financial payments from drug companies to that physician.  (https://projects.propublica.org/graphics/d4dpartd-methodology)
+* [Medicare Part D Prescriber Public Use Files, 2013 to 2018](https://www.cms.gov/Research-Statistics-Data-and-Systems/Statistics-Trends-and-Reports/Medicare-Provider-Charge-Data/Part-D-Prescriber), The Centers for Medicare & Medicaid Services (CMS) Provider Utilization and Payment Data (Part D Prescriber) Public Use File (Part D PUF) is available and contains information on prescriptions prescribed to Medicare beneficiaries enrolled in Medicare’s prescription drug program.  For each prescriber and drug, it identifies the brand and generic name, the total days’ supply prescribed by that provider (which includes the original and refill prescriptions) as well as the drug cost dispensed at a provider’s direction for each calendar year. It contains information on the physician’s National Provider Identifier (NPI), full name, and specialty. To protect patient privacy, records derived from 10 or fewer claims are excluded. We identified all prescriptions made for the most commonly prescribed OBGYN medications from 2013 to 2018. 
 
-Our analysis uses data from the 2015 to 2017 calendar years. The prescription drug landscape has changed somewhat between 2017 and the performance of this analysis in 2020. Some drugs listed above have gone off patent, and competitors and generics have come to market.
-
-All together, these x drugs accounted for about y% of all prescriptions under Part D.
-
-(https://projects.propublica.org/graphics/d4dpartd-methodology) We chose to use a measure of total dollar value of the interactions. Typically the value of industry interactions for a particular doctor and drug were quite small, and the most common type of interaction was sponsored meals. Prior medical and psychology literature has established that even small gifts influence behavior, and therefore we were most interested in capturing whether any interaction occurred, regardless of the value. Additionally, there were outliers whose interactions were worth thousands or tens of thousands of dollars. A binary measure of industry interaction avoided outlier issues.
-
-
-(https://projects.propublica.org/graphics/d4dpartd-methodology) Only providers with 11 or more claims for the drug were included in this model specification. Providers with fewer than 11 claims but who had industry interactions were excluded. This was necessary because we had no good comparison for such providers. Doctors with no industry interactions and who had fewer than 11 claims for a drug were not identifiable in our data.
-
-
-(https://projects.propublica.org/graphics/d4dpartd-methodology) This model controlled for practice volume using doctors’ total Part D prescribing for all drugs other than the drug of interest. To avoid using a covariate that also measured the outcome variable, which was claims for the drug of interest, the covariate was defined as total Part D prescribing for all drugs minus prescribing for the drug of interest.
-
-
-
-CONCLUSIONS AND RELEVANCE:
-Pending!
-
-
-
-Drug and Payments Data pull and preparation: This retrospective, cross-sectional study linked two large, publicly available datasets for 2013 to 2017: the Open Payment Database General Payments and the Medicare Part D Prescriber Public Use Files.  
-==========
-* [Open Payments Database General Payments (The Sunshine Act) Downloads, 2013 to 2018 available](https://www.cms.gov/OpenPayments/Explore-the-Data/Dataset-Downloads), The Physician Payment Sunshine Act was passed as part of the Affordable Care Act and collects information about payments made to physicians by drug and device companies. It contains all transactions over $10 for things like travel, research, meals, gifts, and speaking fees. Each case contains the dollar value and nature of the payment, identifying information about the payment recipient and industry sponsor, as well as the medications or devices associated with each payment.
-
-* [Medicare Part D Prescriber Public Use Files, 2013 to 2017](https://www.cms.gov/Research-Statistics-Data-and-Systems/Statistics-Trends-and-Reports/Medicare-Provider-Charge-Data/Part-D-Prescriber), The Centers for Medicare & Medicaid Services (CMS) Provider Utilization and Payment Data (Part D Prescriber) Public Use File (Part D PUF) is available and contains information on prescriptions prescribed to Medicare beneficiaries enrolled in Medicare’s prescription drug program.  For each prescriber and drug, it identifies the brand and generic name, the total days’ supply prescribed by that provider (which includes the original and refill prescriptions) as well as the drug cost dispensed at a provider’s direction for each calendar year. It contains information on the physician’s National Provider Identifier (NPI), full name, and specialty. To protect patient privacy, records derived from 10 or fewer claims are excluded. We identified all prescriptions made for the most commonly prescribed OBGYN medications from 2013 to 2017.  
-
-Each row is one prescriber.  The dataset identifies providers by their National Provider Identifier (NPI) and the specific prescriptions that were dispensed at their direction, listed by brand name (if applicable) and generic name.  For each prescriber and drug, the dataset includes the total number of prescriptions that were dispensed, which include original prescriptions and any refills, and the total drug cost.  The total drug cost includes the ingredient cost of the medication, dispensing fees, sales tax, and any applicable administration fees and is based on the amount paid by the Part D plan, Medicare beneficiary, government subsidies, and any other third-party payers.Each row is one drug prescribed by one provider.  So there are many rows with one provider who prescribed multiple drugs.
+Each row is one prescriber.  The dataset identifies providers by their National Provider Identifier (NPI) and the specific prescriptions that were dispensed at their direction, listed by brand name (if applicable) and generic name.  For each prescriber and drug, the dataset includes the total number of prescriptions that were dispensed, which include original prescriptions and any refills, and the total drug cost.  The total drug cost includes the ingredient cost of the medication, dispensing fees, sales tax, and any applicable administration fees and is based on the amount paid by the Part D plan, Medicare beneficiary, government subsidies, and any other third-party payers.Each row is one drug prescribed by one provider.  So there are many rows with one provider who prescribed multiple drugs. #downloaded April 30, 2020
 
 * [National Bureau of Economic Research, NDC crosswalk](https://data.nber.org/data/ndc-hcpcs-crosswalk-dme.html)
 * [National Drug Code Directory, Download NDC Database File - Excel Version (Zip Format)](https://www.fda.gov/drugs/drug-approvals-and-databases/national-drug-code-directory)
@@ -55,23 +28,35 @@ Each row is one prescriber.  The dataset identifies providers by their National 
 
 Physician Demographics
 ==========
-* [Physician Compare National Downloadable File](https://data.medicare.gov/Physician-Compare/Physician-Compare-National-Downloadable-File/mj5m-pzi6)
+* [Open Payments Database, Physician Supplement File for all Program Years](https://www.cms.gov/OpenPayments/Explore-the-Data/Dataset-Downloads),  A supplementary file that displays all of the physicians indicated as recipients of payments in records reported in Open Payments. Each record includes the physicians demographic information, specialties, and license information, as well as a unique identification number (Physician Profile ID) that can be used to search for a specific physician in the general, research, and physician ownership files.  #downloaded April 30, 2020 
+* [Physician Compare National Downloadable File](https://data.medicare.gov/Physician-Compare/Physician-Compare-National-Downloadable-File/mj5m-pzi6) #downloaded April 30, 2020
 * [National Uniform Claim Committee, Taxonomy Codes](http://www.nucc.org/index.php/code-sets-mainmenu-41/provider-taxonomy-mainmenu-40/csv-mainmenu-57)
 * [Marketing to Doctors: Last Week Tonight with John Oliver (HBO)](https://www.youtube.com/watch?v=YQZ2UeOTO3I&feature=share)
 [![ACOG district map](https://acogpresident.files.wordpress.com/2013/03/districtmapupdated.jpg?w=608)](https://acogpresident.files.wordpress.com/2013/03/districtmapupdated.jpg?w=608) 
+* [NPPES, NPPES Data Dissemination](https://download.cms.gov/nppes/NPI_Files.html) #downloaded April 30, 2020
 
 
 Drug Classes that Muffly created
 ==========
 * Payment_Class.csv
 * Prescription_Class.csv
-* ClassList - Two authors (TM and BB) developed a candidate list of drug classes based on use for common conditions, high cost, and presence of similarly effective, less expensive therapies.  These co-authors applied a priori criteria based on their clinical experience and the approved drugs database by the U.S. Food and Drug Administration to determine a list of drugs commonly prescribed by obstetrician-gynecologists.  
+* ClassList - Two authors (TM and BB) developed a candidate list of drug classes based on use for common conditions, high cost, and presence of similarly effective, less expensive therapies.  These co-authors applied *a priori* criteria based on their clinical experience and the approved drugs database by the U.S. Food and Drug Administration to determine a list of drugs commonly prescribed by obstetrician-gynecologists.  
 
 [![Matching name and NPI](https://github.com/mufflyt/coi/blob/master/op%20plus%20MPUPS.png?raw=true)](https://github.com/mufflyt/coi/blob/master/op%20plus%20MPUPS.png?raw=true)
 
 [![Flow chart](https://github.com/mufflyt/coi/blob/master/Flow%20chart.png?raw=true)](https://github.com/mufflyt/coi/blob/master/Flow%20chart.png?raw=true)
 
-# OP_PPI_Specialties.R
+Table 1: Proposed types of medications for comparison.  											
+											
+Drug class,	Medication										
+* Bisphosphonates: 	Fosamax,	Actonel,	Boniva,	Atelvia,	Prolia						
+* Anticholinergics for overactive bladder:	Ditropan,	Ditropan XL,	Oxytrol,	Gelnique,	Detrol,	Detrol LA,	Sanctura,	Sanctura XR,	Vesicare,	Enablex,	Toviaz
+* Oral Combined Estrogen and Progestin Products for Hormone Replacement:	Activella,	Combipatch,	Femhrt,	Premphase,	Prempro,	Menest,	Climara Pro				
+* Transdermal estrogen: 	Alora,	Climara,	Vivelle,	Vivelle-Dot,	Menostar						
+* Gel estrogens: 	Divigel,	Estrogel,	Elestrin								
+* Vaginal Estrogen Hormone Therapy: 	Premarin,	Estrace,	Vagifem,	Estring,	Yuvafem,	Osphena,	Intrarosa				
+* Antiviral: 	Valtrex,	Zovirax									
+* Anti infective: 	Flagyl,	Tindamax									
 
 ## Installation and use
 ### Install packages 
@@ -122,14 +107,36 @@ Counts are taken throughout the project.  Of note, `Physician_Profile_ID` is a u
 
 ### `1_Match_OP_NPPES_PCND.R`
 
+**Description**: Loads NPPES data (mainly demographics) and Open Payments data.  Joe used a great combination of Open Payments  names and NPPES names.  He even included the alternative last names.  Wow!  Baller!  Then he mixed the NPPES addressed with names.  I have to learn SQL code and how to do this for sure! Takes many hours to run given the single core nature of R.  
 
+Matching via multiple rounds:
+*Round 1: First, middle, last, suffix, address, city, state
+*Round 2: First, last, suffix, address, city, state
+*Round 3: First, last, address, city, state
+*Round 4: OP First NP AltFirst, last, address, city, state
+*Round 5: First, OP last NP AltLast , address, city, state
+*Round 6: OP Alt First NP First, last,address, city, state
+*Round 7: First, OP Altlast NP last,address, city, state
+*Round 8: OP altFirst NP First, OP Altlast NP last,address, city, state
+*Round 9: First, last, NP Altaddress, NP Altcity, NP Altstate
+*Round 10: First, middle, last, suffix, city, state
+*Round 11: First, middle, last, city, state
+*Round 12: First, last, city, state
+*Round 13: First, middle, last, suffix, zip 
+*Round 14: First, middle, last, zip
+*Round 15: First, last, zip 
 
+Following this Hurculean effort Joe then matched the remaining with Physician Compare Download File (PCND).  Payment data was loaded and matching of the demographics from above (NPPES) was done with the PCND file.  
 
+Matching via multiple rounds:
+*Round 1: first, last, city, state
+*Round 2: ALT Last
+*Round 3: ALT First
+*Round 4: ALT First ALT Last
+Update OP with matched based on PCND, add specialty, filter on OBGYN (i.e., build list of unmatched OBGYN in OP)
 
-
-
-
-
+**Output**: `write.csv(OP_UnMatched,"OP_UnMatched.csv", row.names = FALSE)`
+`write.csv(OP_UnMatched_OBGYN,"OP_UnMatched_OBGYN.csv", row.names = FALSE)`
 
 
 ### `Unfiltered_Match.R`
@@ -184,7 +191,11 @@ Round 2:
 **Output**:
 * `write_rds(PaySum, "PaySum_wClass.rds"  )`
 * `write_rds(Prescriber, "Prescriber_wClass.rds")`
-* `write.csv(class_xyz,"class_xyz.csv",row.names = FALSE,na="")`
+* `write.csv(class_xyz,"class_xyz.csv",row.names = FALSE,na="")` - The prescriptions and payments by NPI and by drug.  
+** `NPI number` is who wrote or did not write for a drug.  Including both allowed us to see a baseline for who wrote prescrptions and who did not.  
+** `Year` of payment is present so we can make sure that the prescription behavior follows the payment
+** `Pay_metrogel` is payments for the drug metrogel to this one provider for the `Year` specified.  The Pay_ prefix describes payments to the prescriber from that drug company who makes the prescription drug of choice.  
+** `Pre_metrogel` is the number of prescriptions for each year by each individual NPI number.  The Pre_ prefix means prescriptions written for that drug.  
 
 ### Adding Physician Demographics
 Covariables included gender, American Board of Obstetrics and Gynecology-approved (ABOG) subspecialty (general OBGYNs, female pelvic medicine and reconstructive surgeons, gynecologic oncologists, maternal-fetal medicine specialists, and reproductive endocrinology and infertility specialists), ACOG region, overall physician volume of prescribing and prescribing volume in the same therapeutic class.  The overall prescribing volume of a physician was calculated as the total days’ supply of all drugs of any category prescribed by that physician.  A log of overall prescribing volume of a physician and the therapeutic class prescribing volume were used for improved model specifications.  Secondary analyses tested the association of payment from the manufacturer of the selected drug with the primary outcome. 
@@ -237,13 +248,13 @@ View(locations)
 ```
 
 ### `OP_PPI_Specialties.R`
-**Description**: Brings together Open Payments data 
+**Description**: Merges all years of the open payments data and selects the PPI (`Physician_Profile_ID`) and Physician Specialty from all years of open payments.  
 
 **Use**: `source("OP_PPI_Specialties.R")` 
 
 **Input**: `OP_DTL_GNRL_PGYR2013_P062920xx.csv`?Not sure?
 
-**Output**: write.csv(OPx_SP,"OP_AllSpecialty.csv", row.names = FALSE)
+**Output**: `write.csv(OPx_SP,"OP_AllSpecialty.csv", row.names = FALSE)`. `write.csv(OPx_SP,"OP_AllSpecialty.csv", row.names = FALSE)` generates file to determine the specialty of every physician who received an open payment: `Physician_Profile_ID`, and `Physician_Specialty`.  
 
 
 ### `OutputForStats.R`
@@ -272,6 +283,8 @@ filter(StudyGroup, Physician_Profile_State %nin% c("GU", "VI", "ZZ", "AP", "AE")
 **Output**: ```r write.csv(T2, "T2.csv"), write.csv(OP,"AllPaymentData.csv") ```
 
 ### Start the Modeling!
+A Poisson model will be used instead of a zero inflation model. Outcome of the model will be cumulative pay. The deliverable will be a graph of each drug with number of scripts on the Y-axis and dollars from the drug company on the X-axis.  IF the line goes up and to the right then we see a positive relationship between drugs and dollars from the drug company.   
+
 ### `Model all classes 2020.01.30.R`
 
 **Description**: Runs a multi-response Poisson model model to determine the relationship between payments and prescribing.  Each class takes about 3 hours to run on my laptop and there are 8 classes.  `Cpay` stands for cumulative payments.  
@@ -289,11 +302,7 @@ vaginal:    cpay sig, couple not great, most good
 
 **Use**: `source("Model all classes 2020.01.30.R")` 
 
-**Input**: `class_Anti_infective.csv` for each class is the prescriptions and payments by NPI and by drug.  
-* `NPI number` is who wrote or did not write for a drug.  Including both allowed us to see a baseline for who wrote prescrptions and who did not.  
-* `Year` of payment is present so we can make sure that the prescription behavior follows the payment
-* `Pay_metrogel` is payments for the drug metrogel to this one provider for the `Year` specified.  The Pay_ prefix describes payments to the prescriber from that drug company who makes the prescription drug of choice.  
-* `Pre_metrogel` is the number of prescriptions for each year by each individual NPI number.  The Pre_ prefix means prescriptions written for that drug.  
+**Input**: `class_Anti_infective.csv` for each class 
 
 **Output**: `anti_inf.5000.50000.10.poisson.rds` is the output from the model.  
 
@@ -534,3 +543,41 @@ target_ndc_package_code = c(
   "Estrogel" = "A17139-617-40",  #Gel_estrogens
   "Elestrin" = (c("0037-4801-70", "0037-4802-35")))
  ```
+ 
+## Working Abstract
+==========
+OBJECTIVE:
+To characterize industry payments to physician specialists who prescribe gynecologic drugs in the Medicare program.  Pharmacetical companies spend more than a billion dollars annually to maket their treatments, and a significant portion is targeted at doctors.  These interactions between doctors and pharmaceutical companies include sponsored meals, promotional speaking, consulting and travel expenses.  Other research has found correlations between industry interactions and prescribing for certain classes of drugs, including opioids, urology drugs, oncology treatments, inflammatory bowel disease treatments and heartburn medication. 
+
+DESIGN, SETTING, AND PARTICIPANTS:
+This study was a cross-sectional analysis of Centers for Medicare & Medicaid Services 2015, 2016, 2017 Part D prescribing data linked to 2015, 2016, 2017 Open Payments data.  We utliized a Markov Chain Monte Carlo for a generalized linear mix model.  MCMCglmm::MCMCglmm(Pre~drug + Cpay, random = ~NPI2, family = "poisson", burnin=5000, nitt=50000000, thin = 10)
+The Pre~drug + Cpay is a formula to predict the number of prescriptions based on the drug class and cumulative financial payments from drug companies to that physician.  (https://projects.propublica.org/graphics/d4dpartd-methodology)
+
+Our analysis uses data from the 2015 to 2017 calendar years. The prescription drug landscape has changed somewhat between 2017 and the performance of this analysis in 2020. Some drugs listed above have gone off patent, and competitors and generics have come to market.
+
+All together, these x drugs accounted for about y% of all prescriptions under Part D.
+
+(https://projects.propublica.org/graphics/d4dpartd-methodology) We chose to use a measure of total dollar value of the interactions. Typically the value of industry interactions for a particular doctor and drug were quite small, and the most common type of interaction was sponsored meals. Prior medical and psychology literature has established that even small gifts influence behavior, and therefore we were most interested in capturing whether any interaction occurred, regardless of the value. Additionally, there were outliers whose interactions were worth thousands or tens of thousands of dollars. A binary measure of industry interaction avoided outlier issues.
+
+
+(https://projects.propublica.org/graphics/d4dpartd-methodology) Only providers with 11 or more claims for the drug were included in this model specification. Providers with fewer than 11 claims but who had industry interactions were excluded. This was necessary because we had no good comparison for such providers. Doctors with no industry interactions and who had fewer than 11 claims for a drug were not identifiable in our data.
+
+
+(https://projects.propublica.org/graphics/d4dpartd-methodology) This model controlled for practice volume using doctors’ total Part D prescribing for all drugs other than the drug of interest. To avoid using a covariate that also measured the outcome variable, which was claims for the drug of interest, the covariate was defined as total Part D prescribing for all drugs minus prescribing for the drug of interest.
+
+
+
+CONCLUSIONS AND RELEVANCE:
+Pending!
+
+
+
+## Dummy Results Section
+Results
+From xxx,xxxx individual prescribers who prescribed drugs to Medicare Part D beneficiaries in 2013 to 2017, xxx,xxx wrote for OBGYN medications.  X% (n=?,???) of whom received at least one payment from the pharmaceutical industry (Table 1 and Table 2).  A total of ??,??? OBGYN physicians prescribing OBGYN medications were identified, including x number (??%) general OBGYNs, x number (?%) female pelvic medicine and reconstructive surgeons, x number (?%) gynecologic oncologists, x number (?%) maternal-fetal medicine specialists, and x number (?%) reproductive endocrinology and infertility specialists. Each physician wrote a mean (SD) of x(y) days of OBYN prescriptions. Mean (SD) days of prescriptions were x (SD), x (SD), x (SD), x (SD), and x (SD) for general OBGYNs, female pelvic medicine and reconstructive surgeons, gynecologic oncologists, maternal-fetal medicine specialists, and reproductive endocrinology and infertility specialists respectively.  
+A total of xx,xxx providers receiving payments for OBGYN medications  were identified, and x (y%) of these compensated providers did not have any OBGYN prescriptions recorded. The overlap between compensation, and OBGYN prescriptions is shown in Figure 2. Overall, x,xxx of y (z%) compensated OBGYN medication prescribers prescribed OBGYN medications , compared to x,xxx of xx,xxx (y%) non-compensated OBGYN prescribers (P<.001, table 3).  This remained true following stratification by specialty, with general OBGYNs having the largest increase at 14-fold likelihood (Table 4). Compensated OBGYN medication prescribers received a median payment value of $xx ($yy-$yyy) and z(zz-zz) payments vs $xx ($yy-$yy) and z (zz-zz) for compensated non-prescribers (P<??.001 and <??.001, respectively).The mean (SD) rate of OBGYN medications prescriptions was 0.2%(2.5%) in non-compensated physicians and x.x% (x.x%) in compensated physicians (P<.001).There was a significant correlation between the percentage of OBGYN medications  prescriptions and both the number (r=0.??,P<?.001) and dollar value (r= 0.?,P<?0.001) of payments (Figures). When stratified by specialty, there was a significant correlation between the percentage of OBGYN medications  prescriptions and number of payments for general OBGYNS (r= 0.??,P<??.001), female pelvic medicine and reconstructive surgeons (r= 0.??,P<??.001), gynecologic oncologists (r= 0.??,P<??.001), maternal-fetal medicine specialists(r= 0.??,P<??.001), and reproductive endocrinologist and infertility specialists (r= 0.??,P<??.001).  There was also a significant correlation between the percentage of OBGYN medications  prescriptions and total dollar value of payments for general OBGYNS (r= 0.??,P<??.001), female pelvic medicine and reconstructive surgeons (r= 0.??,P<??.001), gynecologic oncologists (r= 0.??,P<??.001), maternal-fetal medicine specialists(r= 0.??,P<??.001), and reproductive endocrinologist and infertility specialists (r= 0.??,P<??.001).  
+Table x shows the multivariable analysis for the odds of prescribing each drug by physicians who received any payment versus those who did not.  Any industry payment was associated with increased odds of prescribing of all the drugs??.  
+
+
+Tyler to dos:
+Create relative paths using here:here for all scripts
