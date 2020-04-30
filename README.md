@@ -95,7 +95,7 @@ Counts are taken throughout the project.  Of note, `Physician_Profile_ID` is a u
 
 ### `1_Match_OP_NPPES_PCND.R`
 
-**Description**: Loads NPPES data (mainly demographics) and Open Payments data.  Joe used a great combination of Open Payments  names and NPPES names.  He even included the alternative last names.  Wow!  Baller!  Then he mixed the NPPES addressed with names.  I have to learn SQL code and how to do this for sure! 
+**Description**: Loads NPPES data (mainly demographics) and Open Payments data.  Joe used a great combination of Open Payments  names and NPPES names.  He even included the alternative last names.  Wow!  Baller!  Then he mixed the NPPES addressed with names.  I have to learn SQL code and how to do this for sure! Takes many hours to run given the single core nature of R.  
 
 Matching via multiple rounds:
 *Round 1: First, middle, last, suffix, address, city, state
