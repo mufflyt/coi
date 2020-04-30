@@ -5,15 +5,17 @@ install.packages("sqldf")
 install.packages("tidyverse")
 install.packages("Hmisc")
 # Loading
-library("sqldf", lib.loc="~/R/win-library/3.2")
-library("qdapRegex", lib.loc="~/R/win-library/3.2")
-library("sqldf", lib.loc="~/R/win-library/3.2")
+library("sqldf")
+library("qdapRegex")
+library("sqldf")
 library("readr")
 library(tidyverse)
 library (Hmisc)
 
 
-PCND <- read.csv("D:/muffly/data/Originals/Physician_Compare/Physician_Compare_National_Downloadable_File.csv", stringsAsFactors=FALSE)
+#PCND <- read.csv("D:/muffly/data/Originals/Physician_Compare/Physician_Compare_National_Downloadable_File.csv", stringsAsFactors=FALSE)
+
+PCND <- read.csv("/Volumes/Projects/Pharma_Influence/Data/Physician_Compare/Physician_Compare_National_Downloadable_File.csv", stringsAsFactors=FALSE)
 
 PCND <- filter(PCND, PCND$State %nin% c("AP","AE", "AS", "FM", "GU", "MH","MP", "PR","PW","UM","VI", "ZZ"))
 PCND <- filter(PCND, (PCND$Primary.specialty %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))  | (PCND$Secondary.specialty.1 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY")) | (PCND$Secondary.specialty.2 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY")) | (PCND$Secondary.specialty.3 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY")) | (PCND$Secondary.specialty.4 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))  ) 

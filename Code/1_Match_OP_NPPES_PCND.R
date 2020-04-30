@@ -5,16 +5,16 @@ install.packages("sqldf")
 install.packages("tidyverse")
 install.packages("Hmisc")
 # Loading
-library("sqldf", lib.loc="~/R/win-library/3.2")
-library("qdapRegex", lib.loc="~/R/win-library/3.2")
-library("sqldf", lib.loc="~/R/win-library/3.2")
+library("sqldf")
+library("qdapRegex")
+library("sqldf")
 library("readr")
 library(tidyverse)
 library (Hmisc)
 
 # Load NPPES Data *****************************************************************************************************************
-
-NPPES <- read.csv("D:/muffly/data/Originals/match_data/npidata_pfile_20050523-20190707_demo.csv", stringsAsFactors=FALSE)
+NPPES <- read.csv("/Volumes/Projects/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412.csv", stringsAsFactors = FALSE)
+#NPPES <- read.csv("D:/muffly/data/Originals/match_data/npidata_pfile_20050523-20190707_demo.csv", stringsAsFactors=FALSE)
 
 NPPES$Provider.First.Name = tolower(NPPES$Provider.First.Name)
 NPPES$Provider.Middle.Name = tolower(NPPES$Provider.Middle.Name)
@@ -40,11 +40,13 @@ NPPES$Provider.Business.Practice.Location.Address.Postal.Code <- substr(NPPES$Pr
 NPPES$Provider.Provider.Business.Mailing.Address.Postal.Code <- substr(NPPES$Provider.Business.Mailing.Address.Postal.Code,1,5)
 
 NPPES$Physician_Profile_ID <- ""
+readr::write_rds(NPPES, "/Volumes/Projects/Pharma_Influence/Data/output_of_1_Match_OP_NPPES_PCDN_NPPES_dataframe.rds")
 
 # Load OP data ********************************************************************************************************************
 # *********************************************************************************************************************************
 
-OP <- read.csv("D:/muffly/data/Originals/match_data/OP_PH_PRFL_SPLMTL_P06292018_demo.csv", stringsAsFactors=FALSE)
+OP <- read.csv("/Volumes/Projects/Pharma_Influence/Data/Open Payments/OP_PH_PRFL_SPLMTL_P01172020.csv", stringsAsFactors=FALSE)
+#OP <- read.csv("D:/muffly/data/Originals/match_data/OP_PH_PRFL_SPLMTL_P06292018_demo.csv", stringsAsFactors=FALSE)
 
 OP$Physician_Profile_First_Name = tolower(OP$Physician_Profile_First_Name)
 OP$Physician_Profile_Middle_Name = tolower(OP$Physician_Profile_Middle_Name)
@@ -72,8 +74,8 @@ OP$NPI <- ""
   
 OPM <- sqldf('select OP.Physician_Profile_ID, NPPES.NPI from OP left outer join NPPES on OP.Physician_Profile_First_Name = NPPES.[Provider.First.Name] and OP.Physician_Profile_Last_Name = NPPES.[Provider.Last.Name..Legal.Name.]  and OP.Physician_Profile_Middle_Name = NPPES.[Provider.Middle.Name] and OP.Physician_Profile_Suffix = NPPES.[Provider.Name.Suffix.Text] and OP.Physician_Profile_Address_Line_1 = NPPES.[Provider.First.Line.Business.Practice.Location.Address] and OP.Physician_Profile_City = NPPES.[Provider.Business.Practice.Location.Address.City.Name] and OP.Physician_Profile_State = NPPES.[Provider.Business.Practice.Location.Address.State.Name] and NPPES.[Physician_Profile_ID] = "" ')
 
-OPM <- OPM[!duplicated(OPM$Physician_Profile_ID),]
-OPM <- OPM[!duplicated(OPM$NPI),]
+OPM <- OPM[!duplicated(OPM$Physician_Profile_ID),]  #remove duplicate PPI
+OPM <- OPM[!duplicated(OPM$NPI),]  #Remove duplicate NPI
 
 #update OP
 OP <- sqldf('select OP.*, OPM.NPI as "uNPI" from OP left outer join OPM on OP.Physician_Profile_ID = OPM.Physician_Profile_ID')

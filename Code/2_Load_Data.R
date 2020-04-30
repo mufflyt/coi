@@ -16,9 +16,9 @@ install.packages("sqldf")
 install.packages("tidyverse")
 
 # Loading
-library("sqldf", lib.loc="~/R/win-library/3.2")
-library("qdapRegex", lib.loc="~/R/win-library/3.2")
-library("sqldf", lib.loc="~/R/win-library/3.2")
+library("sqldf")
+library("qdapRegex")
+library("sqldf")
 library("readr")
 library(tidyverse)
 library(Hmisc)
