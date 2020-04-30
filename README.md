@@ -71,7 +71,7 @@ Drug Classes that Muffly created
 
 [![Flow chart](https://github.com/mufflyt/coi/blob/master/Flow%20chart.png?raw=true)](https://github.com/mufflyt/coi/blob/master/Flow%20chart.png?raw=true)
 
-#OP_PPI_Specialties.R
+# OP_PPI_Specialties.R
 
 ## Installation and use
 ### Install packages 
@@ -104,6 +104,8 @@ library("tidyverse")
 ### Matching MPUPS Physician Names to Open Payments Data Process
 Due to the absence of a common variable, a two-step process linked Open Payment with Provider Utilization and Payment Data Public Use File. First, the Open Payments Database was linked to National Provider Identification database based on the physicians first and last name, city and state. Then Medicare Provider Utilization and Payment Data Public Use File was linked using the common variable NPI.  Prescriber groups that did not have prescriptive authority or were not eligible for payments from the pharmaceutical industry (e.g., nurse practitioners, physician assistants, and pharmacists) also were excluded. The final analytic file included physician name, gender, address, city, state, zip code, physician specialty, drug name, total drug cost, total days’ supply for the drug, total amount of payments received and amount of payment received by individual manufacturers.  
 
+### Matching Physician Names to Open Payments Data Process
+
 ### `1_Match PCND with OP.R`
 **Description**: These files are numbered in ordered of how they are to be used "1_", then "2_", then "3_".Take the Physician_Compare_National_Downloadable_File.csv (abbreviated as PCND) and filters out APO/territories and selects the specialty of interest as `c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))` for primary and secondary specialties using the baller move of '|'.  The SQL codes removes duplicate NPI numbers.  Open Payment data is loaded from `OP_PH_PRFL_SPLMTL_P06282019.csv`.  All data is changed to lower case and `!=" "`.  Then the merge process starts based on 
 * first, last, city, state creates matching payments (MP).  
@@ -117,7 +119,19 @@ Counts are taken throughout the project.  Of note, `Physician_Profile_ID` is a u
 * `PCND.csv` - Physician compare data left joined with the `MP` so this has the demographics of the doctors who had matching payments.  
 * `StudyGroupR2.rds` - 'MP' dataframe is saved so this is a list of the physicians matched with payments.  
 
-### Matching Physician Names to Open Payments Data Process
+
+### `1_Match_OP_NPPES_PCND.R`
+
+
+
+
+
+
+
+
+
+
+
 ### `Unfiltered_Match.R`
 
 **Description**: There are going to be a few rounds of physician name matching to Open Payments data.  
@@ -279,7 +293,38 @@ vaginal:    cpay sig, couple not great, most good
 
 **Output**: `anti_inf.5000.50000.10.poisson.rds` is the output from the model.  
 
+> summary(result_anti_inf)
+
+ Iterations = 5001:49991
+ Thinning interval  = 10
+ Sample size  = 4500 
+
+ DIC: 109276.9 
+
+ G-structure:  ~NPI2
+
+     post.mean l-95% CI u-95% CI eff.samp
+NPI2     9.239    8.599    9.838     1175
+
+ R-structure:  ~units
+
+      post.mean l-95% CI u-95% CI eff.samp
+units     20.78    20.09    21.42    405.5
+
+ Location effects: Pre ~ drug + Cpay 
+
+                  post.mean  l-95% CI  u-95% CI eff.samp  pMCMC    
+(Intercept)       -25.98190 -30.09269 -21.79644    1.582 <2e-04 ***
+drugmetronidazole  25.32763  21.11161  29.45196    1.620 <2e-04 ***
+drugtinidazole      9.86899   5.97936  14.55711    1.792 <2e-04 ***
+Cpay                0.01275  -0.01127   0.04089  867.046  0.339    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
 [![Random Trace Plot of Anti-Infectives](https://github.com/mufflyt/coi/blob/master/random%20effects%20trace%20plot%20of%20anti_inf_VCV.png?raw=true)](https://github.com/mufflyt/coi/blob/master/random%20effects%20trace%20plot%20of%20anti_inf_VCV.png?raw=true)
+
+[![Random Trace Plot of Anti-Infectives](https://github.com/mufflyt/coi/blob/master/fixed%20effects%20trace%20plot%20anti-infective.png?raw=true)](https://github.com/mufflyt/coi/blob/master/fixed%20effects%20trace%20plot%20anti-infective.png?raw=true)
+
 
 TEMPLATE
 ### Matching Physician Names to Open Payments Data Process
