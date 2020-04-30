@@ -279,6 +279,7 @@ vaginal:    cpay sig, couple not great, most good
 
 **Output**: `anti_inf.5000.50000.10.poisson.rds` is the output from the model.  
 
+[![Random Trace Plot of Anti-Infectives](https://github.com/mufflyt/coi/blob/master/random%20effects%20trace%20plot%20of%20anti_inf_VCV.png?raw=true)](https://github.com/mufflyt/coi/blob/master/random%20effects%20trace%20plot%20of%20anti_inf_VCV.png?raw=true)
 
 TEMPLATE
 ### Matching Physician Names to Open Payments Data Process
