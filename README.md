@@ -12,6 +12,7 @@ Muffly, Archer, Guido, Ferber
  
 *Aim 3:  To identify if there is a measurable monetary threshold at which there is an association between pharmaceutical payments to OBGYN physicians and prescribing practices.*
 
+* [Marketing to Doctors: Last Week Tonight with John Oliver (HBO)](https://www.youtube.com/watch?v=YQZ2UeOTO3I&feature=share)
 
 Drug and Payments Data pull and preparation: This retrospective, cross-sectional study linked two large, publicly available datasets for 2013 to 2018: the Open Payment Database General Payments and the Medicare Part D Prescriber Public Use Files.  
 ==========
@@ -31,9 +32,9 @@ Physician Demographics
 * [Open Payments Database, Physician Supplement File for all Program Years](https://www.cms.gov/OpenPayments/Explore-the-Data/Dataset-Downloads),  A supplementary file that displays all of the physicians indicated as recipients of payments in records reported in Open Payments. Each record includes the physicians demographic information, specialties, and license information, as well as a unique identification number (Physician Profile ID) that can be used to search for a specific physician in the general, research, and physician ownership files.  #downloaded April 30, 2020 
 * [Physician Compare National Downloadable File](https://data.medicare.gov/Physician-Compare/Physician-Compare-National-Downloadable-File/mj5m-pzi6) #downloaded April 30, 2020
 * [National Uniform Claim Committee, Taxonomy Codes](http://www.nucc.org/index.php/code-sets-mainmenu-41/provider-taxonomy-mainmenu-40/csv-mainmenu-57)
-* [Marketing to Doctors: Last Week Tonight with John Oliver (HBO)](https://www.youtube.com/watch?v=YQZ2UeOTO3I&feature=share)
 [![ACOG district map](https://acogpresident.files.wordpress.com/2013/03/districtmapupdated.jpg?w=608)](https://acogpresident.files.wordpress.com/2013/03/districtmapupdated.jpg?w=608) 
 * [NPPES, NPPES Data Dissemination](https://download.cms.gov/nppes/NPI_Files.html) #downloaded April 30, 2020
+* [Federal Office of Rural Health Policy (FORHP) Data Files for rural vs. urban by zip code](https://www.hrsa.gov/sites/default/files/hrsa/ruralhealth/aboutus/definition/nonmetrocountiesandcts2016.xlsx), In the interest of making information on the FORHP Rural Areas more easily usable for Researchers and other Government Agencies, FORHP has created a crosswalk of ZIP Codes identifying the set of Non-Metro Counties and rural Census Tracts (CTs) that comprise rural areas as defined by FORHP. This Excel file contains Non-Metro Counties (Micropolitan and non-core based counties.  
 
 
 Drug Classes that Muffly created
@@ -90,6 +91,18 @@ library("tidyverse")
 Due to the absence of a common variable, a two-step process linked Open Payment with Provider Utilization and Payment Data Public Use File. First, the Open Payments Database was linked to National Provider Identification database based on the physicians first and last name, city and state. Then Medicare Provider Utilization and Payment Data Public Use File was linked using the common variable NPI.  Prescriber groups that did not have prescriptive authority or were not eligible for payments from the pharmaceutical industry (e.g., nurse practitioners, physician assistants, and pharmacists) also were excluded. The final analytic file included physician name, gender, address, city, state, zip code, physician specialty, drug name, total drug cost, total days’ supply for the drug, total amount of payments received and amount of payment received by individual manufacturers.  
 
 ### Matching Physician Names to Open Payments Data Process
+### `0_Data_Prep.R`
+
+**Description**: First thing to run when starting.  It installs and loads the libraries.  This takes hours....  After that it does some significant data cleaning and writes a file to the same folder with the name"_2".  
+
+**Use**: `source("0_Data_Prep.R")` 
+
+**Input**: None.  This takes raw data from the external hard drives `/Volumes/Pharma_Influence/Data` loads it and selects only the columns needed.  This is especially important with the NPPES file.  It is HUGE!  I cleaned the GOBA_unique.csv file making it unique NPI and GOBA_ID numbers.  I also added the ACOG districts.  
+
+**Output**: 
+readr::write_csv(PCND, "/Volumes/Projects/Pharma_Influence/Data/Physician_Compare/Physician_Compare_National_Downloadable_File2.csv"
+"/Volumes/Projects/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412_2.csv"
+
 
 ### `1_Match PCND with OP.R`
 **Description**: These files are numbered in ordered of how they are to be used "1_", then "2_", then "3_".Take the Physician_Compare_National_Downloadable_File.csv (abbreviated as PCND) and filters out APO/territories and selects the specialty of interest as `c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))` for primary and secondary specialties using the baller move of '|'.  The SQL codes removes duplicate NPI numbers.  Open Payment data is loaded from `OP_PH_PRFL_SPLMTL_P06282019.csv`.  All data is changed to lower case and `!=" "`.  Then the merge process starts based on 
@@ -110,29 +123,29 @@ Counts are taken throughout the project.  Of note, `Physician_Profile_ID` is a u
 **Description**: Loads NPPES data (mainly demographics) and Open Payments data.  Joe used a great combination of Open Payments  names and NPPES names.  He even included the alternative last names.  Wow!  Baller!  Then he mixed the NPPES addressed with names.  I have to learn SQL code and how to do this for sure! Takes many hours to run given the single core nature of R.  
 
 Matching via multiple rounds:
-*Round 1: First, middle, last, suffix, address, city, state
-*Round 2: First, last, suffix, address, city, state
-*Round 3: First, last, address, city, state
-*Round 4: OP First NP AltFirst, last, address, city, state
-*Round 5: First, OP last NP AltLast , address, city, state
-*Round 6: OP Alt First NP First, last,address, city, state
-*Round 7: First, OP Altlast NP last,address, city, state
-*Round 8: OP altFirst NP First, OP Altlast NP last,address, city, state
-*Round 9: First, last, NP Altaddress, NP Altcity, NP Altstate
-*Round 10: First, middle, last, suffix, city, state
-*Round 11: First, middle, last, city, state
-*Round 12: First, last, city, state
-*Round 13: First, middle, last, suffix, zip 
-*Round 14: First, middle, last, zip
-*Round 15: First, last, zip 
+* Round 1: First, middle, last, suffix, address, city, state
+* Round 2: First, last, suffix, address, city, state
+* Round 3: First, last, address, city, state
+* Round 4: OP First NP AltFirst, last, address, city, state
+* Round 5: First, OP last NP AltLast , address, city, state
+* Round 6: OP Alt First NP First, last,address, city, state
+* Round 7: First, OP Altlast NP last,address, city, state
+* Round 8: OP altFirst NP First, OP Altlast NP last,address, city, state
+* Round 9: First, last, NP Altaddress, NP Altcity, NP Altstate
+* Round 10: First, middle, last, suffix, city, state
+* Round 11: First, middle, last, city, state
+* Round 12: First, last, city, state
+* Round 13: First, middle, last, suffix, zip 
+* Round 14: First, middle, last, zip
+* Round 15: First, last, zip 
 
 Following this Hurculean effort Joe then matched the remaining with Physician Compare Download File (PCND).  Payment data was loaded and matching of the demographics from above (NPPES) was done with the PCND file.  
 
 Matching via multiple rounds:
-*Round 1: first, last, city, state
-*Round 2: ALT Last
-*Round 3: ALT First
-*Round 4: ALT First ALT Last
+* Round 1: first, last, city, state
+* Round 2: ALT Last
+* Round 3: ALT First
+* Round 4: ALT First ALT Last
 Update OP with matched based on PCND, add specialty, filter on OBGYN (i.e., build list of unmatched OBGYN in OP)
 
 **Output**: `write.csv(OP_UnMatched,"OP_UnMatched.csv", row.names = FALSE)`
@@ -202,7 +215,7 @@ Covariables included gender, American Board of Obstetrics and Gynecology-approve
 
 ### `GOBA_Compare.R`
 
-**Description**: Takes a file called `GOBA_unique.csv` of NPI numbers and merges it withe demographic data from `Physician Compare`.  `GOBA_unique.csv` can be matched to get subspecialties out of NPI.  
+**Description**: Takes a file called `GOBA_unique.csv` of NPI numbers and merges it withe demographic data from `Physician Compare`.  Most importantly, `GOBA_unique.csv` can be matched to get subspecialties `GOBA_Cert`from the NPI.  
 **Output**: Puts out a file called: "GOBA_Compare.csv". 
 
 ### `API access for NPPES.R`
@@ -256,9 +269,8 @@ View(locations)
 
 **Output**: `write.csv(OPx_SP,"OP_AllSpecialty.csv", row.names = FALSE)`. `write.csv(OPx_SP,"OP_AllSpecialty.csv", row.names = FALSE)` generates file to determine the specialty of every physician who received an open payment: `Physician_Profile_ID`, and `Physician_Specialty`.  
 
-
+### Aggregating Statistics
 ### `OutputForStats.R`
-
 **Description**: Removes physicians not practicing in the United States.  Remove physicians who do not accept Medicaid.  Physician Compare docs are all the physicians who accept Medicare.  Load the drug class data.  
 ```r
 filter(StudyGroup, Physician_Profile_State %nin% c("GU", "VI", "ZZ", "AP", "AE")
@@ -271,7 +283,6 @@ filter(StudyGroup, Physician_Profile_State %nin% c("GU", "VI", "ZZ", "AP", "AE")
 **Output**: `StudyGroup.rds`, `PaySum.rds`, `Prescriber.rds`.  
 
 
-
 ### `Table 2 R1.R`
 
 **Description**: Creates Table 2.  
@@ -281,6 +292,8 @@ filter(StudyGroup, Physician_Profile_State %nin% c("GU", "VI", "ZZ", "AP", "AE")
 **Input**: Brings in all data needed from within the file.  Self-contained.  
 
 **Output**: ```r write.csv(T2, "T2.csv"), write.csv(OP,"AllPaymentData.csv") ```
+
+
 
 ### Start the Modeling!
 A Poisson model will be used instead of a zero inflation model. Outcome of the model will be cumulative pay. The deliverable will be a graph of each drug with number of scripts on the Y-axis and dollars from the drug company on the X-axis.  IF the line goes up and to the right then we see a positive relationship between drugs and dollars from the drug company.   
@@ -338,7 +351,7 @@ Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’
 
 [![Random Trace Plot of Anti-Infectives](https://github.com/mufflyt/coi/blob/master/fixed%20effects%20trace%20plot%20anti-infective.png?raw=true)](https://github.com/mufflyt/coi/blob/master/fixed%20effects%20trace%20plot%20anti-infective.png?raw=true)
 
-Tinidazole (dat_anti_inf,2) as a treatment for Bacterial vaginosis.  Y-axis is dollars to the physician form the manufacturer of tinidazole and X-axis is number of prescriptions.  Tinidazole does start increasing to meaningful numbers ($1500, 30 rx).  
+Tinidazole (dat_anti_inf,2) as a treatment for Bacterial vaginosis.  Y-axis is dollars to the physician form the manufacturer of tinidazole and X-axis is number of prescriptions.  Tinidazole does start increasing to meaningful numbers ($1,500, 30 rx).  
 [![Prescriptions vs. Contributions to MD](https://github.com/mufflyt/coi/blob/master/tinidazole.png?raw=true)](https://github.com/mufflyt/coi/blob/master/tinidazole.png?raw=true)
 
 
@@ -581,3 +594,4 @@ Table x shows the multivariable analysis for the odds of prescribing each drug b
 
 Tyler to dos:
 Create relative paths using here:here for all scripts
+Rebuild GOBA unique with the more recent data 
