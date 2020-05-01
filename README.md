@@ -96,7 +96,7 @@ Due to the absence of a common variable, a two-step process linked Open Payment 
 
 **Use**: `source("0_Data_Prep.R")` 
 
-**Input**: None.  This takes raw data from the external hard drives `/Volumes/Pharma_Influence/Data` loads it and selects only the columns needed.  This is especially important with the NPPES file.  It is HUGE!  
+**Input**: None.  This takes raw data from the external hard drives `/Volumes/Pharma_Influence/Data` loads it and selects only the columns needed.  This is especially important with the NPPES file.  It is HUGE!  I cleaned the GOBA_unique.csv file making it unique NPI and GOBA_ID numbers.  I also added the ACOG districts.  
 
 **Output**: 
 readr::write_csv(PCND, "/Volumes/Projects/Pharma_Influence/Data/Physician_Compare/Physician_Compare_National_Downloadable_File2.csv"
@@ -121,29 +121,29 @@ Counts are taken throughout the project.  Of note, `Physician_Profile_ID` is a u
 **Description**: Loads NPPES data (mainly demographics) and Open Payments data.  Joe used a great combination of Open Payments  names and NPPES names.  He even included the alternative last names.  Wow!  Baller!  Then he mixed the NPPES addressed with names.  I have to learn SQL code and how to do this for sure! Takes many hours to run given the single core nature of R.  
 
 Matching via multiple rounds:
-*Round 1: First, middle, last, suffix, address, city, state
-*Round 2: First, last, suffix, address, city, state
-*Round 3: First, last, address, city, state
-*Round 4: OP First NP AltFirst, last, address, city, state
-*Round 5: First, OP last NP AltLast , address, city, state
-*Round 6: OP Alt First NP First, last,address, city, state
-*Round 7: First, OP Altlast NP last,address, city, state
-*Round 8: OP altFirst NP First, OP Altlast NP last,address, city, state
-*Round 9: First, last, NP Altaddress, NP Altcity, NP Altstate
-*Round 10: First, middle, last, suffix, city, state
-*Round 11: First, middle, last, city, state
-*Round 12: First, last, city, state
-*Round 13: First, middle, last, suffix, zip 
-*Round 14: First, middle, last, zip
-*Round 15: First, last, zip 
+* Round 1: First, middle, last, suffix, address, city, state
+* Round 2: First, last, suffix, address, city, state
+* Round 3: First, last, address, city, state
+* Round 4: OP First NP AltFirst, last, address, city, state
+* Round 5: First, OP last NP AltLast , address, city, state
+* Round 6: OP Alt First NP First, last,address, city, state
+* Round 7: First, OP Altlast NP last,address, city, state
+* Round 8: OP altFirst NP First, OP Altlast NP last,address, city, state
+* Round 9: First, last, NP Altaddress, NP Altcity, NP Altstate
+* Round 10: First, middle, last, suffix, city, state
+* Round 11: First, middle, last, city, state
+* Round 12: First, last, city, state
+* Round 13: First, middle, last, suffix, zip 
+* Round 14: First, middle, last, zip
+* Round 15: First, last, zip 
 
 Following this Hurculean effort Joe then matched the remaining with Physician Compare Download File (PCND).  Payment data was loaded and matching of the demographics from above (NPPES) was done with the PCND file.  
 
 Matching via multiple rounds:
-*Round 1: first, last, city, state
-*Round 2: ALT Last
-*Round 3: ALT First
-*Round 4: ALT First ALT Last
+* Round 1: first, last, city, state
+* Round 2: ALT Last
+* Round 3: ALT First
+* Round 4: ALT First ALT Last
 Update OP with matched based on PCND, add specialty, filter on OBGYN (i.e., build list of unmatched OBGYN in OP)
 
 **Output**: `write.csv(OP_UnMatched,"OP_UnMatched.csv", row.names = FALSE)`
@@ -213,7 +213,7 @@ Covariables included gender, American Board of Obstetrics and Gynecology-approve
 
 ### `GOBA_Compare.R`
 
-**Description**: Takes a file called `GOBA_unique.csv` of NPI numbers and merges it withe demographic data from `Physician Compare`.  `GOBA_unique.csv` can be matched to get subspecialties out of NPI.  
+**Description**: Takes a file called `GOBA_unique.csv` of NPI numbers and merges it withe demographic data from `Physician Compare`.  Most importantly, `GOBA_unique.csv` can be matched to get subspecialties `GOBA_Cert`from the NPI.  
 **Output**: Puts out a file called: "GOBA_Compare.csv". 
 
 ### `API access for NPPES.R`
@@ -256,12 +256,6 @@ locations <- readr::read_csv("/Users/tylermuffly/Dropbox/workforce/Rui_Project/l
 head(locations)
 dim(locations)  
 View(locations)
-
-mutate(state = statecode(state, output_type="alpha_code")) %>%
-  mutate(ACOG_Region = state.x, ACOG_Region = recode_factor(ACOG_Region, CO = "District VIII", AL = "District VII", AR = "District VII", AZ = "District VIII", CA = "District IX", FL = "District XII", GA = "District IV", HI = "District VIII", IA = "District VI", ID = "District VIII", IL = "District VI", IN = "District V", KS = "District VII", LA = "District VII", MA = "District I", MD = "District IV", ME = "District I", MI = "District V", MN = "District VI", MO = "District VII", NC = "District IV", NH = "District I", NJ = "District III", NM = "District VIII", NY = "District II", OH = "District V", OR = "District VIII", PA = "District III", RI = "District I", SD = "District IV", TN = "District VII", TX = "District XI", VA = "District IV", WA = "District VIII", WI = "District VI", CT = "District I", DC = "District IV", KY = "District V", MS = "District VII", NE = "District VI", NV = "District VIII", SC = "District IV", WV = "District IV", UT = "District VIII", AK = "District VIII", DE = "District III", OK = "District VII")) %>%
-mutate(`American Congress of Obstetricians and Gynecologists Region` = fct_other(`American Congress of Obstetricians and Gynecologists Region`, keep = c("District I", "District II", "District III", "District IV", "District V", "District VI", "District VII", "District VIII", "District IX", "District XI", "District XII"))) %>%
-  rename(`American Congress of Obstetricians and Gynecologists District` = `American Congress of Obstetricians and Gynecologists Region`) %>%
-  mutate(`American Congress of Obstetricians and Gynecologists District` = recode(`American Congress of Obstetricians and Gynecologists District`, `District I` = "District I (Atlantic Provinces, Connecticut, Maine, Massachusetts, Rhode Island, Vermont)", `District II` = "District II (New York)", `District III` = "District III (Delaware, New Jersey, Pennsylvania)", `District IV` = "District IV (District of Columbia, Georgia, Maryland, North Carolina, South Carolina, Virginia, West Virginia)", `District V` = "District V (Indiana, Kentucky, Ohio, Michigan)", `District VI` = "District VI (Illinois, Iowa, Minnesota, Nebraska, North Dakota, South Dakota, Wisconsin)", `District VII` = "District VII (Alabama, Arkansas, Kansas, Louisiana, Mississippi, Missouri, Oklahoma, Tennessee)", `District VIII` = "District VIII (Alaska, Arizona, Colorado, Hawaii, Idaho, Montana, Nevada, New Mexico, Oregon, Utah, Washington, Wyoming)", `District IX` = "District IX (California)", `District XI` = "District XI (Texas)", `District XII` = "District XII (Florida)"))
 ```
 
 ### `OP_PPI_Specialties.R`
