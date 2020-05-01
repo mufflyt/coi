@@ -256,6 +256,12 @@ locations <- readr::read_csv("/Users/tylermuffly/Dropbox/workforce/Rui_Project/l
 head(locations)
 dim(locations)  
 View(locations)
+
+mutate(state = statecode(state, output_type="alpha_code")) %>%
+  mutate(ACOG_Region = state.x, ACOG_Region = recode_factor(ACOG_Region, CO = "District VIII", AL = "District VII", AR = "District VII", AZ = "District VIII", CA = "District IX", FL = "District XII", GA = "District IV", HI = "District VIII", IA = "District VI", ID = "District VIII", IL = "District VI", IN = "District V", KS = "District VII", LA = "District VII", MA = "District I", MD = "District IV", ME = "District I", MI = "District V", MN = "District VI", MO = "District VII", NC = "District IV", NH = "District I", NJ = "District III", NM = "District VIII", NY = "District II", OH = "District V", OR = "District VIII", PA = "District III", RI = "District I", SD = "District IV", TN = "District VII", TX = "District XI", VA = "District IV", WA = "District VIII", WI = "District VI", CT = "District I", DC = "District IV", KY = "District V", MS = "District VII", NE = "District VI", NV = "District VIII", SC = "District IV", WV = "District IV", UT = "District VIII", AK = "District VIII", DE = "District III", OK = "District VII")) %>%
+mutate(`American Congress of Obstetricians and Gynecologists Region` = fct_other(`American Congress of Obstetricians and Gynecologists Region`, keep = c("District I", "District II", "District III", "District IV", "District V", "District VI", "District VII", "District VIII", "District IX", "District XI", "District XII"))) %>%
+  rename(`American Congress of Obstetricians and Gynecologists District` = `American Congress of Obstetricians and Gynecologists Region`) %>%
+  mutate(`American Congress of Obstetricians and Gynecologists District` = recode(`American Congress of Obstetricians and Gynecologists District`, `District I` = "District I (Atlantic Provinces, Connecticut, Maine, Massachusetts, Rhode Island, Vermont)", `District II` = "District II (New York)", `District III` = "District III (Delaware, New Jersey, Pennsylvania)", `District IV` = "District IV (District of Columbia, Georgia, Maryland, North Carolina, South Carolina, Virginia, West Virginia)", `District V` = "District V (Indiana, Kentucky, Ohio, Michigan)", `District VI` = "District VI (Illinois, Iowa, Minnesota, Nebraska, North Dakota, South Dakota, Wisconsin)", `District VII` = "District VII (Alabama, Arkansas, Kansas, Louisiana, Mississippi, Missouri, Oklahoma, Tennessee)", `District VIII` = "District VIII (Alaska, Arizona, Colorado, Hawaii, Idaho, Montana, Nevada, New Mexico, Oregon, Utah, Washington, Wyoming)", `District IX` = "District IX (California)", `District XI` = "District XI (Texas)", `District XII` = "District XII (Florida)"))
 ```
 
 ### `OP_PPI_Specialties.R`
@@ -267,9 +273,8 @@ View(locations)
 
 **Output**: `write.csv(OPx_SP,"OP_AllSpecialty.csv", row.names = FALSE)`. `write.csv(OPx_SP,"OP_AllSpecialty.csv", row.names = FALSE)` generates file to determine the specialty of every physician who received an open payment: `Physician_Profile_ID`, and `Physician_Specialty`.  
 
-
+### Aggregating Statistics
 ### `OutputForStats.R`
-
 **Description**: Removes physicians not practicing in the United States.  Remove physicians who do not accept Medicaid.  Physician Compare docs are all the physicians who accept Medicare.  Load the drug class data.  
 ```r
 filter(StudyGroup, Physician_Profile_State %nin% c("GU", "VI", "ZZ", "AP", "AE")
@@ -282,7 +287,6 @@ filter(StudyGroup, Physician_Profile_State %nin% c("GU", "VI", "ZZ", "AP", "AE")
 **Output**: `StudyGroup.rds`, `PaySum.rds`, `Prescriber.rds`.  
 
 
-
 ### `Table 2 R1.R`
 
 **Description**: Creates Table 2.  
@@ -292,6 +296,8 @@ filter(StudyGroup, Physician_Profile_State %nin% c("GU", "VI", "ZZ", "AP", "AE")
 **Input**: Brings in all data needed from within the file.  Self-contained.  
 
 **Output**: ```r write.csv(T2, "T2.csv"), write.csv(OP,"AllPaymentData.csv") ```
+
+
 
 ### Start the Modeling!
 A Poisson model will be used instead of a zero inflation model. Outcome of the model will be cumulative pay. The deliverable will be a graph of each drug with number of scripts on the Y-axis and dollars from the drug company on the X-axis.  IF the line goes up and to the right then we see a positive relationship between drugs and dollars from the drug company.   
@@ -349,7 +355,7 @@ Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’
 
 [![Random Trace Plot of Anti-Infectives](https://github.com/mufflyt/coi/blob/master/fixed%20effects%20trace%20plot%20anti-infective.png?raw=true)](https://github.com/mufflyt/coi/blob/master/fixed%20effects%20trace%20plot%20anti-infective.png?raw=true)
 
-Tinidazole (dat_anti_inf,2) as a treatment for Bacterial vaginosis.  Y-axis is dollars to the physician form the manufacturer of tinidazole and X-axis is number of prescriptions.  Tinidazole does start increasing to meaningful numbers ($1500, 30 rx).  
+Tinidazole (dat_anti_inf,2) as a treatment for Bacterial vaginosis.  Y-axis is dollars to the physician form the manufacturer of tinidazole and X-axis is number of prescriptions.  Tinidazole does start increasing to meaningful numbers ($1,500, 30 rx).  
 [![Prescriptions vs. Contributions to MD](https://github.com/mufflyt/coi/blob/master/tinidazole.png?raw=true)](https://github.com/mufflyt/coi/blob/master/tinidazole.png?raw=true)
 
 
