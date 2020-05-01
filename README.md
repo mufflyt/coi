@@ -366,7 +366,10 @@ Adjust the analysis based on:
 * OBGYN generalist or subspecialist
 * International Medical Graduate vs. U.S. Senior Medical Graduate
 * Rurality of practice location
-* ???
+* Years since graduating from medical school
+* Median income of households in the zip code of the physician's office (maybe from ACS, see Rui's project)
+* Total amount of dollars that the physician received in Open Payments?
+* A particular type of Open Payment (food, consulting, travel, etc.)?
 
 
 TEMPLATE
