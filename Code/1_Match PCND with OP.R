@@ -9,16 +9,18 @@ library("sqldf")
 library("qdapRegex")
 library("sqldf")
 library("readr")
-library(tidyverse)
-library (Hmisc)
+library("tidyverse")
+library ("Hmisc")
 
 
 #PCND <- read.csv("D:/muffly/data/Originals/Physician_Compare/Physician_Compare_National_Downloadable_File.csv", stringsAsFactors=FALSE)
 
-PCND <- read.csv("/Volumes/Projects/Pharma_Influence/Data/Physician_Compare/Physician_Compare_National_Downloadable_File.csv", stringsAsFactors=FALSE)
+PCND <- readr::read_csv("/Volumes/Projects/Pharma_Influence/Data/Physician_Compare/Physician_Compare_National_Downloadable_File2.csv") %>% 
+  dplyr::select(NPI, lst_nm, frst_nm, mid_nm, gndr, Med_sch, Grd_yr, pri_spec, sec_spec_1, sec_spec_2, sec_spec_3, sec_spec_4, adr_ln_1, cty, st, zip) %>%
+  rename(State = st, City = cty, Zip.Code = zip, First.Name = frst_nm, Last.Name = lst_nm, Middle.Name = mid_nm, Primary.specialty = pri_spec, Secondary.speciality.1 = sec_spec_1, Secondary.speciality.2 = sec_spec_2, Secondary.speciality.3 = sec_spec_3, Secondary.speciality.4 = sec_spec_4, Line.1.Street.Address = adr_ln_1, Gender = gndr, Medical.School.Name = Med_sch, Graduation.year = Grd_yr)
 
-PCND <- filter(PCND, PCND$State %nin% c("AP","AE", "AS", "FM", "GU", "MH","MP", "PR","PW","UM","VI", "ZZ"))
-PCND <- filter(PCND, (PCND$Primary.specialty %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))  | (PCND$Secondary.specialty.1 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY")) | (PCND$Secondary.specialty.2 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY")) | (PCND$Secondary.specialty.3 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY")) | (PCND$Secondary.specialty.4 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))  ) 
+PCND <- dplyr::filter(PCND, PCND$State %nin% c("AP","AE", "AS", "FM", "GU", "MH","MP", "PR","PW","UM","VI", "ZZ"))
+PCND <- dplyr::filter(PCND, (PCND$Primary.specialty %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))  | (PCND$Secondary.specialty.1 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY")) | (PCND$Secondary.specialty.2 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY")) | (PCND$Secondary.specialty.3 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY")) | (PCND$Secondary.specialty.4 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))  ) 
 
 PCND$Zip.Code <- substr(PCND$Zip.Code,1,5)
 
@@ -29,7 +31,7 @@ PCND$Line.1.Street.Address <- tolower(PCND$Line.1.Street.Address)
 PCND$City <- tolower(PCND$City)
 PCND$State <- tolower(PCND$State)
 
-PCND_CS <- sqldf('select NPI, [Last.Name], [First.Name],[Middle.Name],[Line.1.Street.Address],City, State from PCND group by [NPI], [City],[State]')
+PCND_CS <- sqldf('select NPI, [Last.Name], [First.Name],[Middle.Name],[Line.1.Street.Address],City, State from PCND group by [NPI], [City],[State]')  #PCND by city and state, so that is what PCND_CS stands for 
 
 PCND_ZIP <- sqldf('select NPI, [Last.Name], [First.Name],[Middle.Name], [Line.1.Street.Address],[Zip.Code] from PCND group by [NPI], [Zip.Code]')
 
@@ -44,7 +46,8 @@ PCND_ZIP_cnt <- sqldf('select NPI, Count(NPI) as "Count" from PCND_ZIP group by 
 
 # load payment data
 
-OP_Summary <- read.csv("D:/muffly/data/Originals/PHPRFL_P062819/OP_PH_PRFL_SPLMTL_P06282019.csv", stringsAsFactors=FALSE)
+#OP_Summary <- read.csv("D:/muffly/data/Originals/PHPRFL_P062819/OP_PH_PRFL_SPLMTL_P06282019.csv", stringsAsFactors=FALSE)
+OP_Summary <- read.csv("/Volumes/Projects/Pharma_Influence/Data/Open Payments/OP_PH_PRFL_SPLMTL_P01172020.csv", stringsAsFactors=FALSE)
 
 OP_Summary$Physician_Profile_Last_Name <- tolower(OP_Summary$Physician_Profile_Last_Name)
 OP_Summary$Physician_Profile_First_Name <- tolower(OP_Summary$Physician_Profile_First_Name)
@@ -166,3 +169,4 @@ rm(PCND_CS_uni)
 rm(PCND_CS_uni_cnt)
 rm(PCND_ZIP)
 rm(PCND_ZIP_cnt)
+

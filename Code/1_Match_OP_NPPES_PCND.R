@@ -9,11 +9,11 @@ library("sqldf")
 library("qdapRegex")
 library("sqldf")
 library("readr")
-library(tidyverse)
-library (Hmisc)
+library("tidyverse")
+library ("Hmisc")
 
 # Load NPPES Data *****************************************************************************************************************
-NPPES <- read.csv("/Volumes/Projects/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412.csv", stringsAsFactors = FALSE)
+NPPES <- read.csv("/Volumes/Projects/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412_2.csv", stringsAsFactors = FALSE)
 #NPPES <- read.csv("D:/muffly/data/Originals/match_data/npidata_pfile_20050523-20190707_demo.csv", stringsAsFactors=FALSE)
 
 NPPES$Provider.First.Name = tolower(NPPES$Provider.First.Name)
@@ -477,9 +477,10 @@ OP_UnMatched <- OP[OP$NPI == "",]
 #
 # *************************************************************************************************
 # Clean up 
-
-PCND <- read.csv("D:/muffly/data/Originals/Physician_Compare/Physician_Compare_National_Downloadable_File.csv", stringsAsFactors=FALSE)
-
+#PCND <- read.csv("D:/muffly/data/Originals/Physician_Compare/Physician_Compare_National_Downloadable_File.csv", stringsAsFactors=FALSE)
+PCND <- read.csv("/Volumes/Projects/Pharma_Influence/Data/Physician_Compare/Physician_Compare_National_Downloadable_File_2.csv", stringsAsFactors=FALSE)
+  
+  
 PCND <- filter(PCND, PCND$State %nin% c("AP","AE", "AS", "FM", "GU", "MH","MP", "PR","PW","UM","VI", "ZZ"))
 PCND <- filter(PCND, (PCND$Primary.specialty %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))  | (PCND$Secondary.specialty.1 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY")) | (PCND$Secondary.specialty.2 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY")) | (PCND$Secondary.specialty.3 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY")) | (PCND$Secondary.specialty.4 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))  ) 
 
@@ -1009,8 +1010,11 @@ names(OP)[15] <- "NPI"
 OP_UnMatched <- OP[is.na(OP$NPI),]
 OP_Matched <- OP[!is.na(OP$NPI),]
 
-OP_Spec <- read.csv("D:/muffly/data/Originals/match_data/OP_PH_PRFL_SPLMTL_P06292018_tax.csv", stringsAsFactors=FALSE)
+#OP_Spec <- read.csv("D:/muffly/data/Originals/match_data/OP_PH_PRFL_SPLMTL_P06292018_tax.csv", stringsAsFactors=FALSE)
+OP_Spec <- read.csv("/Volumes/Projects/Pharma_Influence/Data/Open_Payments/OP_PH_PRFL_SPLMTL_P06292018_tax.csv", stringsAsFactors=FALSE)
 
+  
+  
 OP_UnMatched <- sqldf('select OP_UnMatched.*, OP_Spec.Physician_Profile_Primary_Specialty from OP_UnMatched left outer join OP_Spec on OP_Unmatched.Physician_Profile_ID = OP_Spec.Physician_Profile_ID')
 OP_UnMatched_OBGYN <- filter(OP_UnMatched, OP_UnMatched$Physician_Profile_Primary_Specialty %in% c("Allopathic & Osteopathic Physicians|Obstetrics & Gynecology","Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Gynecologic Oncology", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Gynecology", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Hospice and Palliative Medicine", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Maternal & Fetal Medicine", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Obesity Medicine","Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Obstetrics", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Reproductive Endocrinology"))
 
