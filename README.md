@@ -13,6 +13,10 @@ Muffly, Archer, Guido, Ferber
 *Aim 3:  To identify if there is a measurable monetary threshold at which there is an association between pharmaceutical payments to OBGYN physicians and prescribing practices.*
 
 * [Marketing to Doctors: Last Week Tonight with John Oliver (HBO)](https://www.youtube.com/watch?v=YQZ2UeOTO3I&feature=share)
+* [Propublica Doctors Prescribe more of a durg if they receive money from the pharma manufacturer](https://www.propublica.org/article/doctors-prescribe-more-of-a-drug-if-they-receive-money-from-a-pharma-company-tied-to-it
+)
+* [Propublica Methodology](https://projects.propublica.org/graphics/d4dpartd-methodology)
+
 
 Drug and Payments Data pull and preparation: This retrospective, cross-sectional study linked two large, publicly available datasets for 2013 to 2018: the Open Payment Database General Payments and the Medicare Part D Prescriber Public Use Files.  
 ==========
@@ -353,6 +357,19 @@ Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’
 
 Tinidazole (dat_anti_inf,2) as a treatment for Bacterial vaginosis.  Y-axis is dollars to the physician form the manufacturer of tinidazole and X-axis is number of prescriptions.  Tinidazole does start increasing to meaningful numbers ($1,500, 30 rx).  
 [![Prescriptions vs. Contributions to MD](https://github.com/mufflyt/coi/blob/master/tinidazole.png?raw=true)](https://github.com/mufflyt/coi/blob/master/tinidazole.png?raw=true)
+
+### Matching Physician Names to Open Payments Data Process
+Adjust the analysis based on:
+* Gender
+* Age at the time of prescribing
+* ACOG district (map above)
+* OBGYN generalist or subspecialist
+* International Medical Graduate vs. U.S. Senior Medical Graduate
+* Rurality of practice location
+* Years since graduating from medical school
+* Median income of households in the zip code of the physician's office (maybe from ACS, see Rui's project)
+* Total amount of dollars that the physician received in Open Payments?
+* A particular type of Open Payment (food, consulting, travel, etc.)?
 
 
 TEMPLATE
