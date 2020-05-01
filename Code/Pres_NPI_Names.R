@@ -3,9 +3,9 @@ install.packages("readr")
 install.packages("qdapRegex")
 install.packages("sqldf")
 # Loading
-library("sqldf", lib.loc="~/R/win-library/3.2")
-library("qdapRegex", lib.loc="~/R/win-library/3.2")
-library("sqldf", lib.loc="~/R/win-library/3.2")
+library("sqldf")
+library("qdapRegex")
+library("sqldf")
 library("readr")
 
 #Start
