@@ -23,7 +23,7 @@ library(bit64)
 library(exploratory)
 library(RDSTK)
 
-# Read in all data of GOBA scrapes ----
+# Read in all data of GOBA ----
 # We start with a list of FPMRS physicians and the year that they were boarded called all_bound_together.csv.  The data is filtered for providers who are retired, not in the United States, and has a unique random id.  
 
 # #Read directly from Dropbox, workforce, scraper, Scraper_results_2019
@@ -350,7 +350,7 @@ colnames(full_list)
 #Allows us to map the FPMRS to street address, city, state
 library(ggmap)
 gc(verbose = FALSE)
-ggmap::register_google(key = "AIzaSyDyxsfMXJaGNMjQ52Gh7R4n37meA5uoF_8")
+ggmap::register_google(key = "xxxx")
 ggmap::ggmap_show_api_key()
 ggmap::has_google_key()
 colnames(full_list)
