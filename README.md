@@ -217,6 +217,15 @@ Round 2:
 ### Adding Physician Demographics
 Covariables included gender, American Board of Obstetrics and Gynecology-approved (ABOG) subspecialty (general OBGYNs, female pelvic medicine and reconstructive surgeons, gynecologic oncologists, maternal-fetal medicine specialists, and reproductive endocrinology and infertility specialists), ACOG region, overall physician volume of prescribing and prescribing volume in the same therapeutic class.  The overall prescribing volume of a physician was calculated as the total days’ supply of all drugs of any category prescribed by that physician.  A log of overall prescribing volume of a physician and the therapeutic class prescribing volume were used for improved model specifications.  Secondary analyses tested the association of payment from the manufacturer of the selected drug with the primary outcome. 
 
+### GOBA
+**Description**: Pulls GOBA data from multiple time frames into one csv file that can be used.  Raw data are stored at `Dropbox, workforce, scraper, Scraper_results_2019` and are linked by URL to the code.  
+
+**Use**: `source("pulling_all_scrapes_together.R")` 
+
+**Output**:  
+**Output**:  
+
+
 ### `GOBA_Compare.R`
 
 **Description**: Takes a file called `GOBA_unique.csv` of NPI numbers and merges it withe demographic data from `Physician Compare`.  Most importantly, `GOBA_unique.csv` can be matched to get subspecialties `GOBA_Cert`from the NPI.  
