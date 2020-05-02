@@ -46,7 +46,9 @@ trim <- function (x) gsub("^\\s+|\\s+$", "", x)
 
 # ONLY FOR QUICK TESTING. ONLY TAKES FIRST 100 ROWS FOR QUICK RESULT. 
 # YOU CAN DELETE THIS LINE SO THE SCRIPT WILL CHECK ENTIRE INPUT
-#input<- head(input, 1000)
+input<- tail(input, 5000)
+
+#Ok so this errors out at about 1180 records in to the search.  So we can start at the bottom with (tail(input, 5000)) instead
 
 # Loop through each row (from 1 to the total number of rows) in the dataframe with users
 for(i in 1:nrow(input)){
@@ -167,7 +169,7 @@ for(i in 1:nrow(input)){
   }
   
   # optional line of code. Shows progress. Countdown of rows
-  cat("\r", " remaining: ", nrow(input) - i, "\r")
+  cat("\r", " Row: ", nrow(input), "\r")
   Sys.sleep(0.1)
 }
 
