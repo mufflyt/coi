@@ -76,6 +76,7 @@ install.packages("Hmisc")
 install.packages('reshape')
 install.packages('reshape2')
 install.packages("tidyverse")
+install.packages('humaniformat')
 
 # Loading
 library("sqldf")
@@ -86,6 +87,7 @@ library("Hmisc")
 library('reshape')
 library('reshape2')
 library("tidyverse")
+library("humaniformat")
 ```
 
 ## Scripts: purpose for searching for NPPES
@@ -233,11 +235,16 @@ Covariables included gender, American Board of Obstetrics and Gynecology-approve
 
 ### `API access for NPPES.R`
 
-**Description**: Takes a csv file and searches the NPPES database. I have a list of names that I would like to search for their NPI number using the NPI API (https://npiregistry.cms.hhs.gov/registry/help-api).  NPI number is a unique identifier number.  There are about 45,000 names that I want to see if there is a match in the csv file to the API.  There is documentation of the API listed above and this is also helpful (https://npiregistry.cms.hhs.gov/api/demo?version=2.1).  My goal is to get the correct NPI and all data as possible from the API.  The example API call would be: https://npiregistry.cms.hhs.gov/api/?number=&enumeration_type=NPI-1&taxonomy_description=&first_name=kale&use_first_name_alias=&last_name=turner&organization_name=&address_purpose=&city=&state=&postal_code=&country_code=&limit=&skip=&version=2.1.  Ultimately I want to use the location data for geocoding and to create a map.   
+**Description**: Takes a csv file of `first_name` and `last_name` and searches the NPPES database for an NPI number. Instead of having complicated 12 round joins with PCND I wanted to try this NPPES API to see if the majority of the work could be done here. 
+
+I have a list of names that I would like to search for their NPI number using the NPI API (https://npiregistry.cms.hhs.gov/registry/help-api).  NPI number is a unique identifier number.  There are about 45,000 names that I want to see if there is a match in the csv file to the API.  There is documentation of the API listed above and this is also helpful (https://npiregistry.cms.hhs.gov/api/demo?version=2.1).  My goal is to get the correct NPI and all data as possible from the API.  The example API call would be: https://npiregistry.cms.hhs.gov/api/?number=&enumeration_type=NPI-1&taxonomy_description=&first_name=kale&use_first_name_alias=&last_name=turner&organization_name=&address_purpose=&city=&state=&postal_code=&country_code=&limit=&skip=&version=2.1.  Ultimately I want to use the retrieved location data for geocoding and to create a map.   
 
 **Use**: `source("API access for NPPES.R")` 
 
-**Output**: Address output.  
+**Output**: `~/Dropbox/Pharma_Influence/Data/NPPES_API_Output.csv`
+
+[![API, how does it work](https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.pinimg.com%2F736x%2Ff8%2F02%2Fcc%2Ff802cc6d8fbc9e3f4a9223eb1d965275.jpg&f=1&nofb=1)](https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.pinimg.com%2F736x%2Ff8%2F02%2Fcc%2Ff802cc6d8fbc9e3f4a9223eb1d965275.jpg&f=1&nofb=1)
+
 
 ### Code fragment that we can use to create a map
 I had this from a separate project that I had done. I geocoded the street address, city, state of each FPMRS into lat and long using the Google geocoding API.  Zip codes were challenging to use and the street address, city, state information was accurate without zip codes.  Any non-matches were omitted.  These data were written to a file called locations.csv.  Many thanks to Jesse Adler for the great code.  I need to put google key.  
