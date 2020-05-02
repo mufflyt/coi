@@ -23,7 +23,7 @@ library(bit64)
 library(exploratory)
 library(RDSTK)
 
-# Read in all data of GOBA ----
+# Read in all data of GOBA scrapes ----
 # We start with a list of FPMRS physicians and the year that they were boarded called all_bound_together.csv.  The data is filtered for providers who are retired, not in the United States, and has a unique random id.  
 
 # #Read directly from Dropbox, workforce, scraper, Scraper_results_2019
@@ -47,8 +47,8 @@ a17 <- read.csv(url("https://www.dropbox.com/s/afy2x8sn5aiwhls/Physicians%20%289
 a18 <- read.csv(url("https://www.dropbox.com/s/yyb56grdml8r3u2/Physicians%20%289035315-9032700%29%20%282019-09-08%2010-52-04%29.csv?raw=1"))
 a19 <- read.csv(url("https://www.dropbox.com/s/eb2ys0rhrej57gi/Physicians%20%289035315-9032700%29%20%282019-09-08%2010-57-51%29.csv?raw=1"))
 a20 <- read.csv(url("https://www.dropbox.com/s/0icba0c7fiykfg6/Physicians%20%289050954-9030000%29%20%282019-09-07%2021-56-03%29.csv?raw=1"))
-a21 <- read.csv(url("https://www.dropbox.com/s/3myst0596aqn96e/Physicians_total_drop_na_29.csv?raw=1"))
-a22 <- read.csv(url("https://www.dropbox.com/s/bdxfcw0iq9etp77/Physicians_total_left_join_27.csv?raw=1"))
+#a21 <- read.csv(url("https://www.dropbox.com/s/3myst0596aqn96e/Physicians_total_drop_na_29.csv?raw=1"))
+#a22 <- read.csv(url("https://www.dropbox.com/s/bdxfcw0iq9etp77/Physicians_total_left_join_27.csv?raw=1"))
 
 #Read directly from Dropbox, workforce, scraper, GOBA_December_2019_Pull
 a23 <- read.csv(url("https://www.dropbox.com/s/0tia58u15r6deok/Physicians%20%289017048-9007048%29%20%282019-12-23%2008-40-42%29.csv?raw=1"))
@@ -98,15 +98,41 @@ a63 <- read.csv(url("https://www.dropbox.com/s/lhoqdltq4f0iodk/Physicians%20%289
 a64 <- read.csv(url("https://www.dropbox.com/s/sx85vsvodmil8h6/Physicians%20%289040000-9030000%29%20%282020-03-08%2014-50-09%29.csv?raw=1"))
 a65 <- read.csv(url("https://www.dropbox.com/s/1yzghhwt63294t1/Physicians%20%289050000-9040000%29%20%282020-03-08%2020-12-49%29.csv?raw=1"))
 
+###
+a66 <- read.csv(url("https://www.dropbox.com/s/kl1jpxbh4urfotw/Physicians%20%289041048-9043048%29%20%282019-12-22%2008-51-01%29.csv?raw=1"))
 
+a67 <- read.csv(url("https://www.dropbox.com/s/24mnbhl0j5do660/Physicians%20%289041048-9043048%29%20%282019-12-21%2017-14-39%29.csv?raw=1"))
+
+a68 <- read.csv(url("https://www.dropbox.com/s/i99p7gq15qk2v7a/Physicians%20%289e%2B06-9032700%29%20%282019-09-08%2006-48-56%29.csv?raw=1"))
+
+a69 <- read.csv(url("https://www.dropbox.com/s/aiqpe1bbskhhx94/Physicians%20%289050000-9038000%29%20%282020-01-03%2018-20-19%29.csv?raw=1"))
+
+a70 <- read.csv(url("https://www.dropbox.com/s/qcjhvp06v6fuyoo/Physicians%20%289041048-9037048%29%20%282019-12-22%2012-25-57%29.csv?raw=1"))
+
+a71 <- read.csv(url("https://www.dropbox.com/s/cto20nxan88qgfv/Physicians%20%289037048-9032048%29%20%282019-12-22%2013-22-42%29.csv?raw=1"))
+
+a72 <- read.csv(url("https://www.dropbox.com/s/00m2usopo2vmyx1/Physicians%20%289032048-9027048%29%20%282019-12-22%2014-30-40%29.csv?raw=1"))
+
+a73 <- read.csv(url("https://www.dropbox.com/s/r8crl2nwola5c4o/Physicians%20%289027048-9017048%29%20%282019-12-22%2016-53-04%29.csv?raw=1"))
+
+a74 <- read.csv(url("https://www.dropbox.com/s/o7gjhdzgy7rd5m6/Physicians%20%289017048-9007048%29%20%282019-12-23%2008-40-42%29.csv?raw=1"))
+
+a75 <- read.csv(url("https://www.dropbox.com/s/gky96odvkwgnwrn/Physicians%20%289029730-9050000%29%20%282020-01-27%2006-53-03%29.csv?raw=1"))
+###
+a76 <- read.csv(url("https://www.dropbox.com/s/fwx9r9nnvnlbxv3/Physicians%20%28815002-993412%29%20%282019-09-08%2006-39-33%29.csv?raw=1"))
+a77 <- read.csv(url("https://www.dropbox.com/s/k4ij7hf7rczil6u/Physicians%20%289041800-9040000%29%20%282020-05-02%2009-02-19%29.csv?raw=1"))
+
+
+#REMOVED THIS ONE.......
 #ABOG 2013 from SGS Bastow project from Dropbox/ workforce/ scraper/ 2013 data
-a52 <- read.csv(url("https://www.dropbox.com/s/4ml8wdoijw67n7g/abog%2012.21.2013.csv?raw=1")) %>%
-  dplyr::rename(userid = ID) %>%
-  dplyr::mutate(`Certification 2` = dplyr::recode(Certification.2, `Female Pelvic Medicine and Reconstructive Surgery` = "FPM")) %>%
-  dplyr::rename(sub1 = Certification.2)
+a52 <- read.csv(url("https://www.dropbox.com/s/4ml8wdoijw67n7g/abog%2012.21.2013.csv?raw=1"))
+#   dplyr::rename(userid = ID) %>%
+#   #dplyr::mutate(`Certification 2` = dplyr::recode(Certification.2, `Female Pelvic Medicine and Reconstructive Surgery` = "FPM")) %>%
+#   dplyr::rename(sub1 = Certification.2)
 
 # # Bind together all the individual scrapes ----
 # # Steps to produce the output
+library(exploratory)
 all_a_dataframes <- a1 %>%
   readr::type_convert() %>%
   exploratory::clean_data_frame() %>%
@@ -129,8 +155,8 @@ all_a_dataframes <- a1 %>%
   bind_rows(a18, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE) %>%
   bind_rows(a19, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE) %>%
   bind_rows(a20, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE) %>%
-  bind_rows(a21, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE) %>%
-  bind_rows(a22, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE) %>%
+  #bind_rows(a21, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE) %>%
+  #bind_rows(a22, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE) %>%
   bind_rows(a23, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE) %>%
   bind_rows(a24, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE) %>%
   bind_rows(a25, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE) %>%
@@ -160,7 +186,7 @@ all_a_dataframes <- a1 %>%
   bind_rows(a49, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE) %>%
   bind_rows(a50, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE) %>%
   bind_rows(a51, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE) %>%
-  bind_rows(a52, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE) %>%
+  #bind_rows(a52, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE) %>%
   bind_rows(a53, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE) %>%
   bind_rows(a55, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE) %>%
   bind_rows(a56, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE) %>%
@@ -170,255 +196,75 @@ all_a_dataframes <- a1 %>%
   bind_rows(a62, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE)%>%
   bind_rows(a63, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE) %>%
   bind_rows(a64, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE) %>%
-  bind_rows(a65, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE)
+  bind_rows(a65, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE)%>%
+  bind_rows(a66, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE)%>%
+  bind_rows(a67, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE)%>%
+  bind_rows(a68, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE)%>%
+  bind_rows(a69, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE)%>%
+  bind_rows(a70, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE)%>%
+  bind_rows(a71, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE)%>%
+  bind_rows(a72, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE)%>%
+  bind_rows(a73, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE)%>%
+  bind_rows(a74, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE)%>%
+  bind_rows(a75, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE)%>%
+  bind_rows(a76, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE) %>%
+  bind_rows(a77, id_column_name = "ID", current_df_name = "Physicians_9037048_9032048_2019_12_22_13_22_42", force_data_type = TRUE) %>%
+  dplyr::select(-starts_with("ID.new")) %>%
+  dplyr::select(-X, -Message, -app_no) 
 
-readr::write(all_a_dataframes, "~/Dropbox/Rui/data/all_a_dataframes.csv")
-all_a_dataframes <- readr::read_csv("~/Dropbox/Rui/data/all_a_dataframes.csv")
+readr::write_csv(all_a_dataframes, "~/Dropbox/Pharma_Influence/Data/all_a_dataframes.csv")
+dim(all_a_dataframes)
 
 all_bound_together <- all_a_dataframes %>%
   readr::type_convert() %>%
   exploratory::clean_data_frame() %>%
   dplyr::distinct(userid, .keep_all = TRUE) %>%
   dplyr::select(-starts_with("ID.new")) %>%
-  dplyr::filter(sub1 %in% c("FPM", "Female Pelvic Medicine & Reconstructive Surgery")) %>%
-  dplyr::arrange(name) %>%
-  dplyr::select(userid:orig_bas) %>%
-  dplyr::mutate(unique_random_id = (userid*3.1415926535) - 3, unique_random_id = round(unique_random_id, digits = 0)) %>%
-  dplyr::filter(sub1certStatus %nin% c("Retired", "Not Currently Certified")) %>%
-  dplyr::filter(sub2certStatus %nin% c("Retired", "Not Currently Certified")) %>%
-  dplyr::filter(certStatus %nin% c("Retired", "Not Currently Certified")) %>%
-  dplyr::filter(!is.na(state)) %>%
-  dplyr::filter(state != "ON") %>%
+  dplyr::arrange(desc(userid)) %>%
+  dplyr::filter(sub1certStatus %nin% c("Retired")) %>%
+  dplyr::filter(sub2certStatus %nin% c("Retired")) %>%
+  dplyr::filter(certStatus %nin% c("Retired")) %>%
+  #dplyr::filter(!is.na(state)) %>%
+  dplyr::filter(state %nin% c("ON", "AB")) %>%
   dplyr::filter(clinicallyActive !="No") %>%
-  dplyr::mutate(Year_Boarded_in_FPMRS = lubridate::year(orig_sub)) %>%
-  dplyr::select(unique_random_id, name, Year_Boarded_in_FPMRS)
+  dplyr::mutate(Year_Boarded = lubridate::year(orig_sub)) %>%
+  readr::write_csv("~/Dropbox/Pharma_Influence/Data/all_bound_together.csv")
 
 dim(all_bound_together)
 colnames(all_bound_together)
 head(all_bound_together, 200)
 dplyr::glimpse(all_bound_together)
-#View(all_bound_together)
+View(all_bound_together)
 
-# Write the final bound scraper to disk ----
-readr::write_csv(all_bound_together, "/Users/tylermuffly/Dropbox/Rui/Data/allboundtogether_FPMRS.csv")
+#library("utils")
+# not tested, https://stackoverflow.com/questions/33072993/read-and-cbind-second-column-of-multiple-files-in-directory
 
-all_bound_together <- readr::read_csv("/Users/tylermuffly/Dropbox/Rui/Data/allboundtogether_FPMRS.csv")
-#We start with a list of FPMRS physicians and the year that they were boarded called all_bound_together.csv.  The data is filtered for providers who are retired, not in the United States, and has a unique random id.  
+#https://serialmentor.com/blog/2016/6/13/reading-and-combining-many-tidy-data-files-in-R
 
-####################
-# I imported the county data from Rui.  
-
-# Steps to produce countylevel2017
-`countylevel2017` <- exploratory::read_excel_file( "/Users/tylermuffly/Dropbox/workforce/Rui_Project/Data_from_Rui/countylevel2013-2017.xlsx", sheet = "2017", na = c('','NA'), skip=0, col_names=TRUE, trim_ws=TRUE, col_types="text") %>%
-  readr::type_convert() %>%
-  exploratory::clean_data_frame() %>%
-  mutate(year = 2017)
-
-# Steps to produce countylevel2016
-`countylevel2016` <- exploratory::read_excel_file( "/Users/tylermuffly/Dropbox/workforce/Rui_Project/Data_from_Rui/countylevel2013-2017.xlsx", sheet = "2016", na = c('','NA'), skip=0, col_names=TRUE, trim_ws=TRUE, col_types="text") %>%
-  readr::type_convert() %>%
-  exploratory::clean_data_frame() %>%
-  mutate(year = 2016)
-
-# Steps to produce countylevel2015
-`countylevel2015` <- exploratory::read_excel_file( "/Users/tylermuffly/Dropbox/workforce/Rui_Project/Data_from_Rui/countylevel2013-2017.xlsx", sheet = "2015", na = c('','NA'), skip=0, col_names=TRUE, trim_ws=TRUE, col_types="text") %>%
-  readr::type_convert() %>%
-  exploratory::clean_data_frame() %>%
-  mutate(year = 2015)
-
-# Steps to produce countylevel2014
-`countylevel2014` <- exploratory::read_excel_file( "/Users/tylermuffly/Dropbox/workforce/Rui_Project/Data_from_Rui/countylevel2013-2017.xlsx", sheet = "2014", na = c('','NA'), skip=0, col_names=TRUE, trim_ws=TRUE, col_types="text") %>%
-  readr::type_convert() %>%
-  exploratory::clean_data_frame() %>%
-  mutate(year = 2014)
-
-# Steps to produce countylevelmerged
-`countylevelmerged` <- exploratory::read_excel_file( "/Users/tylermuffly/Dropbox/workforce/Rui_Project/Data_from_Rui/countylevel2013-2017.xlsx", sheet = "2013", na = c('','NA'), skip=0, col_names=TRUE, trim_ws=TRUE, col_types="text") %>%
-  readr::type_convert() %>%
-  exploratory::clean_data_frame() %>%
-  mutate(year = 2013) %>%
-  bind_rows(countylevel2014, id_column_name = "ID", current_df_name = "countylevel2013", force_data_type = TRUE) %>%
-  bind_rows(countylevel2015, id_column_name = "ID", current_df_name = "countylevel2013", force_data_type = TRUE) %>%
-  bind_rows(countylevel2016, id_column_name = "ID", current_df_name = "countylevel2013", force_data_type = TRUE) %>%
-  bind_rows(countylevel2017, id_column_name = "ID", current_df_name = "countylevel2013", force_data_type = TRUE) %>%
-  select(-ID.new.new.new, -ID.new.new, -ID.new, -ID) %>%
-  arrange(desc(FIPS)) %>%
-  mutate(year = factor(year)) %>%
-  filter(year == "2017")
-
-rm(countylevel2017)
-rm(countylevel2016)
-rm(countylevel2015)
-rm(countylevel2014)
-
-# Steps to produce fips
-#I imported the county data from Rui.  I then imported the county name to fits number crosswalk (county_name_id_map.csv) and gave the named county also a fips number.  
-`fips` <- exploratory::read_delim_file("/Users/tylermuffly/Dropbox/workforce/Rui_Project/county_name_id_map.csv" , ",", quote = "\"", skip = 0 , col_names = TRUE , na = c('','NA') , locale=readr::locale(encoding = "UTF-8", decimal_mark = ".", grouping_mark = "," ), trim_ws = TRUE , progress = FALSE) %>%
-  readr::type_convert() %>%
-  exploratory::clean_data_frame() %>%
-  separate(name, into = c("state", "county"), sep = "\\s+", convert = TRUE) %>%
-  mutate(state = recode(state, alabama = "al", alaska = "ak", arizona = "ar", arkansas = "ar", california = "ca", colorado = "co", connecticut = "ct", delaware = "de", districtofcolumbia = "dc", guam = "gu", hawaii = "hi", idaho = "id", illinois = "il", indiana = "in", iowa = "ia", kansas = "ks", kentucky = "ky", louisiana = "la", maine = "me", maryland = "md", massachusetts = "ms", michigan = "mi", minnesota = "mn", mississippi = "ms", missouri = "mo", montana = "mt", nebraska = "ne", nevada = "nv", newhampshire = "nh", newjersey = "nj", newmexico = "nm", newyork = "ny", northcarolina = "nc", northdakota = "nd", oklahoma = "ok", pennsylvania = "pa", puertorico = "pr", rhodeisland = "ri", southcarolina = "sc", southdakota = "sd", tennessee = "tn", texas = "tx", utah = "ut", vermont = "vt", virginia = "va", virginislandsoftheus = "vi", washington = "wa", westvirginia = "wv", wisconsin = "wi", wyoming = "wy")) %>%
-  dplyr::rename(fips = id) %>%
-  mutate(county = str_to_title(county)) %>%
-  mutate(County_name = "County") %>%
-  tidyr::unite(County_names, county, County_name, sep = " ", remove = TRUE, na.rm = FALSE) %>%
-  mutate(state = statecode(state, output_type = "name"))
-####County info brought above this point.  
-
-### Bring in provider information below this point.
-# Steps to produce fullproviderallnewpts2017
-`fullproviderallnewpts2017` <- exploratory::read_excel_file( "/Users/tylermuffly/Dropbox/workforce/Rui_Project/Data_from_Rui/fullproviderallnewpts2013-2017.xlsx", sheet = "2017", na = c('','NA'), skip=0, col_names=TRUE, trim_ws=TRUE, col_types="text") %>%
-  readr::type_convert() %>%
-  exploratory::clean_data_frame() %>%
-  mutate(year = 2017)
-
-# Steps to produce fullproviderallnewpts2016
-`fullproviderallnewpts2016` <- exploratory::read_excel_file( "/Users/tylermuffly/Dropbox/workforce/Rui_Project/Data_from_Rui/fullproviderallnewpts2013-2017.xlsx", sheet = "2016", na = c('','NA'), skip=0, col_names=TRUE, trim_ws=TRUE, col_types="text") %>%
-  readr::type_convert() %>%
-  exploratory::clean_data_frame() %>%
-  mutate(year = 2016)
-
-# Steps to produce fullproviderallnewpts2015
-`fullproviderallnewpts2015` <- exploratory::read_excel_file( "/Users/tylermuffly/Dropbox/workforce/Rui_Project/Data_from_Rui/fullproviderallnewpts2013-2017.xlsx", sheet = "2015", na = c('','NA'), skip=0, col_names=TRUE, trim_ws=TRUE, col_types="text") %>%
-  readr::type_convert() %>%
-  exploratory::clean_data_frame() %>%
-  mutate(year = 2015)
-
-# Steps to produce fullproviderallnewpts2014
-`fullproviderallnewpts2014` <- exploratory::read_excel_file( "/Users/tylermuffly/Dropbox/workforce/Rui_Project/Data_from_Rui/fullproviderallnewpts2013-2017.xlsx", sheet = "2014", na = c('','NA'), skip=0, col_names=TRUE, trim_ws=TRUE, col_types="text") %>%
-  readr::type_convert() %>%
-  exploratory::clean_data_frame() %>%
-  mutate(year = 2014)
-
-# Steps to produce the output
-full_list <- exploratory::read_excel_file( "/Users/tylermuffly/Dropbox/workforce/Rui_Project/Data_from_Rui/fullproviderallnewpts2013-2017.xlsx", sheet = "2013", na = c('','NA'), skip=0, col_names=TRUE, trim_ws=TRUE, col_types="text") %>%
-  readr::type_convert() %>%
-  exploratory::clean_data_frame() %>%
-  mutate(year = 2013) %>%
-  bind_rows(fullproviderallnewpts2014, id_column_name = "ID", current_df_name = "fullproviderallnewpts2013", force_data_type = TRUE) %>%
-  bind_rows(fullproviderallnewpts2015, id_column_name = "ID", current_df_name = "fullproviderallnewpts2013", force_data_type = TRUE) %>%
-  bind_rows(fullproviderallnewpts2016, id_column_name = "ID", current_df_name = "fullproviderallnewpts2013", force_data_type = TRUE) %>%
-  bind_rows(fullproviderallnewpts2017, id_column_name = "ID", current_df_name = "fullproviderallnewpts2013", force_data_type = TRUE) %>%
-  select(-ID.new.new.new, -ID.new.new, -ID.new, -ID) %>%
-  select(-nppes_provider_country) %>%
-  mutate(year = factor(year)) %>%
-  mutate(nppes_provider_street1 = str_to_title(nppes_provider_street1), nppes_provider_city = str_to_title(nppes_provider_city)) %>%
-  tidyr::unite(place_city_state, nppes_provider_city, nppes_provider_state, sep = ", ", remove = TRUE, na.rm = FALSE) %>%
-  # Limit data to 2017
-  filter(year == "2017") #%>%  
-
-
-
-# Steps to produce fips_plus_locations_county_data
-`fips_plus_locations_county_data` <- exploratory::read_delim_file("/Users/tylermuffly/Dropbox/workforce/Rui_Project/fips_plus_locations.csv" , ",", quote = "\"", skip = 0 , col_names = TRUE , na = c('','NA') , locale=readr::locale(encoding = "UTF-8", decimal_mark = ".", grouping_mark = "," ), trim_ws = TRUE , progress = FALSE) %>%
-  readr::type_convert() %>%
-  exploratory::clean_data_frame() %>%
-  mutate(fips = parse_number(fips)) %>%
-  distinct(npi, .keep_all = TRUE) %>%
-  left_join(countylevelmerged, by = c("fips" = "FIPS"))
-
-###???
-
-final_provider <- full_list %>%
-  left_join(locations, by = c("npi" = "npi")) %>%
-  # Bring in provider demographics.
-  left_join(fips_plus_locations, by = c("npi" = "npi")) %>%
-  select(-lon.y, -lat.y) %>%
-  mutate(name_2 = str_remove_all(name_2, "[^a-zA-Z]+")) %>%
-  rename(COUNTY_STATE_NAME = united_county_state) %>%
-  mutate(COUNTY_STATE_NAME = factor(COUNTY_STATE_NAME)) %>%
-
-  # Export full providermerged as a csv for use in R code.
-  mutate(COUNTY_STATE_NAME = str_remove(COUNTY_STATE_NAME, regex("County", ignore_case = TRUE)), COUNTY_STATE_NAME = str_replace(COUNTY_STATE_NAME, regex(" ,", ignore_case = TRUE), ","))
-
-rm(fullproviderallnewpts2014)
-rm(fullproviderallnewpts2015)
-rm(fullproviderallnewpts2016)
-rm(fullproviderallnewpts2017)
-
-dim(full_list)
-colnames(full_list)
-######
-
-
-
-# Google geocoding of FPMRS physician locations ----
-# Next I geocoded the street address, city, state of each FPMRS into lat and long using the Google geocoding API.  Zip codes were challenging to use and the street address, city, state information was accurate without zip codes.  Any non-matches were omitted.  These data were written to a file called locations.csv.  
-
-#https://www.jessesadler.com/post/geocoding-with-r/
-#Google map API, https://console.cloud.google.com/google/maps-apis/overview?pli=1
-#Allows us to map the FPMRS to street address, city, state
-library(ggmap)
-gc(verbose = FALSE)
-ggmap::register_google(key = "xxxx")
-ggmap::ggmap_show_api_key()
-ggmap::has_google_key()
-colnames(full_list)
-#View(full_list$place_city_state)
-dim(full_list)
-sum(is.na(full_list$place_city_state))
-
-#TURNED OFF GOOGLE API COMMAND BELOW
-# locations_df <- ggmap::mutate_geocode(data = full_list, location = place_city_state, output="more", source="google")
-# locations <- tibble::as_tibble(locations_df) %>%
-#   tidyr::separate(place_city_state, into = c("city", "state"), sep = "\\s*\\,\\s*", convert = TRUE) %>%
-#   dplyr::mutate(state = statecode(state, output_type = "name"))
-# colnames(locations)
-# write_csv(locations, "/Users/tylermuffly/Dropbox/workforce/Rui_Project/locations.csv")
-locations <- readr::read_csv("/Users/tylermuffly/Dropbox/workforce/Rui_Project/locations.csv")
-
-head(locations)
-dim(locations)  #See how many FPMRS you lost when could not be geocoded.
-View(locations)
-
-
-
-
-# Steps to produce fips_plus_locations_county_data
-`fips_plus_locations_county_data` <- exploratory::read_delim_file("/Users/tylermuffly/Dropbox/workforce/Rui_Project/fips_plus_locations.csv" , ",", quote = "\"", skip = 0 , col_names = TRUE , na = c('','NA') , locale=readr::locale(encoding = "UTF-8", decimal_mark = ".", grouping_mark = "," ), trim_ws = TRUE , progress = FALSE) %>%
-  readr::type_convert() %>%
-  exploratory::clean_data_frame() %>%
-  mutate(fips = parse_number(fips)) %>%
-  distinct(npi, .keep_all = TRUE) %>%
-  left_join(countylevelmerged, by = c("fips" = "FIPS"))
-#Fill in the counties without google api ----
-
-
-#https://stackoverflow.com/questions/8751497/latitude-longitude-coordinates-to-state-code-in-r/52846162#52846162
-#locations <- readr::read_csv("/Users/tylermuffly/Dropbox/workforce/Rui_Project/locations.csv")
-colnames(locations)
-library(maps)
-library(sf)
-
-## Get the county map, turn into sf object
-US <- sf::st_as_sf(map("county", plot = TRUE, fill = TRUE))
-
-testPoints <- data.frame(npi = locations$npi, x = locations$lon, y = locations$lat)
-
-# Make it a spatial dataframe, using the same coordinate system as the US spatial dataframe
-testPoints <- sf::st_as_sf(testPoints, coords = c("x", "y"), crs = st_crs(US))
-
-#.. and perform a spatial join!
-county_output <- sf::st_join(x = testPoints, y = US) %>%
-  tidyr::separate(ID, into = c("state", "county"), sep = "\\s*\\,\\s*", convert = TRUE) %>% #split the state, county string
-  mutate_at(vars(state, county), funs(str_to_title)) %>%
-  unite(state_county, county, state, sep = ", ", remove = TRUE, na.rm = FALSE) %>%  #recombine as county, state string
-  filter(state_county != "NA, NA") %>% 
-  dplyr::left_join(y =locations, by = c("npi" = "npi"))
-
-readr::write_csv(county_output, "~/Dropbox/workforce/Rui_Project/county_output.csv")
-#county_output <- readr::read_csv("~/Dropbox/workforce/Rui_Project/county_output.csv")
-
-dim(county_output)
-
-
-
-
-
-
-
-
-
+# (files <- list.files(path="/Volumes/Projects/Pharma_Influence/Data/Scraper"))
+# 
+# 
+# 
+# remove.packages("tidyr")
+# remove.packages("tidycensus")
+# remove.packages("broom")
+# remove.packages("ggmap")
+# remove.packages("tidyselect")
+# 
+# install.packages("purrr")
+# library(purrr)
+# require(purrr)
+# library("readr")
+# 
+# data <- files %>%
+#   purrr::map(readr::read_csv) %>%    # read in all the files individually, using
+#   # the function read_csv() from the readr package
+#   purrr::map(~ dplyr::select(name, city, state)) %>%
+#   purrr::map(exploratory::bind_rows)        # reduce with rbind into one dataframe
+# data
+# 
+# library(vroom)
+# vroom(files)
 
 
 # Adding demographics from tidycensus ----
