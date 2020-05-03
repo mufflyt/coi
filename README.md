@@ -36,6 +36,19 @@ Physician Demographics
 * [Open Payments Database, Physician Supplement File for all Program Years](https://www.cms.gov/OpenPayments/Explore-the-Data/Dataset-Downloads),  A supplementary file that displays all of the physicians indicated as recipients of payments in records reported in Open Payments. Each record includes the physicians demographic information, specialties, and license information, as well as a unique identification number (Physician Profile ID) that can be used to search for a specific physician in the general, research, and physician ownership files.  #downloaded April 30, 2020 
 * [Physician Compare National Downloadable File](https://data.medicare.gov/Physician-Compare/Physician-Compare-National-Downloadable-File/mj5m-pzi6) #downloaded April 30, 2020
 * [National Uniform Claim Committee, Taxonomy Codes](http://www.nucc.org/index.php/code-sets-mainmenu-41/provider-taxonomy-mainmenu-40/csv-mainmenu-57)
+```r 
+taxonomy_codes <- c("207V00000X", #Blank, general obgyn
+                    "207VB0002X", #Obesity Medicine
+                    "207VC0200X", #Critical Care Medicine
+                    "207VE0102X", #Reproductive Endocrinology
+                    "207VF0040X", #Female Pelvic Medicine and Reconstructive Surgery
+                    "207VG0400X", # Gynecology
+                    "207VH0002X", #Hospice and Palliative Medicine
+                    "207VM0101X", #Maternal & Fetal Medicine
+                    "207VX0000X", #Obstetrics
+                    "207VX0201X") #Gynecologic Oncology
+```
+
 [![ACOG district map](https://acogpresident.files.wordpress.com/2013/03/districtmapupdated.jpg?w=608)](https://acogpresident.files.wordpress.com/2013/03/districtmapupdated.jpg?w=608) 
 * [NPPES, NPPES Data Dissemination](https://download.cms.gov/nppes/NPI_Files.html) #downloaded April 30, 2020
 * [Federal Office of Rural Health Policy (FORHP) Data Files for rural vs. urban by zip code](https://www.hrsa.gov/sites/default/files/hrsa/ruralhealth/aboutus/definition/nonmetrocountiesandcts2016.xlsx), In the interest of making information on the FORHP Rural Areas more easily usable for Researchers and other Government Agencies, FORHP has created a crosswalk of ZIP Codes identifying the set of Non-Metro Counties and rural Census Tracts (CTs) that comprise rural areas as defined by FORHP. This Excel file contains Non-Metro Counties (Micropolitan and non-core based counties.  
