@@ -115,42 +115,6 @@ Due to the absence of a common variable, a two-step process linked Open Payment 
 ### `00_Pulling all scrapes together.R`
 **Description**: Pulls data from disparate sources to create the one true list of GOBA.  It merges all the data together that has a unique id number `userid`.  Then the data is run through the NPPES API system (not RSocrata, bummer) to find a matching NPI number because there is no matching key between the two.  I need to figure how to do multiple rounds like in the original work that Joe did.  
 
-Do several rounds of matching name to NPPES database.  These are the name variations tried:
-* two versions based on middle and alternate middle, then two versions - with and without suffix
-* full.name,1 = first, middle, last
-* full.name.2 = first, middle, last, suffix
-* full.name.3 = first, middle2, last2
-* full.name.4 = first, middle2, last2, suffix
-
-Rounds to match GOBA to NPPES:  (originally from `2_3_0_GOB_NPPES_Match.R`)
-* Round 1: match on fullname1 / fullname1 
-* Round 2: match on fullname1 / fullname2 
-* Round 3: match on fullname1 / fullname3 
-* Round 4: match on fullname1 / fullname4 
-* Round 5: match on fullname2 / fullname1
-* Round 6: match on fullname2 / fullname2
-* Round 7: match on fullname2 / fullname3
-* Round 8: match on fullname2 / fullname4 
-* Round 9: match on fullname3 / fullname1 
-* Round 10: match on fullname3 / fullname2 
-* Round 11: match on fullname3 / fullname3 
-* Round 12: match on fullname3 / fullname4 
-* Round 13: match on fullname4 / fullname1 
-* Round 14: match on fullname4 / fullname2 
-* Round 15: match on fullname4 / fullname3 
-* Round 16: match on fullname4 / fullname4 
-* Round 17: match on fullname / fullname1 
-* Round 18: match on fullname / fullname2 
-* Round 19: match on fullname / fullname3 
-* Round 20: match on fullname / fullname4 
-* Round 21: match on fullname1 / fullname1 + state
-* Round 22: match on fullname1 / fullname2 State
-* Round 23: match on fullname1 / fullname3 State
-* Round 24: match on fullname1 / fullname4 State
-* Round 25: match on fullname2 / fullname1 State
-* Round 26: match on fullname2 / fullname2 State
-*. There are more....
-
 **Use**: `source("00_Pulling all scrapes together.R")` 
 
 **Input**: Get data off all machines first.  Remember that is is named `Physician_x to y with Sys.time.csv`.  
@@ -167,6 +131,49 @@ API with Documentation:
 * Physician Compare with a helpful `RSocrata` code snippet - https://dev.socrata.com/foundry/data.medicare.gov/mj5m-pzi6
 * Open Payments Overview of all available data - https://openpaymentsdata-origin.cms.gov/dataset/Open-Payments-for-Developers/ap6w-xznw
 * Open Payments Physician Profile Data also uses `RSocrata` package - https://dev.socrata.com/foundry/openpaymentsdata.cms.gov/tr8n-5p4d
+
+Do several rounds of matching OP Physician Demographics `OP_Summary` name to NPPES database `NPPES`.  These are the name variations tried:
+* two versions based on middle and alternate middle, then two versions - with and without suffix
+
+OP Physician Demographics :
+* full.name.1 = first, middle, last
+* full.name.2 = first, middle, last, suffix
+* full.name.3 = first2, middle2, last2 (all alternative/maiden/married name options)
+* full.name.4 = first2, middle2, last2, suffix2 (all alternative options)
+* full.name.state
+
+NPPES:  
+* nppes.full.name.1
+* nppes.full.name.2
+* nppes.full.name.3 (use alternative/maiden/married name options)
+* nppes.full.name.state
+
+Rounds to match OP Physician Demographics to NPPES:  (originally from `2_3_0_GOB_NPPES_Match.R`)
+* Round 1: match on fullname1 / nppes.full.name.1 
+* Round 2: match on fullname1 / nppes.full.name.2 
+* Round 3: match on fullname1 / nppes.full.name.3 
+* Round 5: match on fullname2 / nppes.full.name.1
+* Round 6: match on fullname2 / nppes.full.name.2
+* Round 7: match on fullname2 / nppes.full.name.3
+* Round 9: match on fullname3 / nppes.full.name.1 
+* Round 10: match on fullname3 / nppes.full.name.2 
+* Round 11: match on fullname3 / nppes.full.name.3 
+* Round 13: match on fullname4 / nppes.full.name.1 
+* Round 14: match on fullname4 / nppes.full.name.2 
+* Round 15: match on fullname4 / nppes.full.name.3 
+* Round 17: match on fullname / nppes.full.name.1 
+* Round 18: match on fullname / nppes.full.name.2 
+* Round 19: match on fullname / nppes.full.name.3 
+* Round 21: match on fullname1 / nppes.full.name.1 + state
+* Round 22: match on fullname1 / nppes.full.name.2 + State
+* Round 23: match on fullname1 / nppes.full.name.2 + State
+* Round 25: match on fullname2 / nppes.full.name.1 State
+* Round 26: match on fullname2 / nppes.full.name.2 State
+*. There are more....
+
+GOBA: (no suffixes or 
+* GOBA.full.name.1
+* GOBA.full.name.state
 
 **Use**: `source("0_Data_Prep.R")` 
 
