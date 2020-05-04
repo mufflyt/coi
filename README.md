@@ -136,11 +136,11 @@ Do several rounds of matching OP Physician Demographics `OP_Summary` name to NPP
 * two versions based on middle and alternate middle, then two versions - with and without suffix
 
 OP Physician Demographics :
-* full.name.1 = first, middle, last
-* full.name.2 = first, middle, last, suffix
-* full.name.3 = first2, middle2, last2 (all alternative/maiden/married name options)
-* full.name.4 = first2, middle2, last2, suffix2 (all alternative options)
-* full.name.state
+* OP.full.name.1 = first, middle, last
+* OP.full.name.2 = first, middle, last, suffix
+* OP.full.name.3 = first2, middle2, last2 (all alternative/maiden/married name options)
+* OP.full.name.4 = first2, middle2, last2, suffix2 (all alternative options)
+* OP.full.name.state
 
 NPPES:  
 * nppes.full.name.1
@@ -149,31 +149,33 @@ NPPES:
 * nppes.full.name.state
 
 Rounds to match OP Physician Demographics to NPPES:  (originally from `2_3_0_GOB_NPPES_Match.R`)
-* Round 1: match on fullname1 / nppes.full.name.1 
-* Round 2: match on fullname1 / nppes.full.name.2 
-* Round 3: match on fullname1 / nppes.full.name.3 
-* Round 5: match on fullname2 / nppes.full.name.1
-* Round 6: match on fullname2 / nppes.full.name.2
-* Round 7: match on fullname2 / nppes.full.name.3
-* Round 9: match on fullname3 / nppes.full.name.1 
-* Round 10: match on fullname3 / nppes.full.name.2 
-* Round 11: match on fullname3 / nppes.full.name.3 
-* Round 13: match on fullname4 / nppes.full.name.1 
-* Round 14: match on fullname4 / nppes.full.name.2 
-* Round 15: match on fullname4 / nppes.full.name.3 
-* Round 17: match on fullname / nppes.full.name.1 
-* Round 18: match on fullname / nppes.full.name.2 
-* Round 19: match on fullname / nppes.full.name.3 
-* Round 21: match on fullname1 / nppes.full.name.1 + state
-* Round 22: match on fullname1 / nppes.full.name.2 + State
-* Round 23: match on fullname1 / nppes.full.name.2 + State
-* Round 25: match on fullname2 / nppes.full.name.1 State
-* Round 26: match on fullname2 / nppes.full.name.2 State
+* Round 1: match on OP.full.name.1 / nppes.full.name.1 
+* Round 2: match on OP.full.name.1 / nppes.full.name.2 
+* Round 3: match on OP.full.name.1 / nppes.full.name.3 
+* Round 5: match on OP.full.name.2 / nppes.full.name.1
+* Round 6: match on OP.full.name.2 / nppes.full.name.2
+* Round 7: match on OP.full.name.2 / nppes.full.name.3
+* Round 9: match on OP.full.name.3 / nppes.full.name.1 
+* Round 10: match on OP.full.name.3 / nppes.full.name.2 
+* Round 11: match on OP.full.name.3 / nppes.full.name.3 
+* Round 13: match on OP.full.name.4 / nppes.full.name.1 
+* Round 14: match on OP.full.name.4 / nppes.full.name.2 
+* Round 15: match on OP.full.name.4 / nppes.full.name.3 
+* Round 17: match on OP.full.name.1 / nppes.full.name.1 
+* Round 18: match on OP.full.name.1 / nppes.full.name.2 
+* Round 19: match on OP.full.name.1 / nppes.full.name.3 
+* Round 21: match on OP.full.name.1 / nppes.full.name.1 + state
+* Round 22: match on OP.full.name.1 / nppes.full.name.2 + State
+* Round 23: match on OP.full.name.1 / nppes.full.name.2 + State
+* Round 25: match on OP.full.name.2 / nppes.full.name.1 State
+* Round 26: match on OP.full.name.2 / nppes.full.name.2 State
 *. There are more....
 
 GOBA: (no suffixes or 
 * GOBA.full.name.1
 * GOBA.full.name.state
+
+
 
 **Use**: `source("0_Data_Prep.R")` 
 
