@@ -90,6 +90,7 @@ install.packages('reshape')
 install.packages('reshape2')
 install.packages("tidyverse")
 install.packages('humaniformat')
+install.packages("RSocrata")
 
 # Loading
 library("sqldf")
@@ -101,6 +102,7 @@ library('reshape')
 library('reshape2')
 library("tidyverse")
 library("humaniformat")
+library("RSocrata")
 ```
 
 ## Scripts: purpose for searching for NPPES
