@@ -119,8 +119,8 @@ Do several rounds of matching name to NPPES database.  These are the name variat
 * two versions based on middle and alternate middle, then two versions - with and without suffix
 * full.name,1 = first, middle, last
 * full.name.2 = first, middle, last, suffix
-* full.name.3 = first, middle2, last
-* full.name.4 = first, middle2, last, suffix
+* full.name.3 = first, middle2, last2
+* full.name.4 = first, middle2, last2, suffix
 
 Rounds to match GOBA to NPPES:  (originally from `2_3_0_GOB_NPPES_Match.R`)
 * Round 1: match on fullname1 / fullname1 
