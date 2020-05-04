@@ -36,6 +36,19 @@ Physician Demographics
 * [Open Payments Database, Physician Supplement File for all Program Years](https://www.cms.gov/OpenPayments/Explore-the-Data/Dataset-Downloads),  A supplementary file that displays all of the physicians indicated as recipients of payments in records reported in Open Payments. Each record includes the physicians demographic information, specialties, and license information, as well as a unique identification number (Physician Profile ID) that can be used to search for a specific physician in the general, research, and physician ownership files.  #downloaded April 30, 2020 
 * [Physician Compare National Downloadable File](https://data.medicare.gov/Physician-Compare/Physician-Compare-National-Downloadable-File/mj5m-pzi6) #downloaded April 30, 2020
 * [National Uniform Claim Committee, Taxonomy Codes](http://www.nucc.org/index.php/code-sets-mainmenu-41/provider-taxonomy-mainmenu-40/csv-mainmenu-57)
+```r 
+taxonomy_codes <- c("207V00000X", #Blank, general obgyn
+                    "207VB0002X", #Obesity Medicine
+                    "207VC0200X", #Critical Care Medicine
+                    "207VE0102X", #Reproductive Endocrinology
+                    "207VF0040X", #Female Pelvic Medicine and Reconstructive Surgery
+                    "207VG0400X", # Gynecology
+                    "207VH0002X", #Hospice and Palliative Medicine
+                    "207VM0101X", #Maternal & Fetal Medicine
+                    "207VX0000X", #Obstetrics
+                    "207VX0201X") #Gynecologic Oncology
+```
+
 [![ACOG district map](https://acogpresident.files.wordpress.com/2013/03/districtmapupdated.jpg?w=608)](https://acogpresident.files.wordpress.com/2013/03/districtmapupdated.jpg?w=608) 
 * [NPPES, NPPES Data Dissemination](https://download.cms.gov/nppes/NPI_Files.html) #downloaded April 30, 2020
 * [Federal Office of Rural Health Policy (FORHP) Data Files for rural vs. urban by zip code](https://www.hrsa.gov/sites/default/files/hrsa/ruralhealth/aboutus/definition/nonmetrocountiesandcts2016.xlsx), In the interest of making information on the FORHP Rural Areas more easily usable for Researchers and other Government Agencies, FORHP has created a crosswalk of ZIP Codes identifying the set of Non-Metro Counties and rural Census Tracts (CTs) that comprise rural areas as defined by FORHP. This Excel file contains Non-Metro Counties (Micropolitan and non-core based counties.  
@@ -76,6 +89,7 @@ install.packages("Hmisc")
 install.packages('reshape')
 install.packages('reshape2')
 install.packages("tidyverse")
+install.packages('humaniformat')
 
 # Loading
 library("sqldf")
@@ -86,6 +100,7 @@ library("Hmisc")
 library('reshape')
 library('reshape2')
 library("tidyverse")
+library("humaniformat")
 ```
 
 ## Scripts: purpose for searching for NPPES
@@ -217,6 +232,15 @@ Round 2:
 ### Adding Physician Demographics
 Covariables included gender, American Board of Obstetrics and Gynecology-approved (ABOG) subspecialty (general OBGYNs, female pelvic medicine and reconstructive surgeons, gynecologic oncologists, maternal-fetal medicine specialists, and reproductive endocrinology and infertility specialists), ACOG region, overall physician volume of prescribing and prescribing volume in the same therapeutic class.  The overall prescribing volume of a physician was calculated as the total days’ supply of all drugs of any category prescribed by that physician.  A log of overall prescribing volume of a physician and the therapeutic class prescribing volume were used for improved model specifications.  Secondary analyses tested the association of payment from the manufacturer of the selected drug with the primary outcome. 
 
+### GOBA
+**Description**: Pulls GOBA data from multiple time frames into one csv file that can be used.  Raw data are stored at `Dropbox, workforce, scraper, Scraper_results_2019` and are linked by URL to the code.  
+
+**Use**: `source("pulling_all_scrapes_together.R")` 
+
+**Output**:  
+**Output**:  
+
+
 ### `GOBA_Compare.R`
 
 **Description**: Takes a file called `GOBA_unique.csv` of NPI numbers and merges it withe demographic data from `Physician Compare`.  Most importantly, `GOBA_unique.csv` can be matched to get subspecialties `GOBA_Cert`from the NPI.  
@@ -224,11 +248,16 @@ Covariables included gender, American Board of Obstetrics and Gynecology-approve
 
 ### `API access for NPPES.R`
 
-**Description**: Takes a csv file and searches the NPPES database. I have a list of names that I would like to search for their NPI number using the NPI API (https://npiregistry.cms.hhs.gov/registry/help-api).  NPI number is a unique identifier number.  There are about 45,000 names that I want to see if there is a match in the csv file to the API.  There is documentation of the API listed above and this is also helpful (https://npiregistry.cms.hhs.gov/api/demo?version=2.1).  My goal is to get the correct NPI and all data as possible from the API.  The example API call would be: https://npiregistry.cms.hhs.gov/api/?number=&enumeration_type=NPI-1&taxonomy_description=&first_name=kale&use_first_name_alias=&last_name=turner&organization_name=&address_purpose=&city=&state=&postal_code=&country_code=&limit=&skip=&version=2.1.  Ultimately I want to use the location data for geocoding and to create a map.   
+**Description**: Takes a csv file of `first_name` and `last_name` and searches the NPPES database for an NPI number. Instead of having complicated 12 round joins with PCND I wanted to try this NPPES API to see if the majority of the work could be done here. 
+
+I have a list of names that I would like to search for their NPI number using the NPI API (https://npiregistry.cms.hhs.gov/registry/help-api).  NPI number is a unique identifier number.  There are about 45,000 names that I want to see if there is a match in the csv file to the API.  There is documentation of the API listed above and this is also helpful (https://npiregistry.cms.hhs.gov/api/demo?version=2.1).  My goal is to get the correct NPI and all data as possible from the API.  The example API call would be: https://npiregistry.cms.hhs.gov/api/?number=&enumeration_type=NPI-1&taxonomy_description=&first_name=kale&use_first_name_alias=&last_name=turner&organization_name=&address_purpose=&city=&state=&postal_code=&country_code=&limit=&skip=&version=2.1.  Ultimately I want to use the retrieved location data for geocoding and to create a map.   
 
 **Use**: `source("API access for NPPES.R")` 
 
-**Output**: Address output.  
+**Output**: `~/Dropbox/Pharma_Influence/Data/NPPES_API_Output.csv`
+
+[![API, how does it work](https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.pinimg.com%2F736x%2Ff8%2F02%2Fcc%2Ff802cc6d8fbc9e3f4a9223eb1d965275.jpg&f=1&nofb=1)](https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.pinimg.com%2F736x%2Ff8%2F02%2Fcc%2Ff802cc6d8fbc9e3f4a9223eb1d965275.jpg&f=1&nofb=1)
+
 
 ### Code fragment that we can use to create a map
 I had this from a separate project that I had done. I geocoded the street address, city, state of each FPMRS into lat and long using the Google geocoding API.  Zip codes were challenging to use and the street address, city, state information was accurate without zip codes.  Any non-matches were omitted.  These data were written to a file called locations.csv.  Many thanks to Jesse Adler for the great code.  I need to put google key.  
