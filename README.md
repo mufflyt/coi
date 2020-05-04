@@ -110,12 +110,48 @@ library("humaniformat")
 Due to the absence of a common variable, a two-step process linked Open Payment with Provider Utilization and Payment Data Public Use File. First, the Open Payments Database was linked to National Provider Identification database based on the physicians first and last name, city and state. Then Medicare Provider Utilization and Payment Data Public Use File was linked using the common variable NPI.  Prescriber groups that did not have prescriptive authority or were not eligible for payments from the pharmaceutical industry (e.g., nurse practitioners, physician assistants, and pharmacists) also were excluded. The final analytic file included physician name, gender, address, city, state, zip code, physician specialty, drug name, total drug cost, total days’ supply for the drug, total amount of payments received and amount of payment received by individual manufacturers.  
 
 ### Matching Physician Names to Open Payments Data Process
-### `Pulling all scrapes together.R`
+### `00_Pulling all scrapes together.R`
 **Description**: Pulls data from disparate sources to create the one true list of GOBA.  It merges all the data together that has a unique id number `userid`.  Then the data is run through the NPPES API system (not RSocrata, bummer) to find a matching NPI number because there is no matching key between the two.  I need to figure how to do multiple rounds like in the original work that Joe did.  
 
-**Use**: `source("Pulling all scrapes together.R")` 
+Do several rounds of matching name to NPPES database.  These are the name variations tried:
+* two versions based on middle and alternate middle, then two versions - with and without suffix
+* full.name,1 = first, middle, last
+* full.name.2 = first, middle, last, suffix
+* full.name.3 = first, middle2, last
+* full.name.4 = first, middle2, last, suffix
 
-**Input**: Get data of all machines first.  Remember that is is named `Physician_x to y with Sys.time.csv`.  
+Rounds to match GOBA to NPPES:  (originally from `2_3_0_GOB_NPPES_Match.R`)
+* Round 1: match on fullname1 / fullname1 
+* Round 2: match on fullname1 / fullname2 
+* Round 3: match on fullname1 / fullname3 
+* Round 4: match on fullname1 / fullname4 
+* Round 5: match on fullname2 / fullname1
+* Round 6: match on fullname2 / fullname2
+* Round 7: match on fullname2 / fullname3
+* Round 8: match on fullname2 / fullname4 
+* Round 9: match on fullname3 / fullname1 
+* Round 10: match on fullname3 / fullname2 
+* Round 11: match on fullname3 / fullname3 
+* Round 12: match on fullname3 / fullname4 
+* Round 13: match on fullname4 / fullname1 
+* Round 14: match on fullname4 / fullname2 
+* Round 15: match on fullname4 / fullname3 
+* Round 16: match on fullname4 / fullname4 
+* Round 17: match on fullname / fullname1 
+* Round 18: match on fullname / fullname2 
+* Round 19: match on fullname / fullname3 
+* Round 20: match on fullname / fullname4 
+* Round 21: match on fullname1 / fullname1 + state
+* Round 22: match on fullname1 / fullname2 State
+* Round 23: match on fullname1 / fullname3 State
+* Round 24: match on fullname1 / fullname4 State
+* Round 25: match on fullname2 / fullname1 State
+* Round 26: match on fullname2 / fullname2 State
+*. There are more....
+
+**Use**: `source("00_Pulling all scrapes together.R")` 
+
+**Input**: Get data off all machines first.  Remember that is is named `Physician_x to y with Sys.time.csv`.  
 
 **Output**: 
 `readr::write_csv("~/Dropbox/Pharma_Influence/Data/GOBA.csv")`
