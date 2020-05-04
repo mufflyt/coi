@@ -110,13 +110,29 @@ library("humaniformat")
 Due to the absence of a common variable, a two-step process linked Open Payment with Provider Utilization and Payment Data Public Use File. First, the Open Payments Database was linked to National Provider Identification database based on the physicians first and last name, city and state. Then Medicare Provider Utilization and Payment Data Public Use File was linked using the common variable NPI.  Prescriber groups that did not have prescriptive authority or were not eligible for payments from the pharmaceutical industry (e.g., nurse practitioners, physician assistants, and pharmacists) also were excluded. The final analytic file included physician name, gender, address, city, state, zip code, physician specialty, drug name, total drug cost, total days’ supply for the drug, total amount of payments received and amount of payment received by individual manufacturers.  
 
 ### Matching Physician Names to Open Payments Data Process
+### `Pulling all scrapes together.R`
+**Description**: Pulls data from disparate sources to create the one true list of GOBA.  It merges all the data together that has a unique id number `userid`.  Then the data is run through the NPPES API system (not RSocrata, bummer) to find a matching NPI number because there is no matching key between the two.  I need to figure how to do multiple rounds like in the original work that Joe did.  
+
+**Use**: `source("Pulling all scrapes together.R")` 
+
+**Input**: Get data of all machines first.  Remember that is is named `Physician_x to y with Sys.time.csv`.  
+
+**Output**: 
+`readr::write_csv("~/Dropbox/Pharma_Influence/Data/GOBA.csv")`
+
+
 ### `0_Data_Prep.R`
 
-**Description**: First thing to run when starting.  It installs and loads the libraries.  This takes hours....  After that it does some significant data cleaning and writes a file to the same folder with the name"_2".  
+**Description**: First thing to run when starting.  It installs and loads the libraries.  This takes hours....  After that it does some significant data cleaning and writes a file to the same folder with the name underscore 2.  On May 3, 2020 I had the nutz idea of trying to get the most recent data using APIs instead of downloading the individual files.  APIs are capable of providing data that is refreshed much more often than you can achieve with pulling, cleaning, and loading files.  This will allow for less storage of data.  The API also pulls from the "source" so we are always getting the straight data.  That being said it takes forever to get the data from the APIs.  
+
+API with Documentation:
+* Physician Compare with a helpful `RSocrata` code snippet - https://dev.socrata.com/foundry/data.medicare.gov/mj5m-pzi6
+* Open Payments Overview of all available data - https://openpaymentsdata-origin.cms.gov/dataset/Open-Payments-for-Developers/ap6w-xznw
+* Open Payments Physician Profile Data also uses `RSocrata` package - https://dev.socrata.com/foundry/openpaymentsdata.cms.gov/tr8n-5p4d
 
 **Use**: `source("0_Data_Prep.R")` 
 
-**Input**: None.  This takes raw data from the external hard drives `/Volumes/Pharma_Influence/Data` loads it and selects only the columns needed.  This is especially important with the NPPES file.  It is HUGE!  I cleaned the GOBA_unique.csv file making it unique NPI and GOBA_ID numbers.  I also added the ACOG districts.  
+**Input**: None.  This takes raw data from the APIS and originally external hard drives `/Volumes/Pharma_Influence/Data` loads it and selects only the columns needed.  This is especially important with the NPPES file.  It is HUGE!  I cleaned the GOBA_unique.csv file making it unique NPI and GOBA_ID numbers.  I also added the ACOG districts.  
 
 **Output**: 
 readr::write_csv(PCND, "/Volumes/Projects/Pharma_Influence/Data/Physician_Compare/Physician_Compare_National_Downloadable_File2.csv"
@@ -124,7 +140,7 @@ readr::write_csv(PCND, "/Volumes/Projects/Pharma_Influence/Data/Physician_Compar
 
 
 ### `1_Match PCND with OP.R`
-**Description**: These files are numbered in ordered of how they are to be used "1_", then "2_", then "3_".Take the Physician_Compare_National_Downloadable_File.csv (abbreviated as PCND) and filters out APO/territories and selects the specialty of interest as `c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))` for primary and secondary specialties using the baller move of '|'.  The SQL codes removes duplicate NPI numbers.  Open Payment data is loaded from `OP_PH_PRFL_SPLMTL_P06282019.csv`.  All data is changed to lower case and `!=" "`.  Then the merge process starts based on 
+**Description**: The goal of this file and the `1_Match_OP_NPPES_PCND.R` are to create a crosswalk between NPI and PPI numbers. This has nothing to do with payments and only uses the Physician summary data from open payments. These files are numbered in ordered of how they are to be used "1_", then "2_", then "3_".Take the Physician_Compare_National_Downloadable_File.csv (abbreviated as PCND) and filters out APO/territories and selects the specialty of interest as `c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))` for primary and secondary specialties using the baller move of '|'.  The SQL codes removes duplicate NPI numbers.  Open Payment data is loaded from `OP_PH_PRFL_SPLMTL_P06282019.csv`.  All data is changed to lower case and `!=" "`.  Then the merge process starts based on 
 * first, last, city, state creates matching payments (MP).  
 * check for matches using address
 Counts are taken throughout the project.  Of note, `Physician_Profile_ID` is a unique identificaiton number for Open Payments doctors.  
