@@ -45,7 +45,7 @@ readr::write_rds(NPPES, "/Volumes/Projects/Pharma_Influence/Data/output_of_1_Mat
 # Load OP data ********************************************************************************************************************
 # *********************************************************************************************************************************
 
-OP <- read.csv("/Volumes/Projects/Pharma_Influence/Data/Open Payments/OP_PH_PRFL_SPLMTL_P01172020.csv", stringsAsFactors=FALSE)
+OP <- read.csv("/Volumes/Projects/Pharma_Influence/Data/Open Payments/OP_PH_PRFL_SPLMTL_P01172020_2.csv", stringsAsFactors=FALSE)
 #OP <- read.csv("D:/muffly/data/Originals/match_data/OP_PH_PRFL_SPLMTL_P06292018_demo.csv", stringsAsFactors=FALSE)
 
 OP$Physician_Profile_First_Name = tolower(OP$Physician_Profile_First_Name)
