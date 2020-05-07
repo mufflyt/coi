@@ -91,6 +91,7 @@ install.packages('reshape2')
 install.packages("tidyverse")
 install.packages('humaniformat')
 install.packages("RSocrata")
+install.packages("exploratory")
 
 # Loading
 library("sqldf")
@@ -103,6 +104,7 @@ library('reshape2')
 library("tidyverse")
 library("humaniformat")
 library("RSocrata")
+library("exploratory")
 ```
 
 ## Scripts: purpose for searching for NPPES
@@ -125,7 +127,7 @@ Due to the absence of a common variable, a two-step process linked Open Payment 
 
 ### `0_Data_Prep.R`
 
-**Description**: First thing to run when starting.  It installs and loads the libraries.  This takes hours....  After that it does some significant data cleaning and writes a file to the same folder with the name underscore 2.  On May 3, 2020 I had the nutz idea of trying to get the most recent data using APIs instead of downloading the individual files.  APIs are capable of providing data that is refreshed much more often than you can achieve with pulling, cleaning, and loading files.  This will allow for less storage of data.  The API also pulls from the "source" so we are always getting the straight data.  That being said it takes forever to get the data from the APIs.  
+**Description**: First thing to run when starting.  THSI SHOULD RUN OVERNIGHT.  It installs and loads the libraries.  This takes hours....  After that it does some significant data cleaning and writes a file to the same folder with the name underscore 2.  On May 3, 2020 I had the nutz idea of trying to get the most recent data using APIs instead of downloading the individual files.  APIs are capable of providing data that is refreshed much more often than you can achieve with pulling, cleaning, and loading files.  This will allow for less storage of data.  The API also pulls from the "source" so we are always getting the straight data.  That being said it takes forever to get the data from the APIs.  
 
 API with Documentation:
 * Physician Compare with a helpful `RSocrata` code snippet - https://dev.socrata.com/foundry/data.medicare.gov/mj5m-pzi6
@@ -164,7 +166,7 @@ Rounds to match OP Physician Demographics to NPPES:  (originally from `2_3_0_GOB
 * Round 17: match on OP.full.name.1 / nppes.full.name.1 
 * Round 18: match on OP.full.name.1 / nppes.full.name.2 
 * Round 19: match on OP.full.name.1 / nppes.full.name.3 
-* Round 21: match on OP.full.name.1 / nppes.full.name.1 + state
+* Round 21: match on OP.full.name.1 / nppes.full.name.1 + state #did not do the state
 * Round 22: match on OP.full.name.1 / nppes.full.name.2 + State
 * Round 23: match on OP.full.name.1 / nppes.full.name.2 + State
 * Round 25: match on OP.full.name.2 / nppes.full.name.1 State
