@@ -107,6 +107,12 @@ library("RSocrata")
 library("exploratory")
 ```
 
+## Matching Overview
+* NPPES - NPI given
+* PCND - NPI given
+* OP - NO NPI
+* GOBA - NO NPI
+
 ## Scripts: purpose for searching for NPPES
 ### Path:  `/Pharma_Influence/Guido_Working_file`
 
@@ -189,7 +195,25 @@ readr::write_csv(PCND, "/Volumes/Projects/Pharma_Influence/Data/Physician_Compar
 
 
 ### `1_Match PCND with OP.R`
-**Description**: The goal of this file and the `1_Match_OP_NPPES_PCND.R` are to create a crosswalk between NPI and PPI numbers. This has nothing to do with payments and only uses the Physician summary data from open payments. These files are numbered in ordered of how they are to be used "1_", then "2_", then "3_".Take the Physician_Compare_National_Downloadable_File.csv (abbreviated as PCND) and filters out APO/territories and selects the specialty of interest as `c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))` for primary and secondary specialties using the baller move of '|'.  The SQL codes removes duplicate NPI numbers.  Open Payment data is loaded from `OP_PH_PRFL_SPLMTL_P06282019.csv`.  All data is changed to lower case and `!=" "`.  Then the merge process starts based on 
+**Description**: The goal of this file and the `1_Match_OP_NPPES_PCND.R` are to create a crosswalk between NPI and PPI numbers. This has nothing to do with payments and only uses the Physician summary data from open payments. 
+
+Steps to get ready for matching the full names:
+* keep only unique NPI numbers
+* Change first, middle, last names, and alternative names to title text
+* Change NA to "" so no names are created as Tyler NA
+* Impute NA to "" for middle names so don't get Tyler NA Muffly
+* str_clean all name fields
+* Remove all punctuation from state name
+* Filter to include only states + DC + PR: 
+* keep only unique NPI numbers again
+* Split names into: first, middle, last, suffix
+* Unite to create: full.name.1 that is first, middle, last
+* Unite to create: full.name. that is first, middle, last, suffix (II, III, Jr.). There were no suffixes or alternative names for PCND
+* Unite to create: full.name. that is other first, other middle, other last name
+* Unite to create: full.name.2 that is first, middle, last, state name
+* Unite to create: full.name.3 that is first line address, state name, last name (I suspect that PCND and NPPES use same address)
+
+These files are numbered in ordered of how they are to be used "1_", then "2_", then "3_".Take the Physician_Compare_National_Downloadable_File.csv (abbreviated as PCND) and filters out APO/territories and selects the specialty of interest as `c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))` for primary and secondary specialties using the baller move of '|'.  The SQL codes removes duplicate NPI numbers.  Open Payment data is loaded from `OP_PH_PRFL_SPLMTL_P06282019.csv`.  All data is changed to lower case and `!=" "`.  Then the merge process starts based on 
 * first, last, city, state creates matching payments (MP).  
 * check for matches using address
 Counts are taken throughout the project.  Of note, `Physician_Profile_ID` is a unique identificaiton number for Open Payments doctors.  
