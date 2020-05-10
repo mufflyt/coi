@@ -107,6 +107,12 @@ library("RSocrata")
 library("exploratory")
 ```
 
+## Matching Overview
+* NPPES - NPI given
+* PCND - NPI given
+* OP - NO NPI
+* GOBA - NO NPI
+
 ## Scripts: purpose for searching for NPPES
 ### Path:  `/Pharma_Influence/Guido_Working_file`
 
@@ -127,7 +133,7 @@ Due to the absence of a common variable, a two-step process linked Open Payment 
 
 ### `0_Data_Prep.R`
 
-**Description**: First thing to run when starting.  THSI SHOULD RUN OVERNIGHT.  It installs and loads the libraries.  This takes hours....  After that it does some significant data cleaning and writes a file to the same folder with the name underscore 2.  On May 3, 2020 I had the nutz idea of trying to get the most recent data using APIs instead of downloading the individual files.  APIs are capable of providing data that is refreshed much more often than you can achieve with pulling, cleaning, and loading files.  This will allow for less storage of data.  The API also pulls from the "source" so we are always getting the straight data.  That being said it takes forever to get the data from the APIs.  
+**Description**: First thing to run when starting.  THIS SHOULD RUN OVERNIGHT.  It installs and loads the libraries.  This takes hours....  After that it does some significant data cleaning and writes a file to the same folder with the name underscore 2.  On May 3, 2020 I had the nutz idea of trying to get the most recent data using APIs instead of downloading the individual files.  APIs are capable of providing data that is refreshed much more often than you can achieve with pulling, cleaning, and loading files.  This will allow for less storage of data.  The API also pulls from the "source" so we are always getting the straight data.  That being said it takes forever to get the data from the APIs so I switched back to files saved to an external drive.  
 
 API with Documentation:
 * Physician Compare with a helpful `RSocrata` code snippet - https://dev.socrata.com/foundry/data.medicare.gov/mj5m-pzi6
@@ -177,8 +183,6 @@ GOBA: (no suffixes or
 * GOBA.full.name.1
 * GOBA.full.name.state
 
-
-
 **Use**: `source("0_Data_Prep.R")` 
 
 **Input**: None.  This takes raw data from the APIS and originally external hard drives `/Volumes/Pharma_Influence/Data` loads it and selects only the columns needed.  This is especially important with the NPPES file.  It is HUGE!  I cleaned the GOBA_unique.csv file making it unique NPI and GOBA_ID numbers.  I also added the ACOG districts.  
@@ -189,7 +193,25 @@ readr::write_csv(PCND, "/Volumes/Projects/Pharma_Influence/Data/Physician_Compar
 
 
 ### `1_Match PCND with OP.R`
-**Description**: The goal of this file and the `1_Match_OP_NPPES_PCND.R` are to create a crosswalk between NPI and PPI numbers. This has nothing to do with payments and only uses the Physician summary data from open payments. These files are numbered in ordered of how they are to be used "1_", then "2_", then "3_".Take the Physician_Compare_National_Downloadable_File.csv (abbreviated as PCND) and filters out APO/territories and selects the specialty of interest as `c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))` for primary and secondary specialties using the baller move of '|'.  The SQL codes removes duplicate NPI numbers.  Open Payment data is loaded from `OP_PH_PRFL_SPLMTL_P06282019.csv`.  All data is changed to lower case and `!=" "`.  Then the merge process starts based on 
+**Description**: The goal of this file and the `1_Match_OP_NPPES_PCND.R` are to create a crosswalk between NPI and PPI numbers. This has nothing to do with payments and only uses the Physician summary data from open payments. 
+
+Steps to get ready for matching the full names:
+* keep only unique NPI numbers
+* Change first, middle, last names, and alternative names to title text
+* Change NA to "" so no names are created as Tyler NA
+* Impute NA to "" for middle names so don't get Tyler NA Muffly
+* str_clean all name fields
+* Remove all punctuation from state name
+* Filter to include only states + DC + PR: 
+* keep only unique NPI numbers again
+* Split names into: first, middle, last, suffix
+* Unite to create: full.name.1 that is first, middle, last
+* Unite to create: full.name. that is first, middle, last, suffix (II, III, Jr.). There were no suffixes or alternative names for PCND
+* Unite to create: full.name. that is other first, other middle, other last name
+* Unite to create: full.name.2 that is first, middle, last, state name
+* Unite to create: full.name.3 that is first line address, state name, last name (I suspect that PCND and NPPES use same address)
+
+These files are numbered in ordered of how they are to be used "1_", then "2_", then "3_".Take the Physician_Compare_National_Downloadable_File.csv (abbreviated as PCND) and filters out APO/territories and selects the specialty of interest as `c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))` for primary and secondary specialties using the baller move of '|'.  The SQL codes removes duplicate NPI numbers.  Open Payment data is loaded from `OP_PH_PRFL_SPLMTL_P06282019.csv`.  All data is changed to lower case and `!=" "`.  Then the merge process starts based on 
 * first, last, city, state creates matching payments (MP).  
 * check for matches using address
 Counts are taken throughout the project.  Of note, `Physician_Profile_ID` is a unique identificaiton number for Open Payments doctors.  
@@ -204,7 +226,9 @@ Counts are taken throughout the project.  Of note, `Physician_Profile_ID` is a u
 
 ### `1_Match_OP_NPPES_PCND.R`
 
-**Description**: Loads NPPES data (mainly demographics) and Open Payments data.  Joe used a great combination of Open Payments  names and NPPES names.  He even included the alternative last names.  Wow!  Baller!  Then he mixed the NPPES addressed with names.  I have to learn SQL code and how to do this for sure! Takes many hours to run given the single core nature of R.  
+**Description**: Loads NPPES data (mainly demographics) and Open Payments data.  Joe used a great combination of Open Payments  names and NPPES names.  He even included the alternative last names.  Wow!  Baller!  Then he mixed the NPPES addressed with names.  I have to learn SQL code/sqldf and how to do this for sure! Takes many hours to run given the single core nature of R.  
+
+This is a great video on sqldf: https://youtu.be/s2oTUsAJfjI
 
 Matching via multiple rounds:
 * Round 1: First, middle, last, suffix, address, city, state
