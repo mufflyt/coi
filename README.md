@@ -133,7 +133,7 @@ Due to the absence of a common variable, a two-step process linked Open Payment 
 
 ### `0_Data_Prep.R`
 
-**Description**: First thing to run when starting.  THSI SHOULD RUN OVERNIGHT.  It installs and loads the libraries.  This takes hours....  After that it does some significant data cleaning and writes a file to the same folder with the name underscore 2.  On May 3, 2020 I had the nutz idea of trying to get the most recent data using APIs instead of downloading the individual files.  APIs are capable of providing data that is refreshed much more often than you can achieve with pulling, cleaning, and loading files.  This will allow for less storage of data.  The API also pulls from the "source" so we are always getting the straight data.  That being said it takes forever to get the data from the APIs.  
+**Description**: First thing to run when starting.  THIS SHOULD RUN OVERNIGHT.  It installs and loads the libraries.  This takes hours....  After that it does some significant data cleaning and writes a file to the same folder with the name underscore 2.  On May 3, 2020 I had the nutz idea of trying to get the most recent data using APIs instead of downloading the individual files.  APIs are capable of providing data that is refreshed much more often than you can achieve with pulling, cleaning, and loading files.  This will allow for less storage of data.  The API also pulls from the "source" so we are always getting the straight data.  That being said it takes forever to get the data from the APIs so I switched back to files saved to an external drive.  
 
 API with Documentation:
 * Physician Compare with a helpful `RSocrata` code snippet - https://dev.socrata.com/foundry/data.medicare.gov/mj5m-pzi6
@@ -183,8 +183,6 @@ GOBA: (no suffixes or
 * GOBA.full.name.1
 * GOBA.full.name.state
 
-
-
 **Use**: `source("0_Data_Prep.R")` 
 
 **Input**: None.  This takes raw data from the APIS and originally external hard drives `/Volumes/Pharma_Influence/Data` loads it and selects only the columns needed.  This is especially important with the NPPES file.  It is HUGE!  I cleaned the GOBA_unique.csv file making it unique NPI and GOBA_ID numbers.  I also added the ACOG districts.  
@@ -228,7 +226,9 @@ Counts are taken throughout the project.  Of note, `Physician_Profile_ID` is a u
 
 ### `1_Match_OP_NPPES_PCND.R`
 
-**Description**: Loads NPPES data (mainly demographics) and Open Payments data.  Joe used a great combination of Open Payments  names and NPPES names.  He even included the alternative last names.  Wow!  Baller!  Then he mixed the NPPES addressed with names.  I have to learn SQL code and how to do this for sure! Takes many hours to run given the single core nature of R.  
+**Description**: Loads NPPES data (mainly demographics) and Open Payments data.  Joe used a great combination of Open Payments  names and NPPES names.  He even included the alternative last names.  Wow!  Baller!  Then he mixed the NPPES addressed with names.  I have to learn SQL code/sqldf and how to do this for sure! Takes many hours to run given the single core nature of R.  
+
+This is a great video on sqldf: https://youtu.be/s2oTUsAJfjI
 
 Matching via multiple rounds:
 * Round 1: First, middle, last, suffix, address, city, state
