@@ -21,8 +21,10 @@ library("janitor")
 #Physician Compare ----
 #https://data.medicare.gov/Physician-Compare/Physician-Compare-National-Downloadable-File/mj5m-pzi6
 #The API is nice because you do not have to store a huge file or take the time to download it.  
+
+#Excellent trick to test huge files with read.csv , nrows = 10000
 PCND1 <- 
-  read_csv("/Volumes/Projects/Pharma_Influence/Data/Physician_Compare/Physician_Compare_National_Downloadable_File.csv") %>%
+  read.csv("/Volumes/Projects/Pharma_Influence/Data/Physician_Compare/Physician_Compare_National_Downloadable_File.csv") %>%
   # read.socrata(
   #   "https://data.medicare.gov/resource/mj5m-pzi6.json",
   #   app_token = "vZUBqP0g0i4Lr3vXOqNxCjzyL",
@@ -47,7 +49,7 @@ PCND1 <-
   tidyr::unite(full.name.3, Line.1.Street.Address, State, Last.Name, sep = " ", remove = FALSE, na.rm = FALSE) %>%
   dplyr::mutate(Line.1.Street.Address = str_to_title(Line.1.Street.Address)) %>%
   tidyr::unite(full.name.5, Line.1.Street.Address, State, Last.Name, sep = " ", remove = FALSE, na.rm = FALSE) %>%
-  readr::write_csv("/Volumes/Projects/Pharma_Influence/Data/Physician_Compare/Physician_Compare_National_Downloadable_File2.csv")  #fucking finally
+  readr::write_csv("/Volumes/Projects/Pharma_Influence/Data/Physician_Compare/Physician_Compare_National_Downloadable_File2.csv")  
 
 
 taxonomy_codes <- c("207V00000X", #Blank, general obgyn
@@ -92,7 +94,7 @@ dplyr::filter(Provider.Business.Practice.Location.Address.State.Name %nin% c("ZZ
 
 #GOBA ----
 #Prep GOBA_unique.csv for use with demographics
-GOBA_unique <- read.csv("~/Dropbox/Pharma_Influence/Data/GOBA.csv", stringsAsFactors = FALSE) %>%
+GOBA_unique <- read.csv("~/Dropbox/Pharma_Influence/Data/GOBA.csv", stringsAsFactors = FALSE, nrows = 1000) %>%
   separate(name, into = c("full_name", "degree"), sep = "\\s*\\,\\s*", convert = TRUE) %>%
   mutate(degree = str_remove_all(degree, "[[:punct:]]+")) %>%
   mutate(degree = recode(degree, Jr = "NA", MB = "NA", II = "NA", III = "NA", IV = "NA", Md = "MD", Dr = "NA", Sr = "NA", PhD = "NA", Lambers = "NA", MS = "NA", `MD MSPH` = "NA", `MD PhD` = "MD", `MD COL` = "MD", `M D` = "MD", Demott = "NA", JD = "NA", Mrs = "NA", MPH = "NA")) %>%
@@ -131,7 +133,8 @@ rural_zip_codes <- readxl::read_xlsx("/Volumes/Projects/Pharma_Influence/Data/Ru
   dplyr::select(-CT, -`RUCA 2010`, -Memo) %>%
   dplyr::rename(State = ST, Zip_Code = `CTY FIPS`) %>%
   distinct(Zip_Code, .keep_all = TRUE) %>%
-  mutate(Rural_Zip_codes = "Rural Zip codes")
+  mutate(Rural_Zip_codes = "Rural Zip codes") %>%
+  write_csv("/Volumes/Projects/Pharma_Influence/Data/Rurality/nonmetrocountiesandcts2016_2.csv")
 
 #Open Payments ----
 #https://openpaymentsdata-origin.cms.gov/dataset/Open-Payments-for-Developers/ap6w-xznw
@@ -179,6 +182,10 @@ OP_Summary <- exploratory::read_delim_file("/Volumes/Projects/Pharma_Influence/D
   unite(OP.full.name.2, physician_profile_first_name, physician_profile_middle_name, physician_profile_last_name, physician_profile_suffix, sep = " ", remove = FALSE, na.rm = FALSE) %>%
   unite(OP.full.name.3, physician_profile_alternate_first_name, physician_profile_alternate_middle_name, physician_profile_alternate_last_name, sep = " ", remove = FALSE, na.rm = FALSE) %>%
   unite(OP.full.name.4, physician_profile_alternate_first_name, physician_profile_alternate_middle_name, physician_profile_alternate_last_name, physician_profile_alternate_suffix, sep = " ", remove = FALSE, na.rm = FALSE) %>%
+  
+  rename(Physician_Profile_Last_Name = physician_profile_last_name, Physician_Profile_First_Name = physician_profile_first_name, Physician_Profile_Alternate_Last_Name = physician_profile_alternate_last_name, Physician_Profile_Alternate_First_Name = physician_profile_alternate_first_name, Physician_Profile_Middle_Name = physician_profile_middle_name, Physician_Profile_Address_Line_1 = physician_profile_address_line_1, Physician_Profile_City = physician_profile_city, Physician_Profile_State = physician_profile_state, Physician_Profile_Zipcode = physician_profile_zipcode, Physician_Profile_Country_Name = physician_profile_country_name, Physician_Profile_Primary_Specialty = physician_profile_primary_specialty, Physician_Profile_Ops_Taxonomy_1 = physician_profile_ops_taxonomy_1, Physician_Profile_License_State_Code_1 = physician_profile_license_state_code_1, Physician_Profile_Alternate_Middle_Name = physician_profile_alternate_middle_name, Physician_Profile_Suffix = physician_profile_suffix, Physician_Profile_Alternate_Suffix = physician_profile_alternate_suffix, Physician_Profile_Id = physician_profile_id, Physician_Profile_License_State_Code_2 = physician_profile_license_state_code_2, Physician_Profile_License_State_Code_3 = physician_profile_license_state_code_3, Physician_Profile_License_State_Code_4 = physician_profile_license_state_code_4, Physician_Profile_Ops_Taxonomy_2 = physician_profile_ops_taxonomy_2) %>%
+  
+  
   write_csv("/Volumes/Projects/Pharma_Influence/Data/Open_Payments/OP_PH_PRFL_SPLMTL_P01172020_2.csv")
 
 # 
