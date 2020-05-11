@@ -33,7 +33,7 @@ PCND_ZIP_cnt <- sqldf('select NPI, Count(NPI) as "Count" from PCND_ZIP group by 
 # load payment data
 
 #OP_Summary <- read.csv("D:/muffly/data/Originals/PHPRFL_P062819/OP_PH_PRFL_SPLMTL_P06282019.csv", stringsAsFactors=FALSE)
-OP_Summary <- read.csv("/Volumes/Projects/Pharma_Influence/Data/Open Payments/OP_PH_PRFL_SPLMTL_P01172020_2.csv", stringsAsFactors=FALSE)
+OP_Summary <- read.csv("/Volumes/Projects/Pharma_Influence/Data/Open_Payments/OP_PH_PRFL_SPLMTL_P01172020_2.csv", stringsAsFactors=FALSE)
 
 OP_Summary$Physician_Profile_Last_Name <- tolower(OP_Summary$Physician_Profile_Last_Name)
 OP_Summary$Physician_Profile_First_Name <- tolower(OP_Summary$Physician_Profile_First_Name)
