@@ -1,9 +1,9 @@
 # Installing
-install.packages("readr")
-install.packages("qdapRegex")
-install.packages("sqldf")
-install.packages("tidyverse")
-install.packages("Hmisc")
+# install.packages("readr")
+# install.packages("qdapRegex")
+# install.packages("sqldf")
+# install.packages("tidyverse")
+# install.packages("Hmisc")
 # Loading
 library("sqldf")
 library("qdapRegex")
@@ -45,7 +45,7 @@ readr::write_rds(NPPES, "/Volumes/Projects/Pharma_Influence/Data/output_of_1_Mat
 # Load OP data ********************************************************************************************************************
 # *********************************************************************************************************************************
 
-OP <- read.csv("/Volumes/Projects/Pharma_Influence/Data/Open Payments/OP_PH_PRFL_SPLMTL_P01172020_2.csv", stringsAsFactors=FALSE)
+OP <- read.csv("/Volumes/Projects/Pharma_Influence/Data/Open_Payments/OP_PH_PRFL_SPLMTL_P01172020_2.csv", stringsAsFactors=FALSE)
 #OP <- read.csv("D:/muffly/data/Originals/match_data/OP_PH_PRFL_SPLMTL_P06292018_demo.csv", stringsAsFactors=FALSE)
 
 OP$Physician_Profile_First_Name = tolower(OP$Physician_Profile_First_Name)
@@ -478,7 +478,7 @@ OP_UnMatched <- OP[OP$NPI == "",]
 # *************************************************************************************************
 # Clean up 
 #PCND <- read.csv("D:/muffly/data/Originals/Physician_Compare/Physician_Compare_National_Downloadable_File.csv", stringsAsFactors=FALSE)
-PCND <- read.csv("/Volumes/Projects/Pharma_Influence/Data/Physician_Compare/Physician_Compare_National_Downloadable_File_2.csv", stringsAsFactors=FALSE)
+PCND <- read.csv("/Volumes/Projects/Pharma_Influence/Data/Physician_Compare/Physician_Compare_National_Downloadable_File2.csv", stringsAsFactors=FALSE)
   
   
 PCND <- filter(PCND, PCND$State %nin% c("AP","AE", "AS", "FM", "GU", "MH","MP", "PR","PW","UM","VI", "ZZ"))
@@ -976,7 +976,7 @@ write.csv(StudyGroup, "studygroupR2.csv", row.names = FALSE)
 write_rds(StudyGroup,"StudyGroupR2.rds")
 PCND_UnMatched <- PCND[is.na(PCND$PPI),]
 
-PCND <- read.csv("D:/muffly/data/Originals/Physician_Compare/Physician_Compare_National_Downloadable_File.csv", stringsAsFactors=FALSE)
+PCND <- read.csv("/Volumes/Projects/Pharma_Influence/Data/Physician_Compare/Physician_Compare_National_Downloadable_File2.csv", stringsAsFactors=FALSE)
 PCND <- filter(PCND, PCND$State %nin% c("AP","AE", "AS", "FM", "GU", "MH","MP", "PR","PW","UM","VI", "ZZ"))
 PCND <- filter(PCND, (PCND$Primary.specialty %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))  | (PCND$Secondary.specialty.1 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY")) | (PCND$Secondary.specialty.2 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY")) | (PCND$Secondary.specialty.3 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY")) | (PCND$Secondary.specialty.4 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))  ) 
 
@@ -985,18 +985,18 @@ PCND_UnMatchedx <- sqldf('select NPI, [Last.Name], [First.Name],[Middle.Name],[L
 
 write.csv(PCND_UnMatchedx,"PCND_UnMatched.csv", row.names = FALSE)
 
-rm(PCND)
-rm(PCND_CS)
-rm(PCND_CS_cnt)
-rm(PCND_CS_dup)
-rm(PCND_CS_dup_cnt)
-rm(PCND_CS_uni)
-rm(PCND_CS_uni_cnt)
-rm(PCND_ZIP)
-rm(PCND_ZIP_cnt)
-rm(PCNDx)
-rm(MP)
-rm(OP_Summary)
+# rm(PCND)
+# rm(PCND_CS)
+# rm(PCND_CS_cnt)
+# rm(PCND_CS_dup)
+# rm(PCND_CS_dup_cnt)
+# rm(PCND_CS_uni)
+# rm(PCND_CS_uni_cnt)
+# rm(PCND_ZIP)
+# rm(PCND_ZIP_cnt)
+# rm(PCNDx)
+# rm(MP)
+# rm(OP_Summary)
 
 # *************************************************************************************************************************************************************************
 # update OP with matched based on PCND, add specialty, filter on OBGYN (i.e., build list of unmatched OBGYN in OP)
@@ -1021,4 +1021,6 @@ OP_UnMatched_OBGYN <- filter(OP_UnMatched, OP_UnMatched$Physician_Profile_Primar
 write.csv(OP_UnMatched,"OP_UnMatched.csv", row.names = FALSE)
 write.csv(OP_UnMatched_OBGYN,"OP_UnMatched_OBGYN.csv", row.names = FALSE)
 
-
+beepr::beep(sound = 5)
+beepr::beep(sound = 5)
+beepr::beep(sound = 5)
