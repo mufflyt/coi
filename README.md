@@ -92,6 +92,7 @@ install.packages("tidyverse")
 install.packages('humaniformat')
 install.packages("RSocrata")
 install.packages("exploratory")
+install.packages("janitor")
 
 # Loading
 library("sqldf")
@@ -105,12 +106,13 @@ library("tidyverse")
 library("humaniformat")
 library("RSocrata")
 library("exploratory")
+library("janitor")
 ```
 
 ## Matching Overview
-* NPPES - NPI given
+* NPPES - NPI given so able to match with other databases with the key of NPI number
 * PCND - NPI given
-* OP - NO NPI
+* OP - NO NPI so we need to match based on name, address, state, alternate names, suffix, etc.  
 * GOBA - NO NPI
 
 ## Scripts: purpose for searching for NPPES
@@ -229,6 +231,16 @@ Counts are taken throughout the project.  Of note, `Physician_Profile_ID` is a u
 **Description**: Loads NPPES data (mainly demographics) and Open Payments data.  Joe used a great combination of Open Payments  names and NPPES names.  He even included the alternative last names.  Wow!  Baller!  Then he mixed the NPPES addressed with names.  I have to learn SQL code/sqldf and how to do this for sure! Takes many hours to run given the single core nature of R.  
 
 This is a great video on sqldf: https://youtu.be/s2oTUsAJfjI
+
+DPLYR CODE
+all_data %>% summarise(n_distinct(Medical_School))
+
+is the same as....
+
+SQLDF CODE
+sqldf("SELECT COUNT(DISTINCT Medical_School) from all_data")
+
+[![Reference about the types of database left outer joins we will do here](https://i.stack.imgur.com/S3WMq.jpg)](https://i.stack.imgur.com/S3WMq.jpg) 
 
 Matching via multiple rounds:
 * Round 1: First, middle, last, suffix, address, city, state
