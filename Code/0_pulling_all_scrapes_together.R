@@ -31,6 +31,7 @@ library(RDSTK)
 ###  https://www.r-bloggers.com/merge-all-files-in-a-directory-using-r-into-a-single-dataframe/
 setwd("~/Dropbox/workforce/scraper/Scraper_results_2019/")
 file_list <- list.files()
+file_list
 
 for (file in file_list){
   
@@ -48,24 +49,23 @@ for (file in file_list){
       filter(!is.na(city)) %>%
       mutate(userid = coalesce(userid, ID)) %>%
       mutate(certStatus = recode(certStatus, `Not Certified` = "Not Currently Certified", `Not Currently Certified` = "Not Currently Certified")) %>%
-      dplyr::select(-Message, -X, -city_state, -name_test, -name_test_1, -suffix, -firstname, -middlename, -lastname, -ZIP, -STCOUNTYFP, -CLASSFP, -latitude, -longitude, -residency_program, -Last_name, -NPI, -Provider.First.Line.Business.Mailing.Address, -Provider.Business.Mailing.Address.City.Name, -Provider.Business.Mailing.Address.State.Name, -Provider.Business.Mailing.Address.Postal.Code, -Provider.Business.Mailing.Address.Country.Code..If.outside.U.S.., -Provider.Business.Practice.Location.Address.City.Name, -Provider.Business.Practice.Location.Address.Country.Code..If.outside.U.S.., -Provider.Gender.Code, -Healthcare.Provider.Taxonomy.Code_1, -Provider.License.Number_1, -Provider.License.Number.State.Code_1, -Healthcare.Provider.Primary.Taxonomy.Switch_1, -Healthcare.Provider.Taxonomy.Code_2) %>%
       mutate_at(vars(userid, ID), funs(parse_number))
     
     rm(temp_dataset)
   }
   
 }
-
+dim(dataset)
 View(dataset)
 readr::write_csv(dataset, "~/Dropbox/Pharma_Influence/Data/GOBA/goba_scraper_merged.csv")
+GOBA_rough <- read_csv("~/Dropbox/Pharma_Influence/Data/GOBA/goba_scraper_merged.csv")
+rm(dataset)
 
 setwd("~/Dropbox/Pharma_Influence/")
 
-
+dim(GOBA)
 ############
-GOBA <- dataset %>%
-  readr::type_convert() %>%
-  exploratory::clean_data_frame() %>%
+GOBA <- GOBA_rough %>% #aka dataset
   dplyr::distinct(userid, .keep_all = TRUE) %>%
   dplyr::select(-starts_with("ID.new")) %>%
   dplyr::arrange(desc(userid)) %>%
@@ -73,7 +73,6 @@ GOBA <- dataset %>%
   dplyr::filter(sub2certStatus %nin% c("Retired")) %>%
   dplyr::filter(certStatus %nin% c("Retired")) %>%
   dplyr::filter(state %nin% c("ON", "AB")) %>%
-  dplyr::filter(clinicallyActive !="No") %>%
   dplyr::mutate(Year_Boarded = lubridate::year(orig_sub)) %>%
   separate(name, into = c("full_name", "degree"), sep = "\\s*\\,\\s*", convert = TRUE) %>%
   mutate(degree = str_remove_all(degree, "[[:punct:]]+")) %>%
