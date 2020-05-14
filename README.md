@@ -77,11 +77,24 @@ Drug class,	Medication
 * Anti infective: 	Flagyl,	Tindamax									
 
 ## Installation and use
-### Install packages 
+### Install packages so that can use exploratory functions.  Use R 3.6.2 version.   
 ```r
-rm(list = setdiff(ls(), lsf.str())). #cleans all environment except functions
-
 # Installing
+if (packageVersion("devtools") < 1.6) {
+  install.packages("devtools")
+}
+devtools::install_github("paulhendricks/anonymizer")
+library(anonymizer)
+
+devtools::install_github("tidyverse/glue")
+library(glue)
+
+install.packages("backports")
+library(backports)
+
+devtools::install_github("exploratory-io/exploratory_func")
+library(exploratory)
+
 install.packages("readr")
 install.packages("qdapRegex")
 install.packages("sqldf")
