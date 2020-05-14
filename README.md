@@ -723,6 +723,12 @@ target_ndc_package_code = c(
   "Elestrin" = (c("0037-4801-70", "0037-4802-35")))
  ```
  
+
+## Docker
+I am kicking around the idea of having a Docker file associated with this project.  It would help run the code in a reproducible manner without affecting local settings that can be quite important to some people.  
+
+Good intro to docker: https://www.youtube.com/watch?v=I4k0LkTOKvU
+ 
 ## Working Abstract
 ==========
 OBJECTIVE:
