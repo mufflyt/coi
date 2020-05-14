@@ -50,7 +50,7 @@ taxonomy_codes <- c("207V00000X", #Blank, general obgyn
 ```
 
 [![ACOG district map](https://acogpresident.files.wordpress.com/2013/03/districtmapupdated.jpg?w=608)](https://acogpresident.files.wordpress.com/2013/03/districtmapupdated.jpg?w=608) 
-* [NPPES, NPPES Data Dissemination](https://download.cms.gov/nppes/NPI_Files.html) #downloaded April 30, 2020
+* [NPPES, NPPES Data Dissemination](https://download.cms.gov/nppes/NPI_Files.html) #downloaded April 30, 2020.  The issue is that without an API we can't pick and choose data.  The file is HUGE at 7 GB so it is hard to have R load it all in RAM with read.csv and filter it on one core without getting errors.  I'm trying to find a package successfully to load the data but may need to edit it in Excel beforehand prn.  
 * [Federal Office of Rural Health Policy (FORHP) Data Files for rural vs. urban by zip code](https://www.hrsa.gov/sites/default/files/hrsa/ruralhealth/aboutus/definition/nonmetrocountiesandcts2016.xlsx), In the interest of making information on the FORHP Rural Areas more easily usable for Researchers and other Government Agencies, FORHP has created a crosswalk of ZIP Codes identifying the set of Non-Metro Counties and rural Census Tracts (CTs) that comprise rural areas as defined by FORHP. This Excel file contains Non-Metro Counties (Micropolitan and non-core based counties.  
 
 
@@ -77,7 +77,7 @@ Drug class,	Medication
 * Anti infective: 	Flagyl,	Tindamax									
 
 ## Installation and use
-### Install packages so that can use exploratory functions.  Use R 3.6.2 version.   
+### Install packages so that can use exploratory functions.  Use R 3.6.2 version because R 4.0.0 had difficulties with these packages.  
 ```r
 # Installing
 if (packageVersion("devtools") < 1.6) {
