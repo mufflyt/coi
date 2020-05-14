@@ -146,6 +146,11 @@ Do several rounds of matching OP Physician Demographics `OP_Summary` name to NPP
 
 [![Name Matching challenges to accurate and consistent matching](https://www.rosette.com/wp-content/uploads/2017/12/NameMatchingMethods-Graphic1-v1.svg)](https://www.rosette.com/wp-content/uploads/2017/12/NameMatchingMethods-Graphic1-v1.svg) 
 
+Gems that we found last time were:
+* The NPI and OP addresses likely were pulled from the same dataset because they are very similar.  
+* There are some missing components in people who go by their first initial.  Initials and Nicknames.  
+* Many of the different databases have out of order names.  
+
 OP Physician Demographics :
 * OP.full.name.1 = first, middle, last
 * OP.full.name.2 = first, middle, last, suffix
