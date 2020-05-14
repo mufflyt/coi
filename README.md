@@ -118,7 +118,6 @@ library("janitor")
 ## Scripts: purpose for searching for NPPES
 ### Path:  `/Pharma_Influence/Guido_Working_file`
 
-### Matching MPUPS Physician Names to Open Payments Data Process
 Due to the absence of a common variable, a two-step process linked Open Payment with Provider Utilization and Payment Data Public Use File. First, the Open Payments Database was linked to National Provider Identification database based on the physicians first and last name, city and state. Then Medicare Provider Utilization and Payment Data Public Use File was linked using the common variable NPI.  Prescriber groups that did not have prescriptive authority or were not eligible for payments from the pharmaceutical industry (e.g., nurse practitioners, physician assistants, and pharmacists) also were excluded. The final analytic file included physician name, gender, address, city, state, zip code, physician specialty, drug name, total drug cost, total days’ supply for the drug, total amount of payments received and amount of payment received by individual manufacturers.  
 
 ### Matching Physician Names to Open Payments Data Process
@@ -144,6 +143,8 @@ API with Documentation:
 
 Do several rounds of matching OP Physician Demographics `OP_Summary` name to NPPES database `NPPES`.  These are the name variations tried:
 * two versions based on middle and alternate middle, then two versions - with and without suffix
+
+[![Name Matching challenges to accurate and consistent matching](https://www.rosette.com/wp-content/uploads/2017/12/NameMatchingMethods-Graphic1-v1.svg)](https://www.rosette.com/wp-content/uploads/2017/12/NameMatchingMethods-Graphic1-v1.svg) 
 
 OP Physician Demographics :
 * OP.full.name.1 = first, middle, last
