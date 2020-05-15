@@ -2,9 +2,6 @@
 
 # Loading
 #rm(list = setdiff(ls(), lsf.str())). #cleans all environment except functions
-
-# temp message
-
 # Loading
 library("sqldf")
 library("qdapRegex")
