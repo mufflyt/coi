@@ -79,7 +79,17 @@ Drug class,	Medication
 ## Installation and use
 ### Install packages so that can use exploratory functions.  Use R 3.6.2 version because R 4.0.0 had difficulties with these packages.  
 ```r
-# Installing
+# Installing backend programs to Run in Terminal for Mac
+#brew install cask
+#brew install wget
+#brew cask install basictex
+#brew install pandoc
+#brew install pkg-config
+#brew install git-lfs (https://git-lfs.github.com/, Git Large File Storage)
+#git lfs track "*.psd"
+#git add .gitattributes
+
+# Installing R Packages
 if (packageVersion("devtools") < 1.6) {
   install.packages("devtools")
 }
@@ -106,6 +116,7 @@ install.packages('humaniformat')
 install.packages("RSocrata")
 install.packages("exploratory")
 install.packages("janitor")
+install.packages("doMC")
 
 # Loading
 library("sqldf")
@@ -120,7 +131,17 @@ library("humaniformat")
 library("RSocrata")
 library("exploratory")
 library("janitor")
+library("doMC")
+
+doMC::registerDoMC(cores = detectCores()-1) #Use multiple cores for processing
 ```
+## File Storage
+Given the limitation of LFS on github we will storage files that are quite large on Dropbox as with prior projects.  The directory is ```~/Dropbox/Pharma_Influence/```.  Sub-directories are:
+* ```~/Dropbox/Pharma_Influence/Data ```
+* ```~/Dropbox/Pharma_Influence/Articles for Pharma_Influence```
+* ```~/Dropbox/Pharma_Influence/coi ```
+* ```~/Dropbox/Pharma_Influence/Guido_Working_file```
+
 
 ## Matching Overview
 * NPPES - NPI given so able to match with other databases with the key of NPI number
