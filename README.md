@@ -141,7 +141,7 @@ Given the limitation of LFS on github we will storage files that are quite large
 * ```~/Dropbox/Pharma_Influence/Data/Medicare_Part_D ```
 * ```~/Dropbox/Pharma_Influence/Data/National Bureau of Economic Research ```
 * ```~/Dropbox/Pharma_Influence/Data/National Drug Code Directory ```
-* ```~/Dropbox/Pharma_Influence/DataNPPES_Data_Dissemination_April_2020 ```
+* ```~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020 ```
 * ```~/Dropbox/Pharma_Influence/Data/Open_Payments ```
 * ```~/Dropbox/Pharma_Influence/Data/Physician_Compare ```
 * ```~/Dropbox/Pharma_Influence/Data/Rurality ```
@@ -500,7 +500,7 @@ vaginal:    cpay sig, couple not great, most good
 **Input**: `class_Anti_infective.csv` for each class 
 
 **Output**: `anti_inf.5000.50000.10.poisson.rds` is the output from the model.  
-
+```r
 > summary(result_anti_inf)
 
  Iterations = 5001:49991
@@ -528,6 +528,7 @@ drugtinidazole      9.86899   5.97936  14.55711    1.792 <2e-04 ***
 Cpay                0.01275  -0.01127   0.04089  867.046  0.339    
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+```
 
 [![Random Trace Plot of Anti-Infectives](https://github.com/mufflyt/coi/blob/master/random%20effects%20trace%20plot%20of%20anti_inf_VCV.png?raw=true)](https://github.com/mufflyt/coi/blob/master/random%20effects%20trace%20plot%20of%20anti_inf_VCV.png?raw=true)
 
