@@ -1,5 +1,5 @@
 ## Setup file
-# nothing
+
 # Loading
 #rm(list = setdiff(ls(), lsf.str())). #cleans all environment except functions
 # Loading
