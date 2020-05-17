@@ -796,4 +796,15 @@ Table x shows the multivariable analysis for the odds of prescribing each drug b
 
 Tyler to dos:
 Create relative paths using here:here for all scripts
-Rebuild GOBA unique with the more recent data 
+Rebuild GOBA unique with the more recent data - GOBA is the list of all obgyns instead of self-reported taxonomy code.  This is the original.  
+
+Get power BI for Mac.  Learn M.  Get up to office 2016 to get power BI.  Need to get Delimiter for PC to 
+
+Overall Data Munging
+Step 1: NPI to PPI to crosswalk is stand-alone.  Zip codes has the same errors.  
+Step 2:  Match GOBA to step 1 crosswalk.  Match GOBA to OP or match GOBA to NPPES.  
+
+Open Payments data is updated on a yearly basis whereas the NPPES data is only rarely updated.  
+
+Doximity data is unavailable due to a cease-and-desist.  
+Healthgrades.  
