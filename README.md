@@ -135,17 +135,21 @@ library("doMC")
 
 doMC::registerDoMC(cores = detectCores()-1) #Use multiple cores for processing
 ```
-## File Storage
-Given the limitation of LFS on github we will storage files that are quite large on Dropbox as with prior projects.  The directory is ```~/Dropbox/Pharma_Influence/```.  Sub-directories are:
-* ```~/Dropbox/Pharma_Influence/Data/GOBA ```
-* ```~/Dropbox/Pharma_Influence/Data/Medicare_Part_D ```
-* ```~/Dropbox/Pharma_Influence/Data/National Bureau of Economic Research ```
-* ```~/Dropbox/Pharma_Influence/Data/National Drug Code Directory ```
-* ```~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020 ```
-* ```~/Dropbox/Pharma_Influence/Data/Open_Payments ```
-* ```~/Dropbox/Pharma_Influence/Data/Physician_Compare ```
-* ```~/Dropbox/Pharma_Influence/Data/Rurality ```
+# File Storage on Dropbox
+Given the limitation of LFS on github we will storage files that are quite large on Dropbox as with prior projects.  The directory is ```~/Dropbox/Pharma_Influence/```.  
 
+### --->```~/Dropbox/Pharma_Influence/Data ```
+*Data sub-directories are:*
+* --->```~/Dropbox/Pharma_Influence/Data/GOBA ```
+* --->```~/Dropbox/Pharma_Influence/Data/Medicare_Part_D ```
+* --->```~/Dropbox/Pharma_Influence/Data/National Bureau of Economic Research ```
+* --->```~/Dropbox/Pharma_Influence/Data/National Drug Code Directory ```
+* --->```~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020 ```
+* --->```~/Dropbox/Pharma_Influence/Data/Open_Payments ```
+* --->```~/Dropbox/Pharma_Influence/Data/Physician_Compare ```
+* --->```~/Dropbox/Pharma_Influence/Data/Rurality ```
+
+### --->  ```~/Dropbox/Pharma_Influence/```
 * ```~/Dropbox/Pharma_Influence/Articles for Pharma_Influence```
 * ```~/Dropbox/Pharma_Influence/coi ```
 * ```~/Dropbox/Pharma_Influence/Guido_Working_file```
