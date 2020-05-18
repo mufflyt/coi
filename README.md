@@ -138,7 +138,17 @@ library("janitor")
 ```
 
 # File Storage on Dropbox
-Given the limitation of LFS on github we will storage files that are quite large on Dropbox as with prior projects.  The directory is ```~/Dropbox/Pharma_Influence/```.  
+Given the limitation of LFS on github we will storage files that are quite large on Dropbox as with prior projects.  The directory is ```~/Dropbox/Pharma_Influence/```.  NB this requires sharing of privileges from Dropbox.  Without relative paths  the script is very fragile, hard-wired to exactly one time and place. We should also consider relative file paths using the here:here package so it can run on Tyler and on Joe's machines.  
+
+```r 
+library(here) #Loads the here package
+here:here()   #Sets the top level of the current project
+here::dr_here()
+readr::read_csv(here("data", "mtcars.csv"))  #reads out of the data folder
+ggplot2::ggsave(here("figs", "mpg_hp.png")) #save png to a figs folder
+## [1] "/Users/mufflyt/folders/to/directory/figs/mpg_hp.png"
+```
+
 
 ### --->```~/Dropbox/Pharma_Influence/Data ```
 *Data sub-directories are:*
