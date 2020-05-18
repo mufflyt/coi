@@ -53,6 +53,9 @@ taxonomy_codes <- c("207V00000X", #Blank, general obgyn
 ```
 
 [![ACOG district map](https://acogpresident.files.wordpress.com/2013/03/districtmapupdated.jpg?w=608)](https://acogpresident.files.wordpress.com/2013/03/districtmapupdated.jpg?w=608) 
+
+* [See crosswalk between states and ACOG districts](https://github.com/mufflyt/coi/blob/dev_01/Reference_Data/Crosswalk_ACOG_Districts.csv),  A way to look at large areas of the US that are geographically close.  
+
 * [NPPES, NPPES Data Dissemination](https://download.cms.gov/nppes/NPI_Files.html) #downloaded April 30, 2020.  The issue is that without an API we can't pick and choose data.  The file is HUGE at 7 GB so it is hard to have R load it all in RAM with read.csv and filter it on one core without getting errors.  I'm trying to find a package successfully to load the data but may need to edit it in Excel beforehand prn.  
 * [Federal Office of Rural Health Policy (FORHP) Data Files for rural vs. urban by zip code](https://www.hrsa.gov/sites/default/files/hrsa/ruralhealth/aboutus/definition/nonmetrocountiesandcts2016.xlsx), In the interest of making information on the FORHP Rural Areas more easily usable for Researchers and other Government Agencies, FORHP has created a crosswalk of ZIP Codes identifying the set of Non-Metro Counties and rural Census Tracts (CTs) that comprise rural areas as defined by FORHP. This Excel file contains Non-Metro Counties (Micropolitan and non-core based counties.  
 
@@ -124,6 +127,25 @@ library("RSocrata")
 library("exploratory")
 library("janitor")
 ```
+
+# File Storage on Dropbox
+Given the limitation of LFS on github we will storage files that are quite large on Dropbox as with prior projects.  The directory is ```~/Dropbox/Pharma_Influence/```.  
+
+### --->```~/Dropbox/Pharma_Influence/Data ```
+*Data sub-directories are:*
+* --->```~/Dropbox/Pharma_Influence/Data/GOBA ```
+* --->```~/Dropbox/Pharma_Influence/Data/Medicare_Part_D ```
+* --->```~/Dropbox/Pharma_Influence/Data/National Bureau of Economic Research ```
+* --->```~/Dropbox/Pharma_Influence/Data/National Drug Code Directory ```
+* --->```~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020 ```
+* --->```~/Dropbox/Pharma_Influence/Data/Open_Payments ```
+* --->```~/Dropbox/Pharma_Influence/Data/Physician_Compare ```
+* --->```~/Dropbox/Pharma_Influence/Data/Rurality ```
+
+### --->  ```~/Dropbox/Pharma_Influence/```
+* ```~/Dropbox/Pharma_Influence/Articles for Pharma_Influence```
+* ```~/Dropbox/Pharma_Influence/coi ```
+* ```~/Dropbox/Pharma_Influence/Guido_Working_file```
 
 ## Matching Overview
 * NPPES - NPI given so able to match with other databases with the key of NPI number
