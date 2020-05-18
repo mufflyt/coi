@@ -82,6 +82,15 @@ Drug class,	Medication
 * Antiviral: 	Valtrex,	Zovirax									
 * Anti infective: 	Flagyl,	Tindamax									
 
+# Project Tools
+* R 3.6.2
+* Rstudio 1.2.5042
+* exploratory.io
+* delimit for PC. http://www.delimitware.com.  Opens huge ass files but does not work for Mac.  
+* XTabularor works for Mac.  https://www.bartastechnologies.com/products/xtabulator/.  I had to use this because R choked with it's one core and requiring everything in active memory.  
+
+
+
 ## Installation and use
 ### Install packages so that can use exploratory functions.  Use R 3.6.2 version because R 4.0.0 had difficulties with these packages.  
 ```r
