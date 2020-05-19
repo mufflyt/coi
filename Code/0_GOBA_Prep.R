@@ -18,14 +18,39 @@ library(RDSTK)
 library("qdapRegex")
 
 # function to strip off everything after the first comma 
-### this needs work to stap suffixes!
 # based on code at https://www.r-bloggers.com/split-intermixed-names-into-first-middle-and-last/
+
+trap_suffix <- function(mangled_names) {
+  mangled_names %>% sapply(function(name) {
+    split <- str_split(name, " ") %>% unlist
+    original_length <- length(split)
+    Titles <- c("Jr","Sr","I","II", "III","IV")
+    if (split[1] %in% Titles){
+      case_when(
+        length(split) == 1 ~ c(split[1],NA),
+        length(split) >  1 ~ c(split[1],
+                               paste(split[2:(length(split))], 
+                                     collapse = " ")) 
+      )
+    } else {
+      
+      case_when(
+        length(split) == 1 ~ c(NA,split[1]),
+        length(split) >  1 ~ c(NA,
+                               paste(split[1:(length(split))], 
+                                     collapse = " ")) 
+      )      
+    }
+    
+
+  }) %>% t %>% return
+}
 
 trap_title <- function(mangled_names) {
   mangled_names %>% sapply(function(name) {
     split <- str_split(name, ",") %>% unlist
     original_length <- length(split)
-    case_when(
+      case_when(
       length(split) == 1 ~ c(split[1],NA),
       length(split) >  1 ~ c(split[1],
                              paste(split[2:(length(split))], 
@@ -97,7 +122,6 @@ df[,c("NamePart","Title")] <-  df$name %>% trap_title
 df[,c("First","Middle","Last")] <- df$NamePart %>% fml
 df[,c("Last_Left","Last_Right")] <- df$Last %>% trap_compound
 
-
 # get rid of leading and trailing periods
 df$Title <- rm_white(df$Title)
 df$First <- rm_white(df$First)
@@ -121,6 +145,7 @@ df$Last_Left <- tolower(df$Last_Left)
 df$Last_Right <- tolower(df$Last_Right)
 
 
+df[,c("Suffix","Title")] <- df$Title %>% trap_suffix
 
 #add region info
 Regions <- read.csv("~/Dropbox/Pharma_Influence/Data/Regions.csv", stringsAsFactors=FALSE)
