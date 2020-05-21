@@ -71,7 +71,7 @@ trap_compound <- function(mangled_names) {
       length(split) == 2 ~ c(split[1],split[2]),
       length(split) >  2 ~ c(split[1],
                              paste(split[2:(length(split))], 
-                                   collapse = " ")) 
+                                   collapse = "")) 
     )
   }) %>% t %>% return
 }
@@ -131,23 +131,26 @@ df$Last_Right <- rm_white(df$Last_Right)
 df$Last_Left <- rm_white(df$Last_Left)
 df$Suffix <- rm_white(df$Suffix)
 
-
+df$Last <- gsub("-","",df$Last)
 
 df$First <- gsub('^\\.|\\.$', '', df$First)
 df$Middle <- gsub('^\\.|\\.$', '', df$Middle)
 df$Title <- gsub('\\.','',df$Title)
 
-#convert to lowercase
-df$First <- tolower(df$First)
-df$Middle <- tolower(df$Middle)
-df$Last <- tolower(df$Last)
-df$Last_Left <- tolower(df$Last_Left)
-df$Last_Right <- tolower(df$Last_Right)
+
+#convert to uppercase
+df$First <- toupper(df$First)
+df$Middle <- toupper(df$Middle)
+df$Last <- toupper(df$Last)
+df$Last_Left <- toupper(df$Last_Left)
+df$Last_Right <- toupper(df$Last_Right)
 
 
 df[,c("Suffix","Title")] <- df$Title %>% trap_suffix
+df$Suffix <- toupper(df$Suffix)
 
-#add region info
+#add region infoNULL
+df <- df[!is.na(df$state),] 
 Regions <- read.csv("~/Dropbox/Pharma_Influence/Data/Regions.csv", stringsAsFactors=FALSE)
 
 df$Region <- NA
@@ -163,11 +166,10 @@ for (j in 1:nrow(Regions))
   
 }
 
-
 #cleanup and write output
 GOBA_all_a_dataframes_1 <- df
 rm(df)
 rm(GOBA_all_a_dataframes)
 rm(Regions)
 
-write.csv(GOBA_all_a_dataframes_1,"~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_1.csv",row.names = FALSE)
+write.csv(GOBA_all_a_dataframes_1,"~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_1.csv",row.names = FALSE, na="")
