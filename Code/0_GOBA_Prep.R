@@ -16,6 +16,9 @@ library(bit64)
 library(exploratory)
 library(RDSTK)
 library("qdapRegex")
+# input GOBA_all_a_dataframes.csv - from pulling all scrapes file
+# output GOBA_all_a_dataframes_1.csv - splits name into components (first, middle, last and title, if compound last splits that as well), cleans up names (whitespace, extra periods, hypens from last name).  adds region codes
+
 
 # function to strip off everything after the first comma 
 # based on code at https://www.r-bloggers.com/split-intermixed-names-into-first-middle-and-last/

@@ -1,7 +1,7 @@
 #
 # set working directory, load libraries
 
-# load qdapRegex
+
 # add in these .. Tax codes ... 17400000X, 390200000X, 208D0000X
 
 library("sqldf")
@@ -18,31 +18,45 @@ GOB_Match <- GOBA
 GOB_Match$OP_Physician_Profile_ID <- ""
 GOB_Match$Type <- ""
 GOB_Match$NPI<- ""
-GOB_Match$Full.Name <- toupper(GOB_Match$NamePart)
-GOB_Match$Last.Name.1 <- toupper(GOB_Match$Last)
-GOB_Match$Last.Name.2 <- toupper(GOB_Match$Last_Left)
-GOB_Match$Last.Name.3 <- toupper(GOB_Match$Last_Right)
-GOB_Match$First.Name.1 <- toupper(GOB_Match$First)
+
+GOB_Match$NamePart <- trim(GOB_Match$NamePart)
+GOB_Match$Last <- trim(GOB_Match$Last)
+GOB_Match$Last_Left <- trim(GOB_Match$Last_Left)
+GOB_Match$Last_Right <- trim(GOB_Match$Last_Right)
+GOB_Match$First <- trim(GOB_Match$First)
+GOB_Match$Middle<- trim(GOB_Match$Middle)
+GOB_Match$Full.Name.Suffix <- trim(GOB_Match$Suffix)
+
+GOB_Match$Full.Name <- (GOB_Match$NamePart)
+GOB_Match$Last.Name.1 <- (GOB_Match$Last)
+GOB_Match$Last.Name.2 <- (GOB_Match$Last_Left)
+GOB_Match$Last.Name.3 <- (GOB_Match$Last_Right)
+GOB_Match$First.Name.1 <-(GOB_Match$First)
 GOB_Match$First.Name.2 <- NA
 GOB_Match$First.Name.3 <- NA
 GOB_Match$First.Name.4 <- NA
 GOB_Match$First.Name.5 <- NA
-GOB_Match$Full.Name.Suffix <- NA
+
+GOB_Match[GOB_Match$Last.Name.3 == "","Last.Name.3"] <- GOB_Match[GOB_Match$Last.Name.3 == "","Last.Name.2"]
+
 #
 GOB_Match[is.na(GOB_Match$Middle),"Middle"]=""
 
-GOB_Match$Full.Name.1 <- toupper(paste(GOB_Match$First, GOB_Match$Middle,GOB_Match$Last, sep=" "))
-GOB_Match$Full.Name.2 <- toupper(paste(GOB_Match$First, GOB_Match$Middle,GOB_Match$Last_Left, sep=" "))
-GOB_Match$Full.Name.3 <- toupper(paste(GOB_Match$First, substr(GOB_Match$Middle,1,1), GOB_Match$Last,sep=" "))
-GOB_Match$Full.Name.4 <- toupper(paste(GOB_Match$First, substr(GOB_Match$Middle,1,1), GOB_Match$Last_Left,sep=" "))
+GOB_Match$Full.Name.1 <- (paste(GOB_Match$First, GOB_Match$Middle,GOB_Match$Last, sep=" "))
+GOB_Match$Full.Name.2 <- (paste(GOB_Match$First, GOB_Match$Middle,GOB_Match$Last, GOB_Match$Full.Name.Suffix, sep=" "))
+GOB_Match$Full.Name.3 <- (paste(GOB_Match$First, substr(GOB_Match$Middle,1,1), GOB_Match$Last,sep=" "))
+GOB_Match$Full.Name.4 <- (paste(GOB_Match$First, substr(GOB_Match$Middle,1,1), GOB_Match$Last, GOB_Match$Full.Name.Suffix, sep=" "))
+
+GOB_Match$Full.Name.1 <- rm_white(GOB_Match$Full.Name.1)
+
 #
 rm(GOBA)
 #
-write.csv(GOB_Match,"~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_2.csv", row.names = FALSE)
+write.csv(GOB_Match,"~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_2.csv", row.names = FALSE, na="")
 #
 # load NPPES Data File
 #
-NPPES <- read.csv("~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412.csv", stringsAsFactors=FALSE)
+NPPES <- read.csv("~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412.csv", stringsAsFactors=FALSE,nrows = 10)
 NOD <- NPPES[,c(1,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,7,15,6,14,8,16,10,18,24,23, 25,2)
 ]
 rm(NPPES)
@@ -68,9 +82,12 @@ colnames(NOD)[28] <- "TypeCode"
 NOD<- NOD[,c(1,17,18,19,20,21,22,23,24,25,26,27,28,29)]
 #
 NOD <- NOD[NOD$TypeCode !=2,]
-# 
+#
+NOD <- NOD[!is.na(NOD$TypeCode),]
+#
 # Normalize capitalization and create smaller subset files for matching process
 #
+NOD_Match <- NOD
 NOD_Match$GOB_ID <- ""
 NOD_Match$Type <- ""
 NOD_Match$Last_Name <- toupper(NOD_Match$Last_Name)
@@ -86,14 +103,14 @@ NOD_Match$Suffix_2  <- toupper(NOD_Match$Suffix_2)
 # two versions based on middle and alternate middle, then two versions - with and without suffix
 # total of four full names
 # full.name,1 = first, middle, last
-# full.name.2 = first, middle, last, suffix
-# full.name.3 = first, middle2, last
-# full.name.4 = first, middle2, last, suffix
+# full.name.2 = first, middle, last_2, 
+# full.name.3 = first, middle initial, last
+# full.name.4 = first, middle initian, last_2
 #
 NOD_Match$Full.Name.1 <- paste(NOD_Match$First_Name, NOD_Match$Middle_Name, NOD_Match$Last_Name, sep=" ")
 NOD_Match$Full.Name.2 <- paste(NOD_Match$First_Name, NOD_Match$Middle_Name, NOD_Match$Last_Name, NOD_Match$Suffix,sep=" ")
 NOD_Match$Full.Name.3 <- paste(NOD_Match$First_Name, substr(NOD_Match$Middle_Name,1,1), NOD_Match$Last_Name, sep=" ")
-NOD_Match$Full.Name.4 <- paste(NOD_Match$First_Name, substr(NOD_Match$Middle_Name,1,1), NOD_Match$Last_Name,NOD_Match$Suffix, sep=" ")
+NOD_Match$Full.Name.4 <- paste(NOD_Match$First_Name, substr(NOD_Match$Middle_Name,1,1), NOD_Match$Last_Name, NOD_Match$Suffix, sep=" ")
 #
 # replace '."
 #
@@ -116,13 +133,23 @@ NOD_Match$Full.Name.2 <-  rm_white(NOD_Match$Full.Name.2)
 NOD_Match$Full.Name.3 <-  rm_white(NOD_Match$Full.Name.3)
 NOD_Match$Full.Name.4 <-  rm_white(NOD_Match$Full.Name.4)
 #
-write.csv(NOD,"~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/NPPES_DEMO.csv",row.names = FALSE)
+NOD_Match[is.na(NOD_Match$First_Name_2),"First_Name_2"] <- ""
+NOD_Match[NOD_Match$First_Name_2 == "","First_Name_2"] <-NOD_Match[NOD_Match$First_Name_2 == "","First_Name"]
+
+NOD_Match[is.na(NOD_Match$Last_Name_2),"Last_Name_2"] <- ""
+NOD_Match[NOD_Match$Last_Name_2 == "","Last_Name_2"] <-NOD_Match[NOD_Match$Last_Name_2 == "","Last_Name"]
+
+
+#
+write.csv(NOD_Match,"~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412_1.csv",row.names = FALSE, na="")
 #
 # filter on Taxonomy
-NOD_Match <- sqldf("select NOD.* from NOD where NOD.[TAX] like '%207V%' or NOD.[TAX] like '%174000000X%' or NOD.[TAX] like '%390200000X%' or NOD.[TAX] like '%390200000X%' or NOD.[TAX] like '%208D00000X%' ")
+NOD_Match <- sqldf("select NOD_Match.* from NOD_Match where NOD_Match.[TAX] like '%207V%' or NOD_Match.[TAX] like '%174000000X%' or NOD_Match.[TAX] like '%390200000X%' or NOD_Match.[TAX] like '%208D00000X%' ")
 #
-write.csv(NOD_Match,"~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/NPPES_OBGYN_DEMO.csv",row.names = FALSE) #filtered dataset
+write.csv(NOD_Match,"~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412_2.csv",row.names = FALSE, na="") #filtered dataset
 #
+rm(NOD)
+rm(NPPES)
 #------------------------------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------------------------------
@@ -3006,4 +3033,17 @@ write.csv(GOBA_Match_NPPES_Matched, "~/Dropbox/Pharma_Influence/Guido_Working_fi
 write.csv(GOBA_Match_NPPES_UnMatched,"~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/GOBA_Match_NPPES_UnMatched.csv",row.names = FALSE)
 write.csv(GOB_Match, "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/GOBA_Match_ALL.csv",row.names = FALSE)
 write.csv(NOD_Match, "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/NOD_Match_ALL.csv",row.names = FALSE)
+
+NOD_Fuzzy <- NOD_Match[NOD_Match$GOB_ID == "",c("NPI", "Full.Name.2")]
+names(NOD_Fuzzy)[2] <- "FullName"
+
+GOB_Fuzzy <- GOB_Match[GOB_Match$NPI == "",c("userid","NamePart")]
+names(GOB_Fuzzy)[2] <- "FullName"
+names(GOB_Fuzzy)[1] <- "GOB_ID"
+
+
+write.csv(GOB_Fuzzy, "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/GOBA_Fuzzy.csv",row.names = FALSE, na="")
+
+write.csv(NOD_Fuzzy, "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/NOD_Fuzzy.csv",row.names = FALSE, na="")
+
 rm(list=ls()) 
