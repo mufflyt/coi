@@ -35,8 +35,8 @@ Prescriber <- merge(Prescriber, Prescriber_16_2,all = TRUE)
 Prescriber <- merge(Prescriber, Prescriber_17_2,all = TRUE)
 
 Prescriber_Name_State <- sqldf('select Prescriber.npi,Prescriber.nppes_provider_first_name,Prescriber.nppes_provider_last_org_name,Prescriber.nppes_provider_state from Prescriber group by Prescriber.npi ')
-write.csv(Prescriber_Name, "D:/muffly/data/Prescriber_Name_State.csv",row.names = FALSE)
+write.csv(Prescriber_Name_State, "~/Dropbox/Pharma_Influence/Data/Medicare_Part_D/PartD_Prescriber_PUF_NPI_DRUG_Combined.csv",row.names = FALSE)
 
 Prescriber_Name <- sqldf('select Prescriber.npi,Prescriber.nppes_provider_first_name,Prescriber.nppes_provider_last_org_name from Prescriber group by Prescriber.npi ')
-write.csv(Prescriber_Name, "D:/muffly/data/Prescriber_Name.csv",row.names = FALSE)
+write.csv(Prescriber_Name, "~/Dropbox/Pharma_Influence/Data/Medicare_Part_D/PartD_Prescriber_PUF_NPI_DRUG_Combined_1.csv",row.names = FALSE)
 
