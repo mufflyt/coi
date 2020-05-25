@@ -814,3 +814,12 @@ Rebuild GOBA unique with the more recent data
 
 LG high def screen
 compare to old goba R1.xlsx - Reviewed.  
+COM Add ins: Fuzzy Look Up Add-In for Excel
+
+People with first initials is an issue.  
+
+Look at goba_fuzzy in Dropbox.  
+
+Power Query
+
+Latest GOBA issues.xls - There are 71 people with the exact same first, middle, last, suffix names and the same city, state.  
