@@ -110,6 +110,7 @@ a62 <- read.csv(url("https://www.dropbox.com/s/n5gf97s4uq4nxj4/Physicians%20%281
 a63 <- read.csv(url("https://www.dropbox.com/s/lhoqdltq4f0iodk/Physicians%20%289030000-9024666%29%20%282020-03-07%2016-45-56%29.csv?raw=1"))
 a64 <- read.csv(url("https://www.dropbox.com/s/sx85vsvodmil8h6/Physicians%20%289040000-9030000%29%20%282020-03-08%2014-50-09%29.csv?raw=1"))
 a65 <- read.csv(url("https://www.dropbox.com/s/1yzghhwt63294t1/Physicians%20%289050000-9040000%29%20%282020-03-08%2020-12-49%29.csv?raw=1"))
+a66 <- read.csv(url("https://www.dropbox.com/s/rabwn7i8mo2v67p/Physicians%20%289041410-9041900%29%20%282020-05-19%2013-03-51%29.csv?raw=1"))
 
 #ABOG 2013 from SGS Bastow project from Dropbox/ workforce/ scraper/ 2013 data
 a52 <- read.csv(url("https://www.dropbox.com/s/4ml8wdoijw67n7g/abog%2012.21.2013.csv?raw=1")) %>%
@@ -120,7 +121,8 @@ a52 <- read.csv(url("https://www.dropbox.com/s/4ml8wdoijw67n7g/abog%2012.21.2013
 all_a_dataframes <- a1 %>% readr::type_convert() %>%
   exploratory::clean_data_frame() %>%
   dplyr::bind_rows(list(a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26, a27, a28, a29, a30, a31, a32, a33, a34, a35, a36, a37, a38, a39, a40, a41, a42, a43, a44, a45, a46, a47, a48, a49, a50, a51, a52, a53, #a54, a57, a58,
-                 a55, a56,   a59, a60, a61, a62, a63, a64, a65))
+                 a55, a56,   a59, a60, a61, a62, a63, a64, a65, a66)) %>%
+  dplyr::arrange(desc(userid))
 
 readr::write_csv(all_a_dataframes, "~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes.csv")
 all_a_dataframes <- readr::read_csv("~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes.csv")
@@ -129,17 +131,16 @@ all_bound_together <- all_a_dataframes %>%
   readr::type_convert() %>%
   exploratory::clean_data_frame() %>%
   dplyr::distinct(userid, .keep_all = TRUE) %>%
-  dplyr::select(-starts_with("ID.new")) %>%
-  dplyr::arrange(name) %>%
   dplyr::select(userid:orig_bas) %>%
   dplyr::filter(sub1certStatus %nin% c("Retired", "Not Currently Certified")) %>%
   dplyr::filter(sub2certStatus %nin% c("Retired", "Not Currently Certified")) %>%
   dplyr::filter(certStatus %nin% c("Retired", "Not Currently Certified")) %>%
   dplyr::filter(!is.na(state)) %>%
   dplyr::filter(state != "ON") %>%
-  dplyr::filter(clinicallyActive !="No") %>%
+  dplyr::filter(clinicallyActive %nin%("No")) %>%
   dplyr::mutate(Year_Boarded = lubridate::year(orig_sub)) %>%
-  dplyr::distinct(userid, .keep_all = TRUE)
+  dplyr::distinct(userid, .keep_all = TRUE) %>%
+  dplyr::arrange(desc(userid))
 
 dim(all_bound_together)
 colnames(all_bound_together)
@@ -148,7 +149,6 @@ dplyr::glimpse(all_bound_together)
 View(all_bound_together)
 
 # Write the final bound scraper to disk ----
-readr::write_csv(all_bound_together, "~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes.csv")
+readr::write_rds(all_bound_together, "~/Dropbox/workforce/scraper/Scraper_results_2019/to_evaluate_GOBA_all_a_dataframes.rds")
 
-all_bound_together <- readr::read_csv("~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes.csv")
-#We start with a list of OBGYN physicians and the year that they were boarded called all_bound_together.csv.  The data is filtered for providers who are retired, not in the United States, and has a unique random id.  
+#We start with a list of OBGYN physicians and the year that they were boarded called all_bound_together.csv.  The data is filtered for providers who are retired, not in the United States.
