@@ -1,26 +1,63 @@
+# Load required packages.
+library(geosphere)
+library(gmapsdistance)
+library(R.utils)
+library(janitor)
+library(lubridate)
+library(hms)
+library(tidyr)
+library(stringr)
+library(readr)
+library(forcats)
+library(RcppRoll)
+library(dplyr)
+library(tibble)
+library(bit64)
+library(exploratory)
+library(RDSTK)
+library("qdapRegex")
+# input GOBA_all_a_dataframes.csv - from pulling all scrapes file
+# output GOBA_all_a_dataframes_1.csv - splits name into components (first, middle, last and title, if compound last splits that as well), cleans up names (whitespace, extra periods, hypens from last name).  adds region codes
 
-# function to strip off everything after the first comma
+
+# function to strip off everything after the first comma 
 # based on code at https://www.r-bloggers.com/split-intermixed-names-into-first-middle-and-last/
 
+trap_suffix <- function(mangled_names) {
+  mangled_names %>% sapply(function(name) {
+    split <- str_split(name, " ") %>% unlist
+    original_length <- length(split)
+    Titles <- c("Jr","Sr","I","II", "III","IV")
+    if (split[1] %in% Titles){
+      case_when(
+        length(split) == 1 ~ c(split[1],NA),
+        length(split) >  1 ~ c(split[1],
+                               paste(split[2:(length(split))], 
+                                     collapse = " ")) 
+      )
+    } else {
+      
+      case_when(
+        length(split) == 1 ~ c(NA,split[1]),
+        length(split) >  1 ~ c(NA,
+                               paste(split[1:(length(split))], 
+                                     collapse = " ")) 
+      )      
+    }
+    
+
+  }) %>% t %>% return
+}
+
 trap_title <- function(mangled_names) {
-  titles <- c("MASTER", "MR", "MISS", "MRS", "MS", 
-              "MX", "JR", "SR", "M", "SIR", "GENTLEMAN", 
-              "SIRE", "MISTRESS", "MADAM", "DAME", "LORD", 
-              "LADY", "ESQ", "EXCELLENCY","EXCELLENCE", 
-              "HER", "HIS", "HONOUR", "THE", 
-              "HONOURABLE", "HONORABLE", "HON", "JUDGE")
   mangled_names %>% sapply(function(name) {
     split <- str_split(name, ",") %>% unlist
     original_length <- length(split)
-    split <- split[which(!split %>% 
-                           toupper %>% 
-                           str_replace_all('[^A-Z]','')
-                         %in% titles)]
-    case_when(
-      (length(split) < original_length) & (length(split) == 1) ~  c(split[1],NA),
+      case_when(
       length(split) == 1 ~ c(split[1],NA),
-      length(split) == 2 ~ c(split[1],split[2]),
-      length(split) > 2 ~ c(split[1], split[length(split)])
+      length(split) >  1 ~ c(split[1],
+                             paste(split[2:(length(split))], 
+                                         collapse = " ")) 
     )
   }) %>% t %>% return
 }
@@ -35,7 +72,9 @@ trap_compound <- function(mangled_names) {
     case_when(
       length(split) == 1 ~ c(split[1],NA),
       length(split) == 2 ~ c(split[1],split[2]),
-      length(split) > 2 ~ c(split[1], split[length(split)])
+      length(split) >  2 ~ c(split[1],
+                             paste(split[2:(length(split))], 
+                                   collapse = "")) 
     )
   }) %>% t %>% return
 }
@@ -44,19 +83,9 @@ trap_compound <- function(mangled_names) {
 # from [slightly modified, changed collapse character to space]  https://www.r-bloggers.com/split-intermixed-names-into-first-middle-and-last/
 
 fml <- function(mangled_names) {
-  titles <- c("MASTER", "MR", "MISS", "MRS", "MS", 
-              "MX", "JR", "SR", "M", "SIR", "GENTLEMAN", 
-              "SIRE", "MISTRESS", "MADAM", "DAME", "LORD", 
-              "LADY", "ESQ", "EXCELLENCY","EXCELLENCE", 
-              "HER", "HIS", "HONOUR", "THE", 
-              "HONOURABLE", "HONORABLE", "HON", "JUDGE")
   mangled_names %>% sapply(function(name) {
     split <- str_split(name, " ") %>% unlist
     original_length <- length(split)
-    split <- split[which(!split %>% 
-                           toupper %>% 
-                           str_replace_all('[^A-Z]','')
-                         %in% titles)]
     case_when(
       (length(split) < original_length) & 
         (length(split) == 1) ~  c(NA,
@@ -89,6 +118,7 @@ df$Middle <- NA
 df$Last <- NA
 df$Last_Right <- NA
 df$Last_Left <- NA
+df$Suffix <- NA
 
 # parse, first split off title, then parse name into first, last and middle, then parse last into left and right (for hypenated)
 df[,c("NamePart","Title")] <-  df$name %>% trap_title
@@ -96,19 +126,34 @@ df[,c("First","Middle","Last")] <- df$NamePart %>% fml
 df[,c("Last_Left","Last_Right")] <- df$Last %>% trap_compound
 
 # get rid of leading and trailing periods
+df$Title <- rm_white(df$Title)
+df$First <- rm_white(df$First)
+df$Middle <- rm_white(df$Middle)
+df$Last <- rm_white(df$Last)
+df$Last_Right <- rm_white(df$Last_Right)
+df$Last_Left <- rm_white(df$Last_Left)
+df$Suffix <- rm_white(df$Suffix)
+
+df$Last <- gsub("-","",df$Last)
+
 df$First <- gsub('^\\.|\\.$', '', df$First)
 df$Middle <- gsub('^\\.|\\.$', '', df$Middle)
 df$Title <- gsub('\\.','',df$Title)
 
-#convert to lowercase
-df$First <- tolower(df$First)
-df$Middle <- tolower(df$Middle)
-df$Last <- tolower(df$Last)
-df$Last_Left <- tolower(df$Last_Left)
-df$Last_Right <- tolower(df$Last_Right)
+
+#convert to uppercase
+df$First <- toupper(df$First)
+df$Middle <- toupper(df$Middle)
+df$Last <- toupper(df$Last)
+df$Last_Left <- toupper(df$Last_Left)
+df$Last_Right <- toupper(df$Last_Right)
 
 
-#add region info
+df[,c("Suffix","Title")] <- df$Title %>% trap_suffix
+df$Suffix <- toupper(df$Suffix)
+
+#add region infoNULL
+df <- df[!is.na(df$state),] 
 Regions <- read.csv("~/Dropbox/Pharma_Influence/Data/Regions.csv", stringsAsFactors=FALSE)
 
 df$Region <- NA
@@ -124,11 +169,10 @@ for (j in 1:nrow(Regions))
   
 }
 
-
 #cleanup and write output
 GOBA_all_a_dataframes_1 <- df
 rm(df)
 rm(GOBA_all_a_dataframes)
-rm(Region)
+rm(Regions)
 
-write.csv(GOBA_all_a_dataframes_1,"~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_1.csv",row.names = FALSE)
+write.csv(GOBA_all_a_dataframes_1,"~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_1.csv",row.names = FALSE, na="")
