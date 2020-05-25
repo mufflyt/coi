@@ -124,10 +124,10 @@ all_a_dataframes <- a1 %>% readr::type_convert() %>%
                         a55, a56,   a59, a60, a61, a62, a63, a64, a65, a66)) %>%
   dplyr::arrange(desc(userid))
 
-readr::write_csv(all_a_dataframes, "~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes.csv")
-all_a_dataframes <- readr::read_csv("~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes.csv")
+#readr::write_csv(all_a_dataframes, "~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes.csv")
+#all_a_dataframes <- readr::read_csv("~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes.csv")
 
-all_bound_together <- all_a_dataframes %>%
+all_a_dataframes <- all_a_dataframes %>%
   readr::type_convert() %>%
   exploratory::clean_data_frame() %>%
   dplyr::distinct(userid, .keep_all = TRUE) %>%
@@ -142,10 +142,10 @@ all_bound_together <- all_a_dataframes %>%
   dplyr::distinct(userid, .keep_all = TRUE) %>%
   dplyr::arrange(desc(userid))
 
-dim(all_bound_together)
-colnames(all_bound_together)
-head(all_bound_together, 200)
-dplyr::glimpse(all_bound_together)
+dim(all_a_dataframes)
+colnames(all_a_dataframes)
+head(all_a_dataframes, 200)
+dplyr::glimpse(all_a_dataframes)
 View(all_bound_together)
 
 # Write the final bound scraper to disk ----
