@@ -14,8 +14,10 @@ library("qdapRegex")
 # Prescriber Data File (PRE)
 #
 
-PRE_Match <- read.csv("D:/muffly/data/Prescriber_Name_State.csv", stringsAsFactors=FALSE)
+PRE_Match <- read.csv("~/Dropbox/Pharma_Influence/Data/Medicare_Part_D/PartD_Prescriber_PUF_NPI_DRUG_Combined.csv", stringsAsFactors=FALSE)
 names(PRE_Match) <- c("NPI","First_Name", "Last_Name","State")
+PRE_Match$GOB_ID <- ""
+PRE_Match$Type <- ""
 
 #
 # GOBA Data File
@@ -37,6 +39,8 @@ GOB_Match$Last_Right <- trim(GOB_Match$Last_Right)
 GOB_Match$First <- trim(GOB_Match$First)
 GOB_Match$Middle<- trim(GOB_Match$Middle)
 GOB_Match$Full.Name.Suffix <- trim(GOB_Match$Suffix)
+GOB_Match$state <- trim(toupper(GOB_Match$state))
+GOB_Match$city <- trim(toupper(GOB_Match$city))
 
 GOB_Match$Full.Name <- (GOB_Match$NamePart)
 GOB_Match$Last.Name.1 <- (GOB_Match$Last)
@@ -146,18 +150,23 @@ NOD_Match$Full.Name.2 <-  rm_white(NOD_Match$Full.Name.2)
 NOD_Match$Full.Name.3 <-  rm_white(NOD_Match$Full.Name.3)
 NOD_Match$Full.Name.4 <-  rm_white(NOD_Match$Full.Name.4)
 #
+# populate first and last tname 2 if empty with last or first name
+#
 NOD_Match[is.na(NOD_Match$First_Name_2),"First_Name_2"] <- ""
 NOD_Match[NOD_Match$First_Name_2 == "","First_Name_2"] <-NOD_Match[NOD_Match$First_Name_2 == "","First_Name"]
 
 NOD_Match[is.na(NOD_Match$Last_Name_2),"Last_Name_2"] <- ""
 NOD_Match[NOD_Match$Last_Name_2 == "","Last_Name_2"] <-NOD_Match[NOD_Match$Last_Name_2 == "","Last_Name"]
-
-
+#
+# dump copy for working file rior to filter
 #
 write.csv(NOD_Match,"~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412_1.csv",row.names = FALSE, na="")
 #
 # filter on Taxonomy
+#
 NOD_Match <- sqldf("select NOD_Match.* from NOD_Match where NOD_Match.[TAX] like '%207V%' or NOD_Match.[TAX] like '%174000000X%' or NOD_Match.[TAX] like '%390200000X%' or NOD_Match.[TAX] like '%208D00000X%' or NOD_Match.[TAX] like '174400000X' ")
+#
+# dump copy of working file after filter
 #
 write.csv(NOD_Match,"~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412_2.csv",row.names = FALSE, na="") #filtered dataset
 #
@@ -189,11 +198,15 @@ match1 <- function(Gmatch,Nmatch,MatchType,GOB_Match,NOD_Match){
   matches <- fn$sqldf('select matches.*, dup_names.[Full.Name] as dup_name  from matches LEFT OUTER JOIN dup_names on dup_names.[Full.Name] = matches.[Full.Name] ')
   rm(dup_names)
   #annotate and store
-  matches$Type <- MatchType 
+
   dup_set <- subset(matches, !is.na(matches$dup_name))
   dup_set$dup_name <- NULL
+  
+  if (nrow(matches) > 0) {
+     
+  
+  matches$Type <- MatchType
   matches <- subset(matches, is.na(matches$dup_name))
-
   GOB_Match <- sqldf('select GOB_Match.*, matches.[ID] as m_ID, matches.[NPI] as m_NPI, matches.[Type] as m_Type from GOB_Match LEFT OUTER JOIN matches on GOB_Match.[ID] = matches.[ID]')
   GOB_Match[!is.na(GOB_Match$m_ID),"NPI"] <-  GOB_Match[!is.na(GOB_Match$m_ID),"m_NPI"]
   GOB_Match[!is.na(GOB_Match$m_ID),"Type"] <-  GOB_Match[!is.na(GOB_Match$m_ID),"m_Type"]
@@ -209,7 +222,14 @@ match1 <- function(Gmatch,Nmatch,MatchType,GOB_Match,NOD_Match){
   NOD_Match$m_Type <- NULL
   
   print( paste("***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
-  return(list(GOB_Match,NOD_Match))
+  
+  } else {
+    
+    print( paste("***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
+    
+  }
+    
+  return(list(GOB_Match,NOD_Match,nrow(matches)))
 }
 
 # fullname state
@@ -231,11 +251,16 @@ match2 <- function(Gmatch,Nmatch,MatchType,GOB_Match,NOD_Match){
   matches <- fn$sqldf('select matches.*, dup_names.[Full.Name] as dup_name  from matches LEFT OUTER JOIN dup_names on dup_names.[Full.Name] = matches.[Full.Name] ')
   rm(dup_names)
   #annotate and store
-  matches$Type <- MatchType 
-  dup_set <- subset(matches, !is.na(matches$dup_name))
-  dup_set$dup_name <- NULL
-  matches <- subset(matches, is.na(matches$dup_name))
   
+  dup_set <- subset(matches, !is.na(matches$dup_name))
+  dup_set$dup_name <- NULL  
+  
+  if (nrow(matches) > 0) {
+  
+    matches$Type <- MatchType   
+  
+    matches <- subset(matches, is.na(matches$dup_name))
+    
   GOB_Match <- sqldf('select GOB_Match.*, matches.[ID] as m_ID, matches.[NPI] as m_NPI, matches.[Type] as m_Type from GOB_Match LEFT OUTER JOIN matches on GOB_Match.[ID] = matches.[ID]')
   GOB_Match[!is.na(GOB_Match$m_ID),"NPI"] <-  GOB_Match[!is.na(GOB_Match$m_ID),"m_NPI"]
   GOB_Match[!is.na(GOB_Match$m_ID),"Type"] <-  GOB_Match[!is.na(GOB_Match$m_ID),"m_Type"]
@@ -251,7 +276,11 @@ match2 <- function(Gmatch,Nmatch,MatchType,GOB_Match,NOD_Match){
   NOD_Match$m_Type <- NULL
   
   print( paste("***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
-  return(list(GOB_Match,NOD_Match))
+  
+  } else {
+    print( paste("***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
+  }
+  return(list(GOB_Match,NOD_Match,nrow(matches)))
 }
 
 # first last
@@ -273,10 +302,15 @@ match3 <- function(Gmatch,Nmatch, Gmatch1,Nmatch1,MatchType,GOB_Match,NOD_Match)
   matches <- fn$sqldf('select matches.*, dup_names.[Full.Name] as dup_name  from matches LEFT OUTER JOIN dup_names on dup_names.[Full.Name] = matches.[Full.Name] ')
   rm(dup_names)
   #annotate and store
-  matches$Type <- MatchType 
+  
   dup_set <- subset(matches, !is.na(matches$dup_name))
   dup_set$dup_name <- NULL
-  matches <- subset(matches, is.na(matches$dup_name))
+
+  if (nrow(matches) > 0) {
+    
+    matches$Type <- MatchType 
+    
+    matches <- subset(matches, is.na(matches$dup_name))
   
   GOB_Match <- sqldf('select GOB_Match.*, matches.[ID] as m_ID, matches.[NPI] as m_NPI, matches.[Type] as m_Type from GOB_Match LEFT OUTER JOIN matches on GOB_Match.[ID] = matches.[ID]')
   GOB_Match[!is.na(GOB_Match$m_ID),"NPI"] <-  GOB_Match[!is.na(GOB_Match$m_ID),"m_NPI"]
@@ -293,7 +327,13 @@ match3 <- function(Gmatch,Nmatch, Gmatch1,Nmatch1,MatchType,GOB_Match,NOD_Match)
   NOD_Match$m_Type <- NULL
   
   print( paste("***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
-  return(list(GOB_Match,NOD_Match))
+  
+  } else {
+    
+    print( paste("***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
+    
+  }
+  return(list(GOB_Match,NOD_Match,nrow(matches)))
 }
 
 # first, last, state
@@ -315,9 +355,13 @@ match4 <- function(Gmatch,Nmatch, Gmatch1,Nmatch1,MatchType,GOB_Match,NOD_Match)
   matches <- fn$sqldf('select matches.*, dup_names.[Full.Name] as dup_name  from matches LEFT OUTER JOIN dup_names on dup_names.[Full.Name] = matches.[Full.Name] ')
   rm(dup_names)
   #annotate and store
-  matches$Type <- MatchType 
+  
   dup_set <- subset(matches, !is.na(matches$dup_name))
   dup_set$dup_name <- NULL
+  
+  if (nrow(matches) > 0) {
+  
+    matches$Type <- MatchType   
   matches <- subset(matches, is.na(matches$dup_name))
   
   GOB_Match <- sqldf('select GOB_Match.*, matches.[ID] as m_ID, matches.[NPI] as m_NPI, matches.[Type] as m_Type from GOB_Match LEFT OUTER JOIN matches on GOB_Match.[ID] = matches.[ID]')
@@ -335,7 +379,13 @@ match4 <- function(Gmatch,Nmatch, Gmatch1,Nmatch1,MatchType,GOB_Match,NOD_Match)
   NOD_Match$m_Type <- NULL
   
   print( paste("***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
-  return(list(GOB_Match,NOD_Match))
+  
+} else {
+  
+  print( paste("***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
+  
+}
+  return(list(GOB_Match,NOD_Match,nrow(matches)))
 }
 
 #------------------------------------------------------------------------------------------------------------------------
@@ -343,242 +393,562 @@ match4 <- function(Gmatch,Nmatch, Gmatch1,Nmatch1,MatchType,GOB_Match,NOD_Match)
 # Start Matching
 #------------------------------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------------------------------
+matchcount <- 0
 
+#
 # FullName
+#
 
 returnvals <- match1("[Full.Name.1]","[Full.Name.1]","G_FN1_N_FN1",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
 
 returnvals <- match1("[Full.Name.1]","[Full.Name.2]","G_FN1_N_FN2",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
 
 returnvals <- match1("[Full.Name.1]","[Full.Name.3]","G_FN1_N_FN3",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
 
 returnvals <- match1("[Full.Name.1]","[Full.Name.4]","G_FN1_N_FN4",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
 
 returnvals <- match1("[Full.Name.2]","[Full.Name.1]","G_FN2_N_FN1",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
 
 returnvals <- match1("[Full.Name.2]","[Full.Name.2]","G_FN2_N_FN2",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
 
 returnvals <- match1("[Full.Name.2]","[Full.Name.3]","G_FN2_N_FN3",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
 
 returnvals <- match1("[Full.Name.2]","[Full.Name.4]","G_FN2_N_FN4",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
 
 returnvals <- match1("[Full.Name.3]","[Full.Name.1]","G_FN3_N_FN1",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
 
 returnvals <- match1("[Full.Name.3]","[Full.Name.2]","G_FN3_N_FN2",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
 
 returnvals <- match1("[Full.Name.3]","[Full.Name.3]","G_FN3_N_FN3",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
 
 returnvals <- match1("[Full.Name.3]","[Full.Name.4]","G_FN3_N_FN4",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
 
 returnvals <- match1("[Full.Name.4]","[Full.Name.1]","G_FN4_N_FN1",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
 
 returnvals <- match1("[Full.Name.4]","[Full.Name.2]","G_FN4_N_FN2",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
 
 returnvals <- match1("[Full.Name.4]","[Full.Name.3]","G_FN4_N_FN3",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
 
 returnvals <- match1("[Full.Name.4]","[Full.Name.4]","G_FN4_N_FN4",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
 
 #
 # full name and state
 #
 
-returnvals <- match2("[Full.Name.1]","[Full.Name.1]","G_FN1_N_FN1",GOB_Match,NOD_Match)
+returnvals <- match2("[Full.Name.1]","[Full.Name.1]","G_FN1_N_FN1 S",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
 
-returnvals <- match2("[Full.Name.1]","[Full.Name.2]","G_FN1_N_FN2",GOB_Match,NOD_Match)
-GOB_Match <- returnvals[[1]]
-NOD_Match <- returnvals[[2]]
 
-returnvals <- match2("[Full.Name.1]","[Full.Name.3]","G_FN1_N_FN3",GOB_Match,NOD_Match)
+returnvals <- match2("[Full.Name.1]","[Full.Name.2]","G_FN1_N_FN2 S",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
 
-returnvals <- match2("[Full.Name.1]","[Full.Name.4]","G_FN1_N_FN4",GOB_Match,NOD_Match)
-GOB_Match <- returnvals[[1]]
-NOD_Match <- returnvals[[2]]
 
-returnvals <- match2("[Full.Name.2]","[Full.Name.1]","G_FN2_N_FN1",GOB_Match,NOD_Match)
+returnvals <- match2("[Full.Name.1]","[Full.Name.3]","G_FN1_N_FN3 S",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
 
-returnvals <- match2("[Full.Name.2]","[Full.Name.2]","G_FN2_N_FN2",GOB_Match,NOD_Match)
-GOB_Match <- returnvals[[1]]
-NOD_Match <- returnvals[[2]]
 
-returnvals <- match2("[Full.Name.2]","[Full.Name.3]","G_FN2_N_FN3",GOB_Match,NOD_Match)
+returnvals <- match2("[Full.Name.1]","[Full.Name.4]","G_FN1_N_FN4 S",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
 
-returnvals <- match2("[Full.Name.2]","[Full.Name.4]","G_FN2_N_FN4",GOB_Match,NOD_Match)
-GOB_Match <- returnvals[[1]]
-NOD_Match <- returnvals[[2]]
 
-returnvals <- match2("[Full.Name.3]","[Full.Name.1]","G_FN3_N_FN1",GOB_Match,NOD_Match)
+returnvals <- match2("[Full.Name.2]","[Full.Name.1]","G_FN2_N_FN1 S",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
 
-returnvals <- match2("[Full.Name.3]","[Full.Name.2]","G_FN3_N_FN2",GOB_Match,NOD_Match)
-GOB_Match <- returnvals[[1]]
-NOD_Match <- returnvals[[2]]
 
-returnvals <- match2("[Full.Name.3]","[Full.Name.3]","G_FN3_N_FN3",GOB_Match,NOD_Match)
+returnvals <- match2("[Full.Name.2]","[Full.Name.2]","G_FN2_N_FN2 S",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
 
-returnvals <- match2("[Full.Name.3]","[Full.Name.4]","G_FN3_N_FN4",GOB_Match,NOD_Match)
-GOB_Match <- returnvals[[1]]
-NOD_Match <- returnvals[[2]]
 
-returnvals <- match2("[Full.Name.4]","[Full.Name.1]","G_FN4_N_FN1",GOB_Match,NOD_Match)
+returnvals <- match2("[Full.Name.2]","[Full.Name.3]","G_FN2_N_FN3 S",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
 
-returnvals <- match2("[Full.Name.4]","[Full.Name.2]","G_FN4_N_FN2",GOB_Match,NOD_Match)
-GOB_Match <- returnvals[[1]]
-NOD_Match <- returnvals[[2]]
 
-returnvals <- match2("[Full.Name.4]","[Full.Name.3]","G_FN4_N_FN3",GOB_Match,NOD_Match)
+returnvals <- match2("[Full.Name.2]","[Full.Name.4]","G_FN2_N_FN4 S",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
 
-returnvals <- match2("[Full.Name.4]","[Full.Name.4]","G_FN4_N_FN4",GOB_Match,NOD_Match)
+
+returnvals <- match2("[Full.Name.3]","[Full.Name.1]","G_FN3_N_FN1 S",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match2("[Full.Name.3]","[Full.Name.2]","G_FN3_N_FN2 S",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match2("[Full.Name.3]","[Full.Name.3]","G_FN3_N_FN3 S",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match2("[Full.Name.3]","[Full.Name.4]","G_FN3_N_FN4 S",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match2("[Full.Name.4]","[Full.Name.1]","G_FN4_N_FN1 S",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match2("[Full.Name.4]","[Full.Name.2]","G_FN4_N_FN2 S",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match2("[Full.Name.4]","[Full.Name.3]","G_FN4_N_FN3 S",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match2("[Full.Name.4]","[Full.Name.4]","G_FN4_N_FN4 S",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
 
 #
 # first name last name
 #
+
 returnvals <- match3("[First.Name.1]","[First_Name]","[Last.Name.1]","[Last_Name]","G_FiN1LaN1_N_FiNLaN",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
 
 returnvals <- match3("[First.Name.1]","[First_Name]","[Last.Name.1]","[Last_Name_2]","G_FiN1LaN1_N_FiNLaN2",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
 
 returnvals <- match3("[First.Name.1]","[First_Name]","[Last.Name.2]","[Last_Name]","G_FiN1LaN2_N_FiNLaN",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
 
 returnvals <- match3("[First.Name.1]","[First_Name]","[Last.Name.2]","[Last_Name_2]","G_FiN1LaN2_N_FiNLaN2",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
 
 returnvals <- match3("[First.Name.1]","[First_Name]","[Last.Name.3]","[Last_Name]","G_FiN1LaN3_N_FiN1LaN",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
 
 returnvals <- match3("[First.Name.1]","[First_Name]","[Last.Name.3]","[Last_Name_2]","G_FiN1LaN3_N_FiNLaN2",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
 
 returnvals <- match3("[First.Name.1]","[First_Name_2]","[Last.Name.1]","[Last_Name]","G_FiN1LaN1_N_FiN2LaN",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
 
 returnvals <- match3("[First.Name.1]","[First_Name_2]","[Last.Name.1]","[Last_Name_2]","G_FiN1LaN1_N_FiN2LaN2",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
 
 returnvals <- match3("[First.Name.1]","[First_Name_2]","[Last.Name.2]","[Last_Name]","G_FiN1LaN2_N_FiN2LaN",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
 
 returnvals <- match3("[First.Name.1]","[First_Name_2]","[Last.Name.2]","[Last_Name_2]","G_FiN1LaN2_N_FiN2LaN2",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
 
 returnvals <- match3("[First.Name.1]","[First_Name_2]","[Last.Name.3]","[Last_Name]","G_FiN1LaN3_N_FiN2LaN",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
 
 returnvals <- match3("[First.Name.1]","[First_Name_2]","[Last.Name.3]","[Last_Name_2]","G_FiN1LaN3_N_FiN2LaN2",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
 #
 # first name last name and state
 #
 
-returnvals <- match4("[First.Name.1]","[First_Name]","[Last.Name.1]","[Last_Name]","G_FiN1LaN1_N_FiNLaN",GOB_Match,NOD_Match)
+returnvals <- match4("[First.Name.1]","[First_Name]","[Last.Name.1]","[Last_Name]","G_FiN1LaN1_N_FiNLaN S",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
 
-returnvals <- match4("[First.Name.1]","[First_Name]","[Last.Name.1]","[Last_Name_2]","G_FiN1LaN1_N_FiNLaN2",GOB_Match,NOD_Match)
-GOB_Match <- returnvals[[1]]
-NOD_Match <- returnvals[[2]]
 
-returnvals <- match4("[First.Name.1]","[First_Name]","[Last.Name.2]","[Last_Name]","G_FiN1LaN2_N_FiNLaN",GOB_Match,NOD_Match)
+returnvals <- match4("[First.Name.1]","[First_Name]","[Last.Name.1]","[Last_Name_2]","G_FiN1LaN1_N_FiNLaN2 S",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
 
-returnvals <- match4("[First.Name.1]","[First_Name]","[Last.Name.2]","[Last_Name_2]","G_FiN1LaN2_N_FiNLaN2",GOB_Match,NOD_Match)
-GOB_Match <- returnvals[[1]]
-NOD_Match <- returnvals[[2]]
 
-returnvals <- match4("[First.Name.1]","[First_Name]","[Last.Name.3]","[Last_Name]","G_FiN1LaN3_N_FiN1LaN",GOB_Match,NOD_Match)
+returnvals <- match4("[First.Name.1]","[First_Name]","[Last.Name.2]","[Last_Name]","G_FiN1LaN2_N_FiNLaN S",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
 
-returnvals <- match4("[First.Name.1]","[First_Name]","[Last.Name.3]","[Last_Name_2]","G_FiN1LaN3_N_FiNLaN2",GOB_Match,NOD_Match)
-GOB_Match <- returnvals[[1]]
-NOD_Match <- returnvals[[2]]
 
-returnvals <- match4("[First.Name.1]","[First_Name_2]","[Last.Name.1]","[Last_Name]","G_FiN1LaN1_N_FiN2LaN",GOB_Match,NOD_Match)
+returnvals <- match4("[First.Name.1]","[First_Name]","[Last.Name.2]","[Last_Name_2]","G_FiN1LaN2_N_FiNLaN2 S",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
 
-returnvals <- match4("[First.Name.1]","[First_Name_2]","[Last.Name.1]","[Last_Name_2]","G_FiN1LaN1_N_FiN2LaN2",GOB_Match,NOD_Match)
-GOB_Match <- returnvals[[1]]
-NOD_Match <- returnvals[[2]]
 
-returnvals <- match4("[First.Name.1]","[First_Name_2]","[Last.Name.2]","[Last_Name]","G_FiN1LaN2_N_FiN2LaN",GOB_Match,NOD_Match)
+returnvals <- match4("[First.Name.1]","[First_Name]","[Last.Name.3]","[Last_Name]","G_FiN1LaN3_N_FiN1LaN S",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
 
-returnvals <- match4("[First.Name.1]","[First_Name_2]","[Last.Name.2]","[Last_Name_2]","G_FiN1LaN2_N_FiN2LaN2",GOB_Match,NOD_Match)
-GOB_Match <- returnvals[[1]]
-NOD_Match <- returnvals[[2]]
 
-returnvals <- match4("[First.Name.1]","[First_Name_2]","[Last.Name.3]","[Last_Name]","G_FiN1LaN3_N_FiN2LaN",GOB_Match,NOD_Match)
+returnvals <- match4("[First.Name.1]","[First_Name]","[Last.Name.3]","[Last_Name_2]","G_FiN1LaN3_N_FiNLaN2 S",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
 
-returnvals <- match4("[First.Name.1]","[First_Name_2]","[Last.Name.3]","[Last_Name_2]","G_FiN1LaN3_N_FiN2LaN2",GOB_Match,NOD_Match)
+
+returnvals <- match4("[First.Name.1]","[First_Name_2]","[Last.Name.1]","[Last_Name]","G_FiN1LaN1_N_FiN2LaN S",GOB_Match,NOD_Match)
 GOB_Match <- returnvals[[1]]
 NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match4("[First.Name.1]","[First_Name_2]","[Last.Name.1]","[Last_Name_2]","G_FiN1LaN1_N_FiN2LaN2 S",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match4("[First.Name.1]","[First_Name_2]","[Last.Name.2]","[Last_Name]","G_FiN1LaN2_N_FiN2LaN S",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match4("[First.Name.1]","[First_Name_2]","[Last.Name.2]","[Last_Name_2]","G_FiN1LaN2_N_FiN2LaN2 S",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match4("[First.Name.1]","[First_Name_2]","[Last.Name.3]","[Last_Name]","G_FiN1LaN3_N_FiN2LaN S",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match4("[First.Name.1]","[First_Name_2]","[Last.Name.3]","[Last_Name_2]","G_FiN1LaN3_N_FiN2LaN2 S",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+#
+# Include City in Matching----------------------------------------------------------------------------------------------------------
+# 
+
+GOB_Match$oldState <- GOB_Match$state
+GOB_Match$state <- paste(GOB_Match$city,GOB_Match$state, sep = " ")
+matchcount <- matchcount + returnvals[[3]]
+
+
+NOD_Match$oldState <- NOD_Match$State
+NOD_Match$State <- paste(NOD_Match$City,NOD_Match$State, sep = " ")
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match2("[Full.Name.1]","[Full.Name.1]","G_FN1_N_FN1 CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match2("[Full.Name.1]","[Full.Name.2]","G_FN1_N_FN2 CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match2("[Full.Name.1]","[Full.Name.3]","G_FN1_N_FN3 CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match2("[Full.Name.1]","[Full.Name.4]","G_FN1_N_FN4 CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match2("[Full.Name.2]","[Full.Name.1]","G_FN2_N_FN1 CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match2("[Full.Name.2]","[Full.Name.2]","G_FN2_N_FN2 CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match2("[Full.Name.2]","[Full.Name.3]","G_FN2_N_FN3 CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match2("[Full.Name.2]","[Full.Name.4]","G_FN2_N_FN4 CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match2("[Full.Name.3]","[Full.Name.1]","G_FN3_N_FN1 CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match2("[Full.Name.3]","[Full.Name.2]","G_FN3_N_FN2 CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match2("[Full.Name.3]","[Full.Name.3]","G_FN3_N_FN3 CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match2("[Full.Name.3]","[Full.Name.4]","G_FN3_N_FN4 CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match2("[Full.Name.4]","[Full.Name.1]","G_FN4_N_FN1 CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match2("[Full.Name.4]","[Full.Name.2]","G_FN4_N_FN2 CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match2("[Full.Name.4]","[Full.Name.3]","G_FN4_N_FN3 CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match2("[Full.Name.4]","[Full.Name.4]","G_FN4_N_FN4 CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match4("[First.Name.1]","[First_Name]","[Last.Name.1]","[Last_Name]","G_FiN1LaN1_N_FiNLaN CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match4("[First.Name.1]","[First_Name]","[Last.Name.1]","[Last_Name_2]","G_FiN1LaN1_N_FiNLaN2 CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match4("[First.Name.1]","[First_Name]","[Last.Name.2]","[Last_Name]","G_FiN1LaN2_N_FiNLaN CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match4("[First.Name.1]","[First_Name]","[Last.Name.2]","[Last_Name_2]","G_FiN1LaN2_N_FiNLaN2 CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match4("[First.Name.1]","[First_Name]","[Last.Name.3]","[Last_Name]","G_FiN1LaN3_N_FiN1LaN CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match4("[First.Name.1]","[First_Name]","[Last.Name.3]","[Last_Name_2]","G_FiN1LaN3_N_FiNLaN2 CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match4("[First.Name.1]","[First_Name_2]","[Last.Name.1]","[Last_Name]","G_FiN1LaN1_N_FiN2LaN CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match4("[First.Name.1]","[First_Name_2]","[Last.Name.1]","[Last_Name_2]","G_FiN1LaN1_N_FiN2LaN2 CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match4("[First.Name.1]","[First_Name_2]","[Last.Name.2]","[Last_Name]","G_FiN1LaN2_N_FiN2LaN CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match4("[First.Name.1]","[First_Name_2]","[Last.Name.2]","[Last_Name_2]","G_FiN1LaN2_N_FiN2LaN2 CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match4("[First.Name.1]","[First_Name_2]","[Last.Name.3]","[Last_Name]","G_FiN1LaN3_N_FiN2LaN CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match4("[First.Name.1]","[First_Name_2]","[Last.Name.3]","[Last_Name_2]","G_FiN1LaN3_N_FiN2LaN2 CS",GOB_Match,NOD_Match)
+GOB_Match <- returnvals[[1]]
+NOD_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+GOB_Match$state <- GOB_Match$oldState 
+NOD_Match$State <- NOD_Match$oldState 
+
+#
+# Match on Prescription Data ----------------------------------------------------------------------------------------------------------------------------
+# 
+
+returnvals <- match4("[First.Name.1]","[First_Name]","[Last.Name.1]","[Last_Name]","G_FiN1LaN1_P_FiNLaN",GOB_Match,PRE_Match)
+GOB_Match <- returnvals[[1]]
+PRE_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match4("[First.Name.1]","[First_Name]","[Last.Name.2]","[Last_Name]","G_FiN1LaN2_P_FiNLaN",GOB_Match,PRE_Match)
+GOB_Match <- returnvals[[1]]
+PRE_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
+
+
+returnvals <- match4("[First.Name.1]","[First_Name]","[Last.Name.3]","[Last_Name]","G_FiN1LaN3_P_FiNLaN",GOB_Match,PRE_Match)
+GOB_Match <- returnvals[[1]]
+PRE_Match <- returnvals[[2]]
+matchcount <- matchcount + returnvals[[3]]
 
 
 #
