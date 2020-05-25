@@ -811,3 +811,6 @@ Table x shows the multivariable analysis for the odds of prescribing each drug b
 Tyler to dos:
 Create relative paths using here:here for all scripts
 Rebuild GOBA unique with the more recent data 
+
+LG high def screen
+compare to old goba R1.xlsx - Reviewed.  
