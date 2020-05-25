@@ -149,6 +149,7 @@ dplyr::glimpse(all_bound_together)
 View(all_bound_together)
 
 # Write the final bound scraper to disk ----
-readr::write_rds(all_bound_together, "~/Dropbox/workforce/scraper/Scraper_results_2019/merged/GOBA_all_a_dataframes.rds")
+readr::write_csv(all_bound_together, "~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes.csv")
+## Path ?? readr::write_rds(all_bound_together, "~/Dropbox/workforce/scraper/Scraper_results_2019/merged/GOBA_all_a_dataframes.rds")
 
 #We start with a list of OBGYN physicians and the year that they were boarded called all_bound_together.csv.  The data is filtered for providers who are retired, not in the United States.
