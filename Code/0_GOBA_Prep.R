@@ -1,3 +1,7 @@
+# changes needed
+# filter out names without title
+#
+
 # Load required packages.
 library(geosphere)
 library(gmapsdistance)
@@ -176,3 +180,5 @@ rm(GOBA_all_a_dataframes)
 rm(Regions)
 
 write.csv(GOBA_all_a_dataframes_1,"~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_1.csv",row.names = FALSE, na="")
+
+rm(list=ls()) 
