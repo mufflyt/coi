@@ -10,6 +10,12 @@ library("qdapRegex")
 # load data
 #------------------------------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------------------------------
+#
+# Prescriber Data File (PRE)
+#
+
+PRE_Match <- read.csv("D:/muffly/data/Prescriber_Name_State.csv", stringsAsFactors=FALSE)
+names(PRE_Match) <- c("NPI","First_Name", "Last_Name","State")
 
 #
 # GOBA Data File
