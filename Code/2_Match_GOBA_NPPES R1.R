@@ -158,6 +158,67 @@ NOD_Match[NOD_Match$First_Name_2 == "","First_Name_2"] <-NOD_Match[NOD_Match$Fir
 NOD_Match[is.na(NOD_Match$Last_Name_2),"Last_Name_2"] <- ""
 NOD_Match[NOD_Match$Last_Name_2 == "","Last_Name_2"] <-NOD_Match[NOD_Match$Last_Name_2 == "","Last_Name"]
 #
+#
+#
+NOD_Match[grepl(" JR",NOD_Match$Last_Name),"Suffix"] <- "JR"
+NOD_Match[grepl(" JR.",NOD_Match$Last_Name),"Suffix"] <- "JR"
+NOD_Match[grepl(", JR",NOD_Match$Last_Name),"Suffix"] <- "JR"
+NOD_Match[grepl(", JR.",NOD_Match$Last_Name),"Suffix"] <- "JR"
+
+NOD_Match$Last_Name <- gsub(", JR.","",NOD_Match$Last_Name)
+NOD_Match$Last_Name <- gsub(", JR","",NOD_Match$Last_Name)
+NOD_Match$Last_Name <- gsub(" JR.","",NOD_Match$Last_Name)
+NOD_Match$Last_Name <- gsub(" JR","",NOD_Match$Last_Name)
+
+NOD_Match[grepl(" III",NOD_Match$Last_Name),"Suffix"] <- "III"
+NOD_Match[grepl(", III",NOD_Match$Last_Name),"Suffix"] <- "III"
+
+NOD_Match$Last_Name <- gsub(", III","",NOD_Match$Last_Name)
+NOD_Match$Last_Name <- gsub(" III","",NOD_Match$Last_Name)
+
+NOD_Match[grepl(" II",NOD_Match$Last_Name),"Suffix"] <- "II"
+NOD_Match[grepl(", II",NOD_Match$Last_Name),"Suffix"] <- "II"
+
+NOD_Match$Last_Name <- gsub(", II","",NOD_Match$Last_Name)
+NOD_Match$Last_Name <- gsub(" II","",NOD_Match$Last_Name)
+
+NOD_Match[grepl(", SR",NOD_Match$Last_Name),"Suffix"] <- "SR"
+NOD_Match$Last_Name <- gsub(", SR","",NOD_Match$Last_Name)
+
+NOD_Match[grepl(", SR\\.",NOD_Match$Last_Name),"Suffix"] <- "SR"
+NOD_Match$Last_Name <- gsub(", SR\\.","",NOD_Match$Last_Name)
+
+NOD_Match[grepl(" JR",NOD_Match$Last_Name_2),"Suffix"] <- "JR"
+NOD_Match[grepl(" JR.",NOD_Match$Last_Name_2),"Suffix"] <- "JR"
+NOD_Match[grepl(", JR",NOD_Match$Last_Name_2),"Suffix"] <- "JR"
+NOD_Match[grepl(", JR.",NOD_Match$Last_Name_2),"Suffix"] <- "JR"
+
+NOD_Match$Last_Name_2 <- gsub(", JR.","",NOD_Match$Last_Name_2)
+NOD_Match$Last_Name_2 <- gsub(", JR","",NOD_Match$Last_Name_2)
+NOD_Match$Last_Name_2 <- gsub(" JR.","",NOD_Match$Last_Name_2)
+NOD_Match$Last_Name_2 <- gsub(" JR","",NOD_Match$Last_Name_2)
+
+NOD_Match[grepl(" III",NOD_Match$Last_Name_2),"Suffix"] <- "III"
+NOD_Match[grepl(", III",NOD_Match$Last_Name_2),"Suffix"] <- "III"
+
+NOD_Match$Last_Name_2 <- gsub(", III","",NOD_Match$Last_Name_2)
+NOD_Match$Last_Name_2 <- gsub(" III","",NOD_Match$Last_Name_2)
+
+NOD_Match[grepl(" II",NOD_Match$Last_Name_2),"Suffix"] <- "II"
+NOD_Match[grepl(", II",NOD_Match$Last_Name_2),"Suffix"] <- "II"
+
+NOD_Match$Last_Name_2 <- gsub(", II","",NOD_Match$Last_Name_2)
+NOD_Match$Last_Name_2 <- gsub(" II","",NOD_Match$Last_Name_2)
+
+NOD_Match[grepl(", SR",NOD_Match$Last_Name_2),"Suffix"] <- "SR"
+NOD_Match$Last_Name_2 <- gsub(", SR","",NOD_Match$Last_Name_2)
+
+NOD_Match[grepl(", SR\\.",NOD_Match$Last_Name_2),"Suffix"] <- "SR"
+NOD_Match$Last_Name_2 <- gsub(", SR\\.","",NOD_Match$Last_Name_2)
+
+NOD_Match$Last_Name <- gsub(" ","",NOD_Match$Last_Name)
+NOD_Match$Last_Name_2 <- gsub(" ","",NOD_Match$Last_Name_2)
+#
 # dump copy for working file rior to filter
 #
 write.csv(NOD_Match,"~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412_1.csv",row.names = FALSE, na="")
@@ -221,11 +282,11 @@ match1 <- function(Gmatch,Nmatch,MatchType,GOB_Match,NOD_Match){
   NOD_Match$m_NPI <- NULL
   NOD_Match$m_Type <- NULL
   
-  print( paste("***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
+  print( paste(MatchType, " ***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
   
   } else {
     
-    print( paste("***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
+    print( paste(MatchType," ***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
     
   }
     
@@ -275,10 +336,10 @@ match2 <- function(Gmatch,Nmatch,MatchType,GOB_Match,NOD_Match){
   NOD_Match$m_NPI <- NULL
   NOD_Match$m_Type <- NULL
   
-  print( paste("***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
+  print( paste(MatchType, " ***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
   
   } else {
-    print( paste("***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
+    print( paste(MatchType," ***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
   }
   return(list(GOB_Match,NOD_Match,nrow(matches)))
 }
@@ -326,11 +387,11 @@ match3 <- function(Gmatch,Nmatch, Gmatch1,Nmatch1,MatchType,GOB_Match,NOD_Match)
   NOD_Match$m_NPI <- NULL
   NOD_Match$m_Type <- NULL
   
-  print( paste("***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
+  print( paste(MatchType, " ***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
   
   } else {
     
-    print( paste("***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
+    print( paste(MatchType, " ***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
     
   }
   return(list(GOB_Match,NOD_Match,nrow(matches)))
@@ -378,11 +439,11 @@ match4 <- function(Gmatch,Nmatch, Gmatch1,Nmatch1,MatchType,GOB_Match,NOD_Match)
   NOD_Match$m_NPI <- NULL
   NOD_Match$m_Type <- NULL
   
-  print( paste("***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
+  print( paste(MatchType, " ***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
   
 } else {
   
-  print( paste("***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
+  print( paste(MatchType, " ***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
   
 }
   return(list(GOB_Match,NOD_Match,nrow(matches)))
@@ -394,7 +455,17 @@ match4 <- function(Gmatch,Nmatch, Gmatch1,Nmatch1,MatchType,GOB_Match,NOD_Match)
 #------------------------------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------------------------------
 matchcount <- 0
+priormatchcount <- 1
+loops <- 1
 
+while (priormatchcount != matchcount) {
+  priormatchcount <- matchcount
+  #######################
+  #######################
+  print (paste(loops," loops.  Start time this loop: ",Sys.time()) )
+  
+  #######################
+  #######################
 #
 # FullName
 #
@@ -950,6 +1021,9 @@ GOB_Match <- returnvals[[1]]
 PRE_Match <- returnvals[[2]]
 matchcount <- matchcount + returnvals[[3]]
 
+loops <- loops + 1
+
+}
 
 #
 # End of Matching--------------------------------------------------------------------------------------------------------------------------------
