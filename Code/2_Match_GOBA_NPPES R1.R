@@ -23,7 +23,7 @@ PRE_Match$Type <- ""
 # GOBA Data File
 #
 
-GOBA <- read.csv("~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_1.csv", stringsAsFactors=FALSE)
+GOBA <- read.csv("~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_1.csv", stringsAsFactors=FALSE, strip.white = TRUE)
 GOBA$ID <- GOBA$userid
 GOB_Match <- GOBA  
 
@@ -32,15 +32,9 @@ GOB_Match$OP_Physician_Profile_ID <- ""
 GOB_Match$Type <- ""
 GOB_Match$NPI<- ""
 
-GOB_Match$NamePart <- trim(GOB_Match$NamePart)
-GOB_Match$Last <- trim(GOB_Match$Last)
-GOB_Match$Last_Left <- trim(GOB_Match$Last_Left)
-GOB_Match$Last_Right <- trim(GOB_Match$Last_Right)
-GOB_Match$First <- trim(GOB_Match$First)
-GOB_Match$Middle<- trim(GOB_Match$Middle)
-GOB_Match$Full.Name.Suffix <- trim(GOB_Match$Suffix)
-GOB_Match$state <- trim(toupper(GOB_Match$state))
-GOB_Match$city <- trim(toupper(GOB_Match$city))
+GOB_Match$Full.Name.Suffix <- (GOB_Match$Suffix)
+GOB_Match$state <- (toupper(GOB_Match$state))
+GOB_Match$city <- (toupper(GOB_Match$city))
 
 GOB_Match$Full.Name <- (GOB_Match$NamePart)
 GOB_Match$Last.Name.1 <- (GOB_Match$Last)
@@ -159,7 +153,6 @@ NOD_Match[is.na(NOD_Match$Last_Name_2),"Last_Name_2"] <- ""
 NOD_Match[NOD_Match$Last_Name_2 == "","Last_Name_2"] <-NOD_Match[NOD_Match$Last_Name_2 == "","Last_Name"]
 #
 #
-#
 NOD_Match[grepl(" JR",NOD_Match$Last_Name),"Suffix"] <- "JR"
 NOD_Match[grepl(" JR.",NOD_Match$Last_Name),"Suffix"] <- "JR"
 NOD_Match[grepl(", JR",NOD_Match$Last_Name),"Suffix"] <- "JR"
@@ -218,6 +211,10 @@ NOD_Match$Last_Name_2 <- gsub(", SR\\.","",NOD_Match$Last_Name_2)
 
 NOD_Match$Last_Name <- gsub(" ","",NOD_Match$Last_Name)
 NOD_Match$Last_Name_2 <- gsub(" ","",NOD_Match$Last_Name_2)
+
+NOD_Match$Last_Name <- gsub("-","",NOD_Match$Last_Name)
+NOD_Match$Last_Name_2 <- gsub("-","",NOD_Match$Last_Name_2)
+
 #
 # dump copy for working file rior to filter
 #
