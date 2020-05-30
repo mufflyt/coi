@@ -32,11 +32,49 @@ GOB_Match$OP_Physician_Profile_ID <- ""
 GOB_Match$Type <- ""
 GOB_Match$NPI<- ""
 
+states <- c("AK","AL","AR","AZ","CA","CO","CT","DE","FL","GA","HI","IA","ID","IL","IN","KS","KY","LA","MA","MD","ME","MI","MN","MO","MS","MT","NC","ND","NE","NH","NJ","NM","NV","NY","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VA","VT","WA","WI","WV","WY","DC")
+
+GOB_Match <- GOB_Match[GOB_Match$state %in% states,]
+
 GOB_Match$Full.Name.Suffix <- (GOB_Match$Suffix)
 GOB_Match$state <- (toupper(GOB_Match$state))
 GOB_Match$city <- (toupper(GOB_Match$city))
 
-GOB_Match$Full.Name <- (GOB_Match$NamePart)
+GOB_Match$NamePart <- gsub("'","",GOB_Match$NamePart)
+GOB_Match$NamePart <- gsub("-","",GOB_Match$NamePart)
+GOB_Match$NamePart <- gsub("\\."," ",GOB_Match$NamePart)
+GOB_Match$NamePart <- rm_white(GOB_Match$NamePart)
+GOB_Match$NamePart <- gsub("(NMN)","",GOB_Match$NamePart)
+GOB_Match$NamePart <- gsub("(Nmn)","",GOB_Match$NamePart)
+GOB_Match$NamePart <- gsub("\\(","",GOB_Match$NamePart)
+GOB_Match$NamePart <- gsub(")","",GOB_Match$NamePart)
+GOB_Match$NamePart <- toupper(GOB_Match$NamePart)
+
+GOB_Match$Middle <- gsub("'","",GOB_Match$Middle)
+GOB_Match$Middle <- gsub("-","",GOB_Match$Middle)
+GOB_Match$Middle <- gsub("\\."," ",GOB_Match$Middle)
+GOB_Match$Middle <- gsub(")","",GOB_Match$Middle)
+GOB_Match$Middle <- gsub("\\(","",GOB_Match$Middle)
+GOB_Match$Middle <- gsub(" ","",GOB_Match$Middle)
+GOB_Match$Middle <- rm_white(GOB_Match$Middle)
+
+GOB_Match$First <- gsub("-","",GOB_Match$First)
+GOB_Match$First <- gsub("'","",GOB_Match$First)
+GOB_Match$First <- gsub("\\.","",GOB_Match$First)
+
+GOB_Match$Last <- gsub("'","",GOB_Match$Last)
+GOB_Match$Last <- gsub(")","",GOB_Match$Last)
+GOB_Match$Last <- gsub("\\(","",GOB_Match$Last)
+
+GOB_Match$Last_Left <- gsub(")","",GOB_Match$Last_Left)
+GOB_Match$Last_Left <- gsub("\\(","",GOB_Match$Last_Left)
+GOB_Match$Last_Left <- gsub("'","",GOB_Match$Last_Left)
+
+GOB_Match$Last_Right <- gsub("'","",GOB_Match$Last_Right)
+
+GOB_Match$Middle <- gsub("NMN","",GOB_Match$Middle)
+
+GOB_Match$Full.Name <- toupper(GOB_Match$NamePart)
 GOB_Match$Last.Name.1 <- (GOB_Match$Last)
 GOB_Match$Last.Name.2 <- (GOB_Match$Last_Left)
 GOB_Match$Last.Name.3 <- (GOB_Match$Last_Right)
@@ -57,6 +95,10 @@ GOB_Match$Full.Name.3 <- (paste(GOB_Match$First, substr(GOB_Match$Middle,1,1), G
 GOB_Match$Full.Name.4 <- (paste(GOB_Match$First, substr(GOB_Match$Middle,1,1), GOB_Match$Last, GOB_Match$Full.Name.Suffix, sep=" "))
 
 GOB_Match$Full.Name.1 <- rm_white(GOB_Match$Full.Name.1)
+GOB_Match$Full.Name.2 <- rm_white(GOB_Match$Full.Name.2)
+GOB_Match$Full.Name.3 <- rm_white(GOB_Match$Full.Name.3)
+GOB_Match$Full.Name.4 <- rm_white(GOB_Match$Full.Name.4)
+#
 
 #
 rm(GOBA)
@@ -99,6 +141,11 @@ NOD <- NOD[!is.na(NOD$TypeCode),]
 # Normalize capitalization and create smaller subset files for matching process
 #
 NOD_Match <- NOD
+
+NOD_Match <- NOD_Match[NOD_Match$State %in% states,]
+
+NOD_Match$All_Name <- paste(NOD_Match$First_Name,NOD_Match$First_Name_2, NOD_Match$Middle_Name, NOD_Match$Middle_Name_2, NOD_Match$Last_Name, NOD_Match$Last_Name_2, NOD_Match$Suffix, NOD_Match$Suffix_2, sep = " | ")
+
 NOD_Match$GOB_ID <- ""
 NOD_Match$Type <- ""
 NOD_Match$Last_Name <- toupper(NOD_Match$Last_Name)
@@ -110,49 +157,7 @@ NOD_Match$Middle_Name_2  <- toupper(NOD_Match$Middle_Name_2)
 NOD_Match$Suffix  <- toupper(NOD_Match$Suffix)
 NOD_Match$Suffix_2  <- toupper(NOD_Match$Suffix_2)
 #
-# create full name field based on first, middle, last and suffix
-# two versions based on middle and alternate middle, then two versions - with and without suffix
-# total of four full names
-# full.name,1 = first, middle, last
-# full.name.2 = first, middle, last_2, 
-# full.name.3 = first, middle initial, last
-# full.name.4 = first, middle initian, last_2
-#
-NOD_Match$Full.Name.1 <- paste(NOD_Match$First_Name, NOD_Match$Middle_Name, NOD_Match$Last_Name, sep=" ")
-NOD_Match$Full.Name.2 <- paste(NOD_Match$First_Name, NOD_Match$Middle_Name, NOD_Match$Last_Name, NOD_Match$Suffix,sep=" ")
-NOD_Match$Full.Name.3 <- paste(NOD_Match$First_Name, substr(NOD_Match$Middle_Name,1,1), NOD_Match$Last_Name, sep=" ")
-NOD_Match$Full.Name.4 <- paste(NOD_Match$First_Name, substr(NOD_Match$Middle_Name,1,1), NOD_Match$Last_Name, NOD_Match$Suffix, sep=" ")
-#
-# replace '."
-#
-NOD_Match$Full.Name.1 <- gsub("\\.","",NOD_Match$Full.Name.1)
-NOD_Match$Full.Name.2 <- gsub("\\.","",NOD_Match$Full.Name.2)
-NOD_Match$Full.Name.3 <- gsub("\\.","",NOD_Match$Full.Name.3)
-NOD_Match$Full.Name.4 <- gsub("\\.","",NOD_Match$Full.Name.4)
-#
-# replace "-"
-#
-NOD_Match$Full.Name.1 <- gsub("-","",NOD_Match$Full.Name.1)
-NOD_Match$Full.Name.2 <- gsub("-","",NOD_Match$Full.Name.2)
-NOD_Match$Full.Name.3 <- gsub("-","",NOD_Match$Full.Name.3)
-NOD_Match$Full.Name.4 <- gsub("-","",NOD_Match$Full.Name.4)
-#
-# remove whitespace
-#
-NOD_Match$Full.Name.1 <- rm_white(NOD_Match$Full.Name.1)
-NOD_Match$Full.Name.2 <-  rm_white(NOD_Match$Full.Name.2)
-NOD_Match$Full.Name.3 <-  rm_white(NOD_Match$Full.Name.3)
-NOD_Match$Full.Name.4 <-  rm_white(NOD_Match$Full.Name.4)
-#
-# populate first and last tname 2 if empty with last or first name
-#
-NOD_Match[is.na(NOD_Match$First_Name_2),"First_Name_2"] <- ""
-NOD_Match[NOD_Match$First_Name_2 == "","First_Name_2"] <-NOD_Match[NOD_Match$First_Name_2 == "","First_Name"]
-
-NOD_Match[is.na(NOD_Match$Last_Name_2),"Last_Name_2"] <- ""
-NOD_Match[NOD_Match$Last_Name_2 == "","Last_Name_2"] <-NOD_Match[NOD_Match$Last_Name_2 == "","Last_Name"]
-#
-#
+# clean up names some more
 NOD_Match[grepl(" JR",NOD_Match$Last_Name),"Suffix"] <- "JR"
 NOD_Match[grepl(" JR.",NOD_Match$Last_Name),"Suffix"] <- "JR"
 NOD_Match[grepl(", JR",NOD_Match$Last_Name),"Suffix"] <- "JR"
@@ -165,9 +170,11 @@ NOD_Match$Last_Name <- gsub(" JR","",NOD_Match$Last_Name)
 
 NOD_Match[grepl(" III",NOD_Match$Last_Name),"Suffix"] <- "III"
 NOD_Match[grepl(", III",NOD_Match$Last_Name),"Suffix"] <- "III"
+NOD_Match[grepl(",III",NOD_Match$Last_Name),"Suffix"] <- "III"
 
 NOD_Match$Last_Name <- gsub(", III","",NOD_Match$Last_Name)
 NOD_Match$Last_Name <- gsub(" III","",NOD_Match$Last_Name)
+NOD_Match$Last_Name <- gsub("III","",NOD_Match$Last_Name)
 
 NOD_Match[grepl(" II",NOD_Match$Last_Name),"Suffix"] <- "II"
 NOD_Match[grepl(", II",NOD_Match$Last_Name),"Suffix"] <- "II"
@@ -214,10 +221,105 @@ NOD_Match$Last_Name_2 <- gsub(" ","",NOD_Match$Last_Name_2)
 
 NOD_Match$Last_Name <- gsub("-","",NOD_Match$Last_Name)
 NOD_Match$Last_Name_2 <- gsub("-","",NOD_Match$Last_Name_2)
+#
+# TODO - maybe add code to split compound first name into alternates?
+#
+NOD_Match$First_Name <- gsub("'","",NOD_Match$First_Name)
+NOD_Match$First_Name <- gsub("-","",NOD_Match$First_Name)
+NOD_Match$First_Name <- gsub("\\.","",NOD_Match$First_Name)
+NOD_Match$First_Name <- gsub(" ","",NOD_Match$First_Name)
+
+NOD_Match$First_Name_2 <- gsub("'","",NOD_Match$First_Name_2)
+NOD_Match$First_Name_2 <- gsub("-","",NOD_Match$First_Name_2)
+NOD_Match$First_Name_2 <- gsub("\\.","",NOD_Match$First_Name_2)
+NOD_Match$First_Name_2 <- gsub(" ","",NOD_Match$First_Name_2)
+
+NOD_Match$Last_Name <- gsub("'","",NOD_Match$Last_Name)
+NOD_Match$Last_Name <- gsub("-","",NOD_Match$Last_Name)
+NOD_Match$Last_Name <- gsub("\\.","",NOD_Match$Last_Name)
+NOD_Match$Last_Name <- gsub(" ","",NOD_Match$Last_Name)
+
+NOD_Match$Last_Name_2 <- gsub("'","",NOD_Match$Last_Name_2)
+NOD_Match$Last_Name_2 <- gsub("-","",NOD_Match$Last_Name_2)
+NOD_Match$Last_Name_2 <- gsub("\\.","",NOD_Match$Last_Name_2)
+NOD_Match$Last_Name_2 <- gsub(" ","",NOD_Match$Last_Name_2)
+NOD_Match$Last_Name_2 <- gsub("(MAIDEN)","",NOD_Match$Last_Name_2)
+NOD_Match$Last_Name_2 <- gsub("\\(ALSO,","",NOD_Match$Last_Name_2)
+NOD_Match$Last_Name_2 <- gsub("\\(","",NOD_Match$Last_Name_2)
+NOD_Match$Last_Name_2 <- gsub(")","",NOD_Match$Last_Name_2)
+
+NOD_Match$Middle_Name <- gsub("NMN","",NOD_Match$Middle_Name)
+NOD_Match$Middle_Name_2 <- gsub("NMN","",NOD_Match$Middle_Name_2)
+NOD_Match$Middle_Name <- gsub("'","",NOD_Match$Middle_Name)
+NOD_Match$Middle_Name_2 <- gsub("'","",NOD_Match$Middle_Name_2)
+NOD_Match$Middle_Name <- gsub("-","",NOD_Match$Middle_Name)
+NOD_Match$Middle_Name_2 <- gsub("-","",NOD_Match$Middle_Name_2)
+NOD_Match$Middle_Name <- gsub(" ","",NOD_Match$Middle_Name)
+NOD_Match$Middle_Name_2 <- gsub(" ","",NOD_Match$Middle_Name_2)
+NOD_Match$Middle_Name <- gsub("\\.","",NOD_Match$Middle_Name)
+NOD_Match$Middle_Name_2 <- gsub("\\.","",NOD_Match$Middle_Name_2)
+NOD_Match$Middle_Name <- gsub("\\(","",NOD_Match$Middle_Name)
+NOD_Match$Middle_Name_2 <- gsub("\\(","",NOD_Match$Middle_Name_2)
+NOD_Match$Middle_Name <- gsub(")","",NOD_Match$Middle_Name)
+NOD_Match$Middle_Name_2 <- gsub(")","",NOD_Match$Middle_Name_2)
+NOD_Match$Middle_Name <- gsub(",","",NOD_Match$Middle_Name)
+NOD_Match$Middle_Name_2 <- gsub(",","",NOD_Match$Middle_Name_2)
+#
+# TODO ... replace with regular expression for any numeric character
+#
+NOD_Match$Middle_Name <- gsub("0","",NOD_Match$Middle_Name)
+NOD_Match$Middle_Name_2 <- gsub("0","",NOD_Match$Middle_Name_2)
+#
+NOD_Match$Suffix <- gsub("\\.","",NOD_Match$Suffix)
+NOD_Match$Suffix_2 <- gsub("\\.","",NOD_Match$Suffix_2)
+#
+# create full name field based on first, middle, last and suffix
+# two versions based on middle and alternate middle, then two versions - with and without suffix
+# total of four full names
+# full.name,1 = first, middle, last
+# full.name.2 = first, middle, last_2, 
+# full.name.3 = first, middle initial, last
+# full.name.4 = first, middle initian, last_2
+#
+
+NOD_Match$Full.Name.1 <- paste(NOD_Match$First_Name, NOD_Match$Middle_Name, NOD_Match$Last_Name, sep=" ")
+NOD_Match$Full.Name.2 <- paste(NOD_Match$First_Name, NOD_Match$Middle_Name, NOD_Match$Last_Name, NOD_Match$Suffix,sep=" ")
+NOD_Match$Full.Name.3 <- paste(NOD_Match$First_Name, substr(NOD_Match$Middle_Name,1,1), NOD_Match$Last_Name, sep=" ")
+NOD_Match$Full.Name.4 <- paste(NOD_Match$First_Name, substr(NOD_Match$Middle_Name,1,1), NOD_Match$Last_Name, NOD_Match$Suffix, sep=" ")
+#
+# replace '."
+#
+NOD_Match$Full.Name.1 <- gsub("\\.","",NOD_Match$Full.Name.1)
+NOD_Match$Full.Name.2 <- gsub("\\.","",NOD_Match$Full.Name.2)
+NOD_Match$Full.Name.3 <- gsub("\\.","",NOD_Match$Full.Name.3)
+NOD_Match$Full.Name.4 <- gsub("\\.","",NOD_Match$Full.Name.4)
+#
+# replace "-"
+#
+NOD_Match$Full.Name.1 <- gsub("-","",NOD_Match$Full.Name.1)
+NOD_Match$Full.Name.2 <- gsub("-","",NOD_Match$Full.Name.2)
+NOD_Match$Full.Name.3 <- gsub("-","",NOD_Match$Full.Name.3)
+NOD_Match$Full.Name.4 <- gsub("-","",NOD_Match$Full.Name.4)
+#
+# remove whitespace
+#
+NOD_Match$Full.Name.1 <- rm_white(NOD_Match$Full.Name.1)
+NOD_Match$Full.Name.2 <-  rm_white(NOD_Match$Full.Name.2)
+NOD_Match$Full.Name.3 <-  rm_white(NOD_Match$Full.Name.3)
+NOD_Match$Full.Name.4 <-  rm_white(NOD_Match$Full.Name.4)
+#
+# populate first and last tname 2 if empty with last or first name
+#
+NOD_Match[is.na(NOD_Match$First_Name_2),"First_Name_2"] <- ""
+NOD_Match[NOD_Match$First_Name_2 == "","First_Name_2"] <-NOD_Match[NOD_Match$First_Name_2 == "","First_Name"]
+
+NOD_Match[is.na(NOD_Match$Last_Name_2),"Last_Name_2"] <- ""
+NOD_Match[NOD_Match$Last_Name_2 == "","Last_Name_2"] <-NOD_Match[NOD_Match$Last_Name_2 == "","Last_Name"]
 
 #
-# dump copy for working file rior to filter
+# dump copy for working file prior to filter
 #
+
 write.csv(NOD_Match,"~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412_1.csv",row.names = FALSE, na="")
 #
 # filter on Taxonomy
@@ -231,8 +333,8 @@ write.csv(NOD_Match,"~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_Ap
 rm(NOD)
 rm(NPPES)
 
-#------------------------------------------------------------------------------------------------------------------------
-#------------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------------------------
 # load functions for matching
 #------------------------------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------------------------------
