@@ -381,97 +381,97 @@ while (priormatchcount != matchcount) {
   # 
   
   
-  returnvals <- match2("[Full.Name.1]","[Full.Name.1]","G_FN1_N_FN1 CS ALLNPPES",GOB_Match,NOD_Match)
+  returnvals <- match2("[Full.Name.1]","[Full.Name.1]","G_FN1_N_FN1 S ALLNPPES",GOB_Match,NOD_Match)
   GOB_Match <- returnvals[[1]]
   NOD_Match <- returnvals[[2]]
   matchcount <- matchcount + returnvals[[3]]
   
   
-  returnvals <- match2("[Full.Name.1]","[Full.Name.2]","G_FN1_N_FN2 CS ALLNPPES",GOB_Match,NOD_Match)
+  returnvals <- match2("[Full.Name.1]","[Full.Name.2]","G_FN1_N_FN2 S ALLNPPES",GOB_Match,NOD_Match)
   GOB_Match <- returnvals[[1]]
   NOD_Match <- returnvals[[2]]
   matchcount <- matchcount + returnvals[[3]]
   
   
-  returnvals <- match2("[Full.Name.1]","[Full.Name.3]","G_FN1_N_FN3 CS ALLNPPES",GOB_Match,NOD_Match)
+  returnvals <- match2("[Full.Name.1]","[Full.Name.3]","G_FN1_N_FN3 S ALLNPPES",GOB_Match,NOD_Match)
   GOB_Match <- returnvals[[1]]
   NOD_Match <- returnvals[[2]]
   matchcount <- matchcount + returnvals[[3]]
   
   
-  returnvals <- match2("[Full.Name.1]","[Full.Name.4]","G_FN1_N_FN4 CS ALLNPPES",GOB_Match,NOD_Match)
+  returnvals <- match2("[Full.Name.1]","[Full.Name.4]","G_FN1_N_FN4 S ALLNPPES",GOB_Match,NOD_Match)
   GOB_Match <- returnvals[[1]]
   NOD_Match <- returnvals[[2]]
   matchcount <- matchcount + returnvals[[3]]
   
   
-  returnvals <- match2("[Full.Name.2]","[Full.Name.1]","G_FN2_N_FN1 CS ALLNPPES",GOB_Match,NOD_Match)
+  returnvals <- match2("[Full.Name.2]","[Full.Name.1]","G_FN2_N_FN1 S ALLNPPES",GOB_Match,NOD_Match)
   GOB_Match <- returnvals[[1]]
   NOD_Match <- returnvals[[2]]
   matchcount <- matchcount + returnvals[[3]]
   
   
-  returnvals <- match2("[Full.Name.2]","[Full.Name.2]","G_FN2_N_FN2 CS ALLNPPES",GOB_Match,NOD_Match)
+  returnvals <- match2("[Full.Name.2]","[Full.Name.2]","G_FN2_N_FN2 S ALLNPPES",GOB_Match,NOD_Match)
   GOB_Match <- returnvals[[1]]
   NOD_Match <- returnvals[[2]]
   matchcount <- matchcount + returnvals[[3]]
   
   
-  returnvals <- match2("[Full.Name.2]","[Full.Name.3]","G_FN2_N_FN3 CS ALLNPPES",GOB_Match,NOD_Match)
+  returnvals <- match2("[Full.Name.2]","[Full.Name.3]","G_FN2_N_FN3 S ALLNPPES",GOB_Match,NOD_Match)
   GOB_Match <- returnvals[[1]]
   NOD_Match <- returnvals[[2]]
   matchcount <- matchcount + returnvals[[3]]
   
   
-  returnvals <- match2("[Full.Name.2]","[Full.Name.4]","G_FN2_N_FN4 CS ALLNPPES",GOB_Match,NOD_Match)
+  returnvals <- match2("[Full.Name.2]","[Full.Name.4]","G_FN2_N_FN4 S ALLNPPES",GOB_Match,NOD_Match)
   GOB_Match <- returnvals[[1]]
   NOD_Match <- returnvals[[2]]
   matchcount <- matchcount + returnvals[[3]]
   
   
-  returnvals <- match2("[Full.Name.3]","[Full.Name.1]","G_FN3_N_FN1 CS ALLNPPES",GOB_Match,NOD_Match)
+  returnvals <- match2("[Full.Name.3]","[Full.Name.1]","G_FN3_N_FN1 S ALLNPPES",GOB_Match,NOD_Match)
   GOB_Match <- returnvals[[1]]
   NOD_Match <- returnvals[[2]]
   matchcount <- matchcount + returnvals[[3]]
   
   
-  returnvals <- match2("[Full.Name.3]","[Full.Name.2]","G_FN3_N_FN2 CS ALLNPPES",GOB_Match,NOD_Match)
+  returnvals <- match2("[Full.Name.3]","[Full.Name.2]","G_FN3_N_FN2 S ALLNPPES",GOB_Match,NOD_Match)
   GOB_Match <- returnvals[[1]]
   NOD_Match <- returnvals[[2]]
   matchcount <- matchcount + returnvals[[3]]
   
   
-  returnvals <- match2("[Full.Name.3]","[Full.Name.3]","G_FN3_N_FN3 CS ALLNPPES",GOB_Match,NOD_Match)
+  returnvals <- match2("[Full.Name.3]","[Full.Name.3]","G_FN3_N_FN3 S ALLNPPES",GOB_Match,NOD_Match)
   GOB_Match <- returnvals[[1]]
   NOD_Match <- returnvals[[2]]
   matchcount <- matchcount + returnvals[[3]]
   
   
-  returnvals <- match2("[Full.Name.3]","[Full.Name.4]","G_FN3_N_FN4 CS ALLNPPES",GOB_Match,NOD_Match)
+  returnvals <- match2("[Full.Name.3]","[Full.Name.4]","G_FN3_N_FN4 S ALLNPPES",GOB_Match,NOD_Match)
   GOB_Match <- returnvals[[1]]
   NOD_Match <- returnvals[[2]]
   matchcount <- matchcount + returnvals[[3]]
   
   
-  returnvals <- match2("[Full.Name.4]","[Full.Name.1]","G_FN4_N_FN1 CS ALLNPPES",GOB_Match,NOD_Match)
+  returnvals <- match2("[Full.Name.4]","[Full.Name.1]","G_FN4_N_FN1 S ALLNPPES",GOB_Match,NOD_Match)
   GOB_Match <- returnvals[[1]]
   NOD_Match <- returnvals[[2]]
   matchcount <- matchcount + returnvals[[3]]
   
   
-  returnvals <- match2("[Full.Name.4]","[Full.Name.2]","G_FN4_N_FN2 CS ALLNPPES",GOB_Match,NOD_Match)
+  returnvals <- match2("[Full.Name.4]","[Full.Name.2]","G_FN4_N_FN2 S ALLNPPES",GOB_Match,NOD_Match)
   GOB_Match <- returnvals[[1]]
   NOD_Match <- returnvals[[2]]
   matchcount <- matchcount + returnvals[[3]]
   
   
-  returnvals <- match2("[Full.Name.4]","[Full.Name.3]","G_FN4_N_FN3 CS ALLNPPES",GOB_Match,NOD_Match)
+  returnvals <- match2("[Full.Name.4]","[Full.Name.3]","G_FN4_N_FN3 S ALLNPPES",GOB_Match,NOD_Match)
   GOB_Match <- returnvals[[1]]
   NOD_Match <- returnvals[[2]]
   matchcount <- matchcount + returnvals[[3]]
   
   
-  returnvals <- match2("[Full.Name.4]","[Full.Name.4]","G_FN4_N_FN4 CS ALLNPPES",GOB_Match,NOD_Match)
+  returnvals <- match2("[Full.Name.4]","[Full.Name.4]","G_FN4_N_FN4 S ALLNPPES",GOB_Match,NOD_Match)
   GOB_Match <- returnvals[[1]]
   NOD_Match <- returnvals[[2]]
   matchcount <- matchcount + returnvals[[3]]
