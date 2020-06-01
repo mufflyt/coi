@@ -772,8 +772,8 @@ target_ndc_package_code = c(
 This is challenging using R but ```r stringdist``` may be a package worth exploring in the future.  
 ```r
 library(dplyr)
-applicants <- read.csv(url("https://www.dropbox.com/s/o4j1h7tqbmb5746/pull_All_Years_rename_56.csv?raw=1"))%>% pull(x)
-residents <- read.csv(url("https://www.dropbox.com/s/7v67tpo8v52q58k/pull_residents_distinct_23.csv?raw=1")) %>% pull(x)
+applicants <- read.csv(url(""))%>% pull(x)
+residents <- read.csv(url("")) %>% pull(x)
 set1 <-  applicants 
 set2 <- residents
 library(stringdist)
@@ -817,6 +817,9 @@ matchNames<-fuzzymatch(set1,set2,"set1","set2",meth="osa")
 
 head(matchNames)
 ```
+
+# Venn Diagram
+
 
 ## Docker
 I am kicking around the idea of having a Docker file associated with this project.  It would help run the code in a reproducible manner without affecting local settings that can be quite important to some people.  
