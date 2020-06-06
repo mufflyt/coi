@@ -906,3 +906,6 @@ Power Query
 Latest GOBA issues.xls - There are 71 people with the exact same first, middle, last, suffix names and the same city, state.  
 
 
+
+85% matched from GOBA to PPI number.  
+# Add demographics with NPPES and PhysicianCompare.  
