@@ -1,6 +1,42 @@
 #
-# 5/23/20 - reworked matching to use function.  added fuzzy match files (removed duplicate names from each first)
-# 5/23/20 2059 - added 174400000X to taxonomy filter
+# 1. Input
+#
+# 1.1 PRE_Match: Prescriber Demographics (raw, unprocessed) ~/Dropbox/Pharma_Influence/Data/Medicare_Part_D/PartD_Prescriber_PUF_NPI_DRUG_Combined.csv
+# 1.2 GOB_Match: GOBA data, scrapped [ ] and then cleaned [ ] "~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_1.csv
+# 1.3 NOD_Match: NPPES data file (raw, unprocessed) "~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_1.csv
+#
+# 2. Pre-match processing
+#
+# 2.1 Prescriber (PRE_Match)
+#
+# 2.2 GOBA (GOB_Match)
+# 2.2.1 removed if not in 50 states + DC
+# 
+# 2.3 NPPES (NOD_Match) 
+# 2.3.1
+#
+# 3. Intermediate Files
+#
+# 3.1 Cleaned and Normalized GOBA data: ~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_2.csv
+# 3.2 Cleaned and Normalized NPPES: ~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412_1.csv
+# 3.3 Cleaned and Normalized NPPES, Filtered on OBGYN Taxonomy Codes: ~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412_2.csv
+#
+# 4. Functions
+#
+# 4.1 
+# 4.2 
+# 4.3 
+# 4.4 
+#
+# 5. Output
+#
+# 5.1 GOBA_Match_NPPES_Matched:  "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/GOBA_Match_NPPES_Matched.csv"
+# 5.2 GOBA_Match_NPPES_UnMatched: "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/GOBA_Match_NPPES_UnMatched.csv"
+# 5.3 GOB_Match: "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/GOBA_Match_ALL.csv"
+# 5.4 NOD_Match:  "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/NOD_Match_ALL.csv"
+# 5.5 GOB_Fuzzy:  "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/GOBA_Fuzzy.csv"
+# 5.6 NOD_Fuzzy: "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/NOD_Fuzzy.csv"
+#
 library("sqldf")
 library("RSQLite")
 library("qdapRegex")
@@ -109,7 +145,7 @@ write.csv(GOB_Match,"~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_
 # NPPES Data File
 #
 
-NPPES <- read.csv("~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412.csv", stringsAsFactors=FALSE)
+NPPES <- read.csv("~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_1.csv", stringsAsFactors=FALSE)
 NOD <- NPPES[,c(1,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,7,15,6,14,8,16,10,18,24,23, 25,2)
              ]
 rm(NPPES)
@@ -281,7 +317,6 @@ NOD_Match$Suffix_2 <- gsub("\\.","",NOD_Match$Suffix_2)
 # full.name.3 = first, middle initial, last
 # full.name.4 = first, middle initian, last_2
 #
-
 NOD_Match$Full.Name.1 <- paste(NOD_Match$First_Name, NOD_Match$Middle_Name, NOD_Match$Last_Name, sep=" ")
 NOD_Match$Full.Name.2 <- paste(NOD_Match$First_Name, NOD_Match$Middle_Name, NOD_Match$Last_Name, NOD_Match$Suffix,sep=" ")
 NOD_Match$Full.Name.3 <- paste(NOD_Match$First_Name, substr(NOD_Match$Middle_Name,1,1), NOD_Match$Last_Name, sep=" ")
