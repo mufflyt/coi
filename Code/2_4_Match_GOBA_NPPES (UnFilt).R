@@ -1,3 +1,10 @@
+# revisions 
+#
+# 060820 
+# - updated to indicate already matched in unfiltered NOD set so that duplicates are not generated
+# - updated to process rejectMI file (remove those matches)
+
+
 # start with GOB_Match and NOD_Match from 2_1_Match_GOBA_NOD
 # pull in fuzzy_R1.csv
 # update NOD and GOB datasets
@@ -7,42 +14,63 @@ library("sqldf")
 library("RSQLite")
 library("qdapRegex")
 
-NOD_Match <- read.csv("~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/NOD_Match_ALL.csv", stringsAsFactors=FALSE) #filtered dataset
 GOB_Match <- read.csv("~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/GOBA_Match_ALL.csv", stringsAsFactors=FALSE)
 Fuzzy_Match <- read.csv("~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/Fuzzy_R1.csv", stringsAsFactors=FALSE)
-
-NOD_Match[is.na(NOD_Match$GOB_ID),"GOB_ID"] <- ""
-GOB_Match[is.na(GOB_Match$NPI),"NPI"] <- ""
+RejectMI <- read.csv("~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/Reject_MI.csv", stringsAsFactors=FALSE)
 
 #
-#update GOB
+# remove NAs
 #
+
+GOB_Match[is.na(GOB_Match$NPI),"NPI"]  <- ""
+
+#
+#update GOB with Fuzzy
+#
+
 GOB_Match <- sqldf('select GOB_Match.*, Fuzzy_Match.[GOB_ID] as m_ID, Fuzzy_Match.[NPI] as m_NPI  from GOB_Match LEFT OUTER JOIN Fuzzy_Match on GOB_Match.[ID] = Fuzzy_Match.[GOB_ID]')
 GOB_Match[!is.na(GOB_Match$m_ID),"NPI"] <-  GOB_Match[!is.na(GOB_Match$m_ID),"m_NPI"]
 GOB_Match[!is.na(GOB_Match$m_ID),"Type"] <- "Fuzzy_R1"
 GOB_Match$m_ID<- NULL
 GOB_Match$m_NPI <- NULL
+rm(Fuzzy_Match)
+
+#
+#update GOB with rejectMI
+#
+
+GOB_Match <- sqldf('select GOB_Match.*, RejectMI.[GOBA_ID] as m_ID  from GOB_Match LEFT OUTER JOIN RejectMI on GOB_Match.[ID] = RejectMI.[GOBA_ID]')
+GOB_Match[!is.na(GOB_Match$m_ID),"NPI"] <-  ""
+GOB_Match[!is.na(GOB_Match$m_ID),"Type"] <- ""
+GOB_Match$m_ID<- NULL
+rm(RejectMI)
+
 #
 # save new list of matches
 #
 GOBA_Match_NPPES <- subset(GOB_Match,select = c("ID","NPI", "Type"))
 GOBA_Match_NPPES_Matched <- GOBA_Match_NPPES[GOBA_Match_NPPES$NPI!= "",]
 GOBA_Match_NPPES_UnMatched <- GOBA_Match_NPPES[GOBA_Match_NPPES$NPI == "",]
+
 #
 # load NOD file without Taxonomy filter
 #
-NOD_Match_old <- NOD_Match
+
 NOD_Match <- read.csv("~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412_1.csv", stringsAsFactors=FALSE) #filtered dataset
 NOD_Match$GOB_ID <- ""
 NOD_Match$Type <- ""
 #
 #update NOD_Match
 #
-NOD_Match <- sqldf('select NOD_Match.*, Fuzzy_Match.[GOB_ID] as m_ID, Fuzzy_Match.[NPI] as m_NPI from NOD_Match LEFT OUTER JOIN Fuzzy_Match on NOD_Match.[NPI] = Fuzzy_Match.[NPI]')
+GOB_Matchx <- GOB_Match[GOB_Match$NPI != "",]
+
+NOD_Match <- sqldf('select NOD_Match.*, GOB_Matchx.[ID] as m_ID, GOB_Matchx.[Type] as m_Type from NOD_Match LEFT OUTER JOIN GOB_Matchx on NOD_Match.[NPI] = GOB_Matchx.[NPI]')
 NOD_Match[!is.na(NOD_Match$m_ID),"GOB_ID"] <-  NOD_Match[!is.na(NOD_Match$m_ID),"m_ID"]
-NOD_Match[!is.na(NOD_Match$m_ID),"Type"] <- "Fuzzy_R1"
+NOD_Match[!is.na(NOD_Match$m_ID),"Type"] <- NOD_Match[!is.na(NOD_Match$m_ID),"m_Type"]
 NOD_Match$m_ID<- NULL
 NOD_Match$m_NPI <- NULL
+rm(GOB_Matchx)
+
 #------------------------------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------------------------------
 # Load Functions for Matching (only ones including state .. 2 and 4)
