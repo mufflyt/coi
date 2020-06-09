@@ -1,3 +1,13 @@
+#
+# Revisions
+#
+# 06/07/2020 
+# - dropbox file paths for input data, new field names in PCND
+# - added code to amend cross reference list (NPI to PPI) to include GOBA names
+#
+#
+# this file generates NPI to PPI cross reference.  NPI list is from PCND OBGYN's and GOBA OBGYNs
+
 # Installing
 # install.packages("readr")
 # install.packages("qdapRegex")
@@ -5,6 +15,7 @@
 # install.packages("tidyverse")
 # install.packages("Hmisc")
 # Loading
+
 library("sqldf")
 library("qdapRegex")
 library("sqldf")
@@ -13,8 +24,10 @@ library("tidyverse")
 library ("Hmisc")
 
 # Load NPPES Data *****************************************************************************************************************
-NPPES <- read.csv("/Volumes/Projects/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412_2.csv", stringsAsFactors = FALSE)
-#NPPES <- read.csv("D:/muffly/data/Originals/match_data/npidata_pfile_20050523-20190707_demo.csv", stringsAsFactors=FALSE)
+NPPES <- read.csv("~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412.csv",stringsAsFactors = FALSE)
+       
+NPPES <- NPPES[,c(1,6,7,8,9,10,14,15,16,17,18,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35)]            
+
 
 NPPES$Provider.First.Name = tolower(NPPES$Provider.First.Name)
 NPPES$Provider.Middle.Name = tolower(NPPES$Provider.Middle.Name)
@@ -40,13 +53,13 @@ NPPES$Provider.Business.Practice.Location.Address.Postal.Code <- substr(NPPES$Pr
 NPPES$Provider.Provider.Business.Mailing.Address.Postal.Code <- substr(NPPES$Provider.Business.Mailing.Address.Postal.Code,1,5)
 
 NPPES$Physician_Profile_ID <- ""
-readr::write_rds(NPPES, "/Volumes/Projects/Pharma_Influence/Data/output_of_1_Match_OP_NPPES_PCDN_NPPES_dataframe.rds")
+
 
 # Load OP data ********************************************************************************************************************
 # *********************************************************************************************************************************
 
-OP <- read.csv("/Volumes/Projects/Pharma_Influence/Data/Open_Payments/OP_PH_PRFL_SPLMTL_P01172020_2.csv", stringsAsFactors=FALSE)
-#OP <- read.csv("D:/muffly/data/Originals/match_data/OP_PH_PRFL_SPLMTL_P06292018_demo.csv", stringsAsFactors=FALSE)
+OP <- read.csv("~/Dropbox/Pharma_Influence/Data/Open_Payments/OP_PH_PRFL_SPLMTL_P01172020.csv", stringsAsFactors=FALSE)
+OP <- OP[,c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,17,18,19,20,21,22)]
 
 OP$Physician_Profile_First_Name = tolower(OP$Physician_Profile_First_Name)
 OP$Physician_Profile_Middle_Name = tolower(OP$Physician_Profile_Middle_Name)
@@ -460,10 +473,10 @@ NPPES$uPPI <- NULL
 NPPES[is.na(NPPES$Physician_Profile_ID),"Physician_Profile_ID"] <- ""
 
 rm(OPM)
+OP_Matched <- OP[OP$NPI != "",]
 
 # *******************************************************************************************************************************************************************
 
-OP_Matched <- OP[OP$NPI != "",]
 OP_UnMatched <- OP[OP$NPI == "",]
 
 #OP_Spec <- read.csv("D:/muffly/data/Originals/match_data/OP_PH_PRFL_SPLMTL_P06292018_tax.csv", stringsAsFactors=FALSE)
@@ -471,36 +484,48 @@ OP_UnMatched <- OP[OP$NPI == "",]
 #OP_UnMatched <- sqldf('select OP_UnMatched.*, OP_Spec.Physician_Profile_Primary_Specialty from OP_UnMatched left outer join OP_Spec on OP_UnMatched.Physician_Profile_ID = OP_Spec.Physician_Profile_ID')
 #unMatchedOBGYN <- read.csv("D:/muffly/data/Originals/match_data/unMatchedOBGYN.csv", stringsAsFactors=FALSE)
 #unMatchedOBGYNx <- sqldf('select unMatchedOBGYN.*, NPPES.* from unMatchedOBGYN left outer join NPPES on unMatchedOBGYN.Physician_Profile_Last_Name = NPPES.[Provider.Last.Name..Legal.Name.]   and unMatchedOBGYN.Physician_Profile_Zipcode = NPPES.[Provider.Business.Practice.Location.Address.Postal.Code] and NPPES.[Physician_Profile_ID] = "" ')
-
 #write.csv(OP_Matched,"D:/muffly/data/Originals/match_data/OP_Matched.csv",row.names = FALSE)
 
 #
 # *************************************************************************************************
 # Clean up 
-#PCND <- read.csv("D:/muffly/data/Originals/Physician_Compare/Physician_Compare_National_Downloadable_File.csv", stringsAsFactors=FALSE)
-PCND <- read.csv("/Volumes/Projects/Pharma_Influence/Data/Physician_Compare/Physician_Compare_National_Downloadable_File2.csv", stringsAsFactors=FALSE)
-  
-  
+PCND <- read.csv("~/Dropbox/Pharma_Influence/Data/Physician_Compare/Physician_Compare_National_Downloadable_File.csv", stringsAsFactors=FALSE)
+PCNDx <- PCND # store copy for later
+#
+# change names to field names based on code base
+#
+names(PCND) <- c("NPI","PAC ID","Professional.Enrollment.ID","Last.Name","First.Name","Middle.Name","Suffix","Gender","Credential","Medical.school.name","Graduation.year","Primary.specialty","Secondary.specialty.1","Secondary.specialty.2","Secondary.specialty.3","Secondary.specialty.4","All.secondary.specialties","Organization.legal.name","Group.Practice.PAC.ID","Number.of.Group.Practice.members","Line.1.Street.Address","Line.2.Street.Address","Marker.of.address.line.2.suppression","City","State","Zip.Code","Phone.Number","Hospital.affiliation.CCN.1","Hospital.affiliation.LBN.1","Hospital.affiliation.CCN.2","Hospital.affiliation.LBN.2","Hospital.affiliation.CCN.3","Hospital.affiliation.LBN.3","Hospital.affiliation.CCN.4","Hospital.affiliation.LBN.4","Hospital.affiliation.CCN.5","Hospital.affiliation.LBN.5","Professional.accepts.Medicare.Assignment")
+#
+# filter PCND on US States and OBGYN practice
+#
 PCND <- filter(PCND, PCND$State %nin% c("AP","AE", "AS", "FM", "GU", "MH","MP", "PR","PW","UM","VI", "ZZ"))
 PCND <- filter(PCND, (PCND$Primary.specialty %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))  | (PCND$Secondary.specialty.1 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY")) | (PCND$Secondary.specialty.2 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY")) | (PCND$Secondary.specialty.3 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY")) | (PCND$Secondary.specialty.4 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))  ) 
-
+# 
+# determine unique NPI entries and pull non repeating demographics assocated with the uniques
+#
 PCND_Matched <- sqldf('select PCND.NPI from PCND group by PCND.NPI')
 PCND_Matched <- sqldf('select PCND_Matched.NPI, OP_Matched.Physician_Profile_ID from PCND_Matched left outer join OP_Matched on PCND_Matched.NPI = OP_Matched.NPI')
 
 PCND1 <- sqldf('select PCND.NPI,  PCND.Gender, PCND.[Medical.school.name] as "MedSchool",PCND.State, PCND.[Graduation.year] as "GraduationYear" from PCND group by PCND.NPI')
 PCND1 <- sqldf('select PCND1.*, PCND_Matched.Physician_Profile_ID as "PPI" from PCND1 join PCND_Matched on PCND1.NPI = PCND_Matched.NPI')
 PCND1 <- PCND1[,c(1,6,2:5)]
-
-StudyGroup1 <- PCND[,c(1,2)]
-StudyGroup1 <- StudyGroup[!is.na(StudyGroup$PPI),]
-
-PCND2 <- sqldf('select PCND.*, StudyGroup1.PPI from PCND left outer join StudyGroup1 on PCND.NPI = StudyGroup1.NPI')
-PCND2 <- PCND2[is.na(PCND2$PPI),]
-
-rm(PCND)
 rm(PCND_Matched)
-rm(OP_Matched)
-rm(OP_UnMatched)
+#
+# split off unmatched and then get full PCND list for these (with duplicates) - call that PCND2
+#
+#StudyGroup1 <- PCND1[,c(1,2)]
+#StudyGroup1_matched <- StudyGroup1[!is.na(StudyGroup1$PPI),]
+#StudyGroup1_unmatched <- StudyGroup1[is.na(StudyGroup1$PPI),]
+PCND_unmatched <- PCND1[is.na(PCND1$PPI),c(1,2)]
+
+#PCND2 <- sqldf('select PCND.*, StudyGroup1_unmatched.PPI from PCND  join StudyGroup1_unmatched on PCND.NPI = StudyGroup1_unmatched.NPI')
+PCND2 <- sqldf('select PCND.*, PCND_unmatched.PPI from PCND  join PCND_unmatched on PCND.NPI = PCND_unmatched.NPI')
+#
+# clean up
+#
+rm(PCND)
+## rm(OP_Matched) # not sure about dropping this yet!
+## rm(OP_UnMatched) # not sure about dropping this yet!
 #
 # *************************************************************************************************
 # Match remaining PCND
@@ -531,7 +556,10 @@ PCND_ZIP_cnt <- sqldf('select NPI, Count(NPI) as "Count" from PCND_ZIP group by 
 # load payment data
 
 OP_Summary <- OP
-OP_Summary <- sqldf('select OP_Summary.*, StudyGroup1.NPI as "mNPI" from OP_Summary left outer join StudyGroup1 on OP_Summary.Physician_Profile_ID = StudyGroup1.PPI')
+OP_Summary <- sqldf('select OP_Summary.*, PCND1.NPI as "mNPI" from OP_Summary left outer join PCND1 on OP_Summary.Physician_Profile_ID = PCND1.PPI')
+
+#OP_Summary <- sqldf('select OP_Summary.*, StudyGroup1.NPI as "mNPI" from OP_Summary left outer join StudyGroup1 on OP_Summary.Physician_Profile_ID = StudyGroup1.PPI')
+
 OP_Summary <- OP_Summary[is.na(OP_Summary$mNPI),]
 OP_Summary$mNPI <- NULL
 OP_Summary$NPI <- NULL
@@ -957,8 +985,12 @@ PCND$mPPI <- NULL
 # Generate Round 2 match list
 PCND <- sqldf('select PCND.NPI, PCND.PPI , PCND.Gender, PCND.[Medical.school.name] as "MedSchool",PCND.State, PCND.[Graduation.year] as "GraduationYear" from PCND group by PCND.NPI')
 
+
 StudyGroup2 <- PCND[,c(1,2)]
 StudyGroup2 <- StudyGroup2[StudyGroup2$PPI != "",]
+
+StudyGroup1 <- PCND1[!is.na(PCND1$PPI),c(1,2)]
+
 StudyGroup <- merge(StudyGroup1, StudyGroup2, all = TRUE)
 
 rm(PCND)
@@ -969,34 +1001,52 @@ PCND <- sqldf('select PCND1.*, StudyGroup2.PPI as "R2PPI" from PCND1 left outer 
 PCND[is.na(PCND$PPI),"PPI"] <- PCND[is.na(PCND$PPI),"R2PPI"]
 PCND$R2PPI <- NULL
 rm(PCND1)
+rm(StudyGroup1)
+rm(StudyGroup2)
 
-write.csv(PCND,"PCND.csv", row.names = FALSE)
-write_rds(PCND,"PCND.rds")
-write.csv(StudyGroup, "studygroupR2.csv", row.names = FALSE)
-write_rds(StudyGroup,"StudyGroupR2.rds")
-PCND_UnMatched <- PCND[is.na(PCND$PPI),]
+PCND_unmatched <- PCND[is.na(PCND$PPI),]
+PCND_unmatched <- sqldf('select PCNDx.* from PCNDx join PCND_unmatched on PCNDx.NPI = PCND_unmatched.NPI')
+rm(PCNDx)
+#
+# *************************************************************************************************************************************************************************
+#
 
-PCND <- read.csv("/Volumes/Projects/Pharma_Influence/Data/Physician_Compare/Physician_Compare_National_Downloadable_File2.csv", stringsAsFactors=FALSE)
-PCND <- filter(PCND, PCND$State %nin% c("AP","AE", "AS", "FM", "GU", "MH","MP", "PR","PW","UM","VI", "ZZ"))
-PCND <- filter(PCND, (PCND$Primary.specialty %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))  | (PCND$Secondary.specialty.1 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY")) | (PCND$Secondary.specialty.2 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY")) | (PCND$Secondary.specialty.3 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY")) | (PCND$Secondary.specialty.4 %in% c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))  ) 
+# Load in GOBA File, filter on NPI found, link to OP to get PPI data, find those not in study group based on PCND
 
-PCND_UnMatchedx <- sqldf('select PCND.* from PCND_UnMatched left outer join PCND on PCND.NPI = PCND_UnMatched.NPI')
-PCND_UnMatchedx <- sqldf('select NPI, [Last.Name], [First.Name],[Middle.Name],[Line.1.Street.Address],City, State, [Zip.Code] from PCND_UnMatchedx group by [NPI]')
+GOBA <- read.csv("~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/GOBA_Match_ALL_1.csv", stringsAsFactors=FALSE)
+GOBA <- GOBA[!is.na(GOBA$NPI),c("userid","NPI")]
+GOBA <- sqldf('select GOBA.*, OP_Matched.Physician_Profile_ID as "PPI" from GOBA left outer join OP_Matched  on GOBA.NPI = OP_Matched.NPI')
+GOBA <- GOBA[!is.na(GOBA$PPI),]
 
-write.csv(PCND_UnMatchedx,"PCND_UnMatched.csv", row.names = FALSE)
+# remove those matched via PCND compare
 
-# rm(PCND)
-# rm(PCND_CS)
-# rm(PCND_CS_cnt)
-# rm(PCND_CS_dup)
-# rm(PCND_CS_dup_cnt)
-# rm(PCND_CS_uni)
-# rm(PCND_CS_uni_cnt)
-# rm(PCND_ZIP)
-# rm(PCND_ZIP_cnt)
-# rm(PCNDx)
-# rm(MP)
-# rm(OP_Summary)
+GOBA <- sqldf('select GOBA.*, StudyGroup.PPI as "SGPPI" from GOBA left outer join StudyGroup on GOBA.NPI = StudyGroup.NPI')
+GOBA <- GOBA[is.na(GOBA$SGPPI),]
+
+StudyGroup3 <- GOBA[c(2,3)]
+StudyGroup <- merge(StudyGroup, StudyGroup3, all = TRUE)
+rm(StudyGroup3)
+
+#
+# *************************************************************************************************************************************************************************
+#
+
+write.csv(PCND_unmatched,"~/Dropbox/Pharma_Influence/Guido_Working_file/PCND_UnMatched.csv", row.names = FALSE)
+write.csv(StudyGroup,"~/Dropbox/Pharma_Influence/Guido_Working_file/StudyGroup.csv", row.names = FALSE)
+
+rm(PCND)
+rm(PCND_CS)
+rm(PCND_CS_cnt)
+rm(PCND_CS_dup)
+rm(PCND_CS_dup_cnt)
+rm(PCND_CS_uni)
+rm(PCND_CS_uni_cnt)
+rm(PCND_ZIP)
+rm(PCND_ZIP_cnt)
+rm(MP)
+rm(PCND_unmatched)
+rm(StudyGroup)
+
 
 # *************************************************************************************************************************************************************************
 # update OP with matched based on PCND, add specialty, filter on OBGYN (i.e., build list of unmatched OBGYN in OP)
@@ -1021,6 +1071,3 @@ OP_UnMatched_OBGYN <- filter(OP_UnMatched, OP_UnMatched$Physician_Profile_Primar
 write.csv(OP_UnMatched,"OP_UnMatched.csv", row.names = FALSE)
 write.csv(OP_UnMatched_OBGYN,"OP_UnMatched_OBGYN.csv", row.names = FALSE)
 
-beepr::beep(sound = 5)
-beepr::beep(sound = 5)
-beepr::beep(sound = 5)
