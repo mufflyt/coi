@@ -1,3 +1,8 @@
+# revision
+#
+# 06092020
+#
+# - filtered out NPI values from PRE_Match that have been matched (to prevent dups)
 #
 # 1. Input
 #
@@ -145,7 +150,7 @@ write.csv(GOB_Match,"~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_
 # NPPES Data File
 #
 
-NPPES <- read.csv("~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_1.csv", stringsAsFactors=FALSE)
+NPPES <- read.csv("~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412.csv", stringsAsFactors=FALSE)
 NOD <- NPPES[,c(1,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,7,15,6,14,8,16,10,18,24,23, 25,2)
              ]
 rm(NPPES)
@@ -1138,6 +1143,14 @@ NOD_Match$State <- NOD_Match$oldState
 # Match on Prescription Data ----------------------------------------------------------------------------------------------------------------------------
 # 
 
+GOB_Matchx <- GOB_Match[GOB_Match$NPI != "",]
+PRE_Match <- sqldf('select PRE_Match.*, GOB_Matchx.[ID] as m_ID, GOB_Matchx.[Type] as m_Type  from PRE_Match LEFT OUTER JOIN GOB_Matchx on PRE_Match.[NPI] = GOB_Matchx.[NPI]')
+PRE_Match[!is.na(PRE_Match$m_ID),"GOB_ID"] <-  PRE_Match[!is.na(PRE_Match$m_ID),"m_ID"]
+PRE_Match[!is.na(PRE_Match$m_ID),"Type"] <-  PRE_Match[!is.na(PRE_Match$m_ID),"m_Type"]
+PRE_Match$m_ID <- NULL
+PRE_Match$m_Type <- NULL
+rm(GOB_Matchx)
+
 returnvals <- match4("[First.Name.1]","[First_Name]","[Last.Name.1]","[Last_Name]","G_FiN1LaN1_P_FiNLaN",GOB_Match,PRE_Match)
 GOB_Match <- returnvals[[1]]
 PRE_Match <- returnvals[[2]]
@@ -1154,6 +1167,15 @@ returnvals <- match4("[First.Name.1]","[First_Name]","[Last.Name.3]","[Last_Name
 GOB_Match <- returnvals[[1]]
 PRE_Match <- returnvals[[2]]
 matchcount <- matchcount + returnvals[[3]]
+
+PRE_Matchx <- PRE_Match[PRE_Match$GOB_ID != "",]
+NOD_Match <- sqldf('select NOD_Match.*, PRE_Matchx.[GOB_ID] as m_ID, PRE_Matchx.[Type] as m_Type  from NOD_Match LEFT OUTER JOIN PRE_Matchx on NOD_Match.[NPI] = PRE_Matchx.[NPI]')
+NOD_Match[!is.na(NOD_Match$m_ID),"GOB_ID"] <-  NOD_Match[!is.na(NOD_Match$m_ID),"m_ID"]
+NOD_Match[!is.na(NOD_Match$m_ID),"Type"] <-  NOD_Match[!is.na(NOD_Match$m_ID),"m_Type"]
+NOD_Match$m_ID <- NULL
+NOD_Match$m_Type <- NULL
+rm(NOD_Matchx)
+
 
 loops <- loops + 1
 
@@ -1200,4 +1222,4 @@ write.csv(GOB_Fuzzy, "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_N
 write.csv(NOD_Fuzzy, "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/NOD_Fuzzy.csv",row.names = FALSE, na="")
 
 rm(list=ls()) 
-
+gc()
