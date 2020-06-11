@@ -71,6 +71,9 @@ NOD_Match <- sqldf(c('create index NPI1 on NOD_Match(NPI)','create index NPI2 on
 #Sys.time()
 
 #NOD_Match <- sqldf('select NOD_Match.*, GOB_Matchx.[ID] as m_ID, GOB_Matchx.[Type] as m_Type from NOD_Match LEFT OUTER JOIN GOB_Matchx on NOD_Match.[NPI] = GOB_Matchx.[NPI]')
+
+#Sys.time()
+
 NOD_Match[!is.na(NOD_Match$m_ID),"GOB_ID"] <-  NOD_Match[!is.na(NOD_Match$m_ID),"m_ID"]
 NOD_Match[!is.na(NOD_Match$m_ID),"Type"] <- NOD_Match[!is.na(NOD_Match$m_ID),"m_Type"]
 NOD_Match$m_ID<- NULL
