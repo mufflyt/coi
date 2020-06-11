@@ -64,7 +64,13 @@ NOD_Match$Type <- ""
 #
 GOB_Matchx <- GOB_Match[GOB_Match$NPI != "",]
 
-NOD_Match <- sqldf('select NOD_Match.*, GOB_Matchx.[ID] as m_ID, GOB_Matchx.[Type] as m_Type from NOD_Match LEFT OUTER JOIN GOB_Matchx on NOD_Match.[NPI] = GOB_Matchx.[NPI]')
+#Sys.time()
+
+NOD_Match <- sqldf(c('create index NPI1 on NOD_Match(NPI)','create index NPI2 on GOB_Matchx(NPI)' ,'select NOD_Match.*, GOB_Matchx.[ID] as m_ID, GOB_Matchx.[Type] as m_Type from main.NOD_Match LEFT OUTER JOIN main.GOB_Matchx on main.NOD_Match.[NPI] = main.GOB_Matchx.[NPI]'))
+
+#Sys.time()
+
+#NOD_Match <- sqldf('select NOD_Match.*, GOB_Matchx.[ID] as m_ID, GOB_Matchx.[Type] as m_Type from NOD_Match LEFT OUTER JOIN GOB_Matchx on NOD_Match.[NPI] = GOB_Matchx.[NPI]')
 NOD_Match[!is.na(NOD_Match$m_ID),"GOB_ID"] <-  NOD_Match[!is.na(NOD_Match$m_ID),"m_ID"]
 NOD_Match[!is.na(NOD_Match$m_ID),"Type"] <- NOD_Match[!is.na(NOD_Match$m_ID),"m_Type"]
 NOD_Match$m_ID<- NULL
@@ -547,5 +553,5 @@ names(GOB_Fuzzy)[1] <- "GOB_ID"
 write.csv(GOB_Fuzzy, "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/GOBA_Fuzzy_1.csv",row.names = FALSE, na="")
 write.csv(NOD_Fuzzy, "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/NOD_Fuzzy_1.csv",row.names = FALSE, na="")
 
-rm(list=ls()) 
+`rm(list=ls()) 
 
