@@ -25,9 +25,10 @@ library ("Hmisc")
 
 # Load NPPES Data *****************************************************************************************************************
 NPPES <- read.csv("~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412.csv",stringsAsFactors = FALSE)
-       
-NPPES <- NPPES[,c(1,6,7,8,9,10,14,15,16,17,18,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35)]            
-
+NPPES <- NPPES[,c(1,6,7,8,9,10,14,15,16,17,18,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104)]            
+NPPES$TAX <- NA
+NPPES$TAX <- paste(NPPES$Healthcare.Provider.Taxonomy.Code_1,NPPES$Healthcare.Provider.Taxonomy.Code_2,NPPES$Healthcare.Provider.Taxonomy.Code_3,NPPES$Healthcare.Provider.Taxonomy.Code_4, NPPES$Healthcare.Provider.Taxonomy.Code_5, NPPES$Healthcare.Provider.Taxonomy.Code_6, NPPES$Healthcare.Provider.Taxonomy.Code_7, NPPES$Healthcare.Provider.Taxonomy.Code_8, NPPES$Healthcare.Provider.Taxonomy.Code_9, NPPES$Healthcare.Provider.Taxonomy.Code_10, NPPES$Healthcare.Provider.Taxonomy.Code_11, NPPES$Healthcare.Provider.Taxonomy.Code_12, NPPES$Healthcare.Provider.Taxonomy.Code_13, NPPES$Healthcare.Provider.Taxonomy.Code_14, NPPES$Healthcare.Provider.Taxonomy.Code_15)
+NPPES <- NPPES[,c(1:26,42)]
 
 NPPES$Provider.First.Name = tolower(NPPES$Provider.First.Name)
 NPPES$Provider.Middle.Name = tolower(NPPES$Provider.Middle.Name)
@@ -80,6 +81,10 @@ OP$Physician_Profile_State = tolower(OP$Physician_Profile_State)
 OP$Physician_Profile_Zipcode <- substr(OP$Physician_Profile_Zipcode,1,5)
 
 OP$NPI <- ""
+
+OP$TAX <- NA
+OP$TAX <- paste(OP$Physician_Profile_OPS_Taxonomy_1,OP$Physician_Profile_OPS_Taxonomy_2,OP$Physician_Profile_OPS_Taxonomy_3,OP$Physician_Profile_OPS_Taxonomy_4, OP$Physician_Profile_OPS_Taxonomy_5)
+
 
 # Matching ************************************************************************************************************************1
 # First, middle, last, suffix, address, city, state *******************************************************************************
@@ -1033,6 +1038,9 @@ rm(StudyGroup3)
 
 write.csv(PCND_unmatched,"~/Dropbox/Pharma_Influence/Guido_Working_file/PCND_UnMatched.csv", row.names = FALSE)
 write.csv(StudyGroup,"~/Dropbox/Pharma_Influence/Guido_Working_file/StudyGroup.csv", row.names = FALSE)
+write.csv(StudyGroup_GOBA,"~/Dropbox/Pharma_Influence/Guido_Working_file/StudyGroup_GOBA.csv", row.names = FALSE)
+write.csv(StudyGroup_PCND,"~/Dropbox/Pharma_Influence/Guido_Working_file/StudyGroup_PCND.csv", row.names = FALSE)
+
 
 rm(PCND)
 rm(PCND_CS)
@@ -1052,22 +1060,21 @@ rm(StudyGroup)
 # update OP with matched based on PCND, add specialty, filter on OBGYN (i.e., build list of unmatched OBGYN in OP)
 
 
-OP<- sqldf('select OP.*, StudyGroup.NPI from OP left outer join StudyGroup on OP.Physician_Profile_ID = StudyGroup.PPI')
+OP<- sqldf('select OP.*, StudyGroup.NPI as "SG_PPI" from OP left outer join StudyGroup on OP.Physician_Profile_ID = StudyGroup.PPI')
 
-OP[OP$NPPES_NPI =="","NPPES_NPI"] <- OP[OP$NPPES_NPI =="","PCND_NPI"]
-OP$PCND_NPI <- NULL
-names(OP)[15] <- "NPI"
+OP[OP$NPI =="","NPI"] <- OP[OP$NPI =="","SG_PPI"]
+OP$SG_NPI <- NULL
+
 OP_UnMatched <- OP[is.na(OP$NPI),]
 OP_Matched <- OP[!is.na(OP$NPI),]
 
-#OP_Spec <- read.csv("D:/muffly/data/Originals/match_data/OP_PH_PRFL_SPLMTL_P06292018_tax.csv", stringsAsFactors=FALSE)
-OP_Spec <- read.csv("/Volumes/Projects/Pharma_Influence/Data/Open_Payments/OP_PH_PRFL_SPLMTL_P06292018_tax.csv", stringsAsFactors=FALSE)
 
-  
-  
-OP_UnMatched <- sqldf('select OP_UnMatched.*, OP_Spec.Physician_Profile_Primary_Specialty from OP_UnMatched left outer join OP_Spec on OP_Unmatched.Physician_Profile_ID = OP_Spec.Physician_Profile_ID')
 OP_UnMatched_OBGYN <- filter(OP_UnMatched, OP_UnMatched$Physician_Profile_Primary_Specialty %in% c("Allopathic & Osteopathic Physicians|Obstetrics & Gynecology","Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Gynecologic Oncology", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Gynecology", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Hospice and Palliative Medicine", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Maternal & Fetal Medicine", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Obesity Medicine","Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Obstetrics", "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology|Reproductive Endocrinology"))
 
-write.csv(OP_UnMatched,"OP_UnMatched.csv", row.names = FALSE)
-write.csv(OP_UnMatched_OBGYN,"OP_UnMatched_OBGYN.csv", row.names = FALSE)
+write.csv(OP_Matched,"~/Dropbox/Pharma_Influence/Guido_Working_file/OP_Matched.csv", row.names = FALSE)
+write.csv(OP_UnMatched,"~/Dropbox/Pharma_Influence/Guido_Working_file/OP_UnMatched.csv", row.names = FALSE)
+write.csv(OP_UnMatched_OBGYN,"~/Dropbox/Pharma_Influence/Guido_Working_file/OP_UnMatched_OBGYN.csv", row.names = FALSE)
+
+rm(list=ls()) 
+gc()
 
