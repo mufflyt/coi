@@ -1,3 +1,5 @@
+# dump NPPES file with NPI numbers
+
 #
 # Revisions
 #
@@ -85,11 +87,10 @@ OP$NPI <- ""
 OP$TAX <- NA
 OP$TAX <- paste(OP$Physician_Profile_OPS_Taxonomy_1,OP$Physician_Profile_OPS_Taxonomy_2,OP$Physician_Profile_OPS_Taxonomy_3,OP$Physician_Profile_OPS_Taxonomy_4, OP$Physician_Profile_OPS_Taxonomy_5)
 
-
 # Matching ************************************************************************************************************************1
 # First, middle, last, suffix, address, city, state *******************************************************************************
 # *********************************************************************************************************************************
-  
+
 OPM <- sqldf('select OP.Physician_Profile_ID, NPPES.NPI from OP left outer join NPPES on OP.Physician_Profile_First_Name = NPPES.[Provider.First.Name] and OP.Physician_Profile_Last_Name = NPPES.[Provider.Last.Name..Legal.Name.]  and OP.Physician_Profile_Middle_Name = NPPES.[Provider.Middle.Name] and OP.Physician_Profile_Suffix = NPPES.[Provider.Name.Suffix.Text] and OP.Physician_Profile_Address_Line_1 = NPPES.[Provider.First.Line.Business.Practice.Location.Address] and OP.Physician_Profile_City = NPPES.[Provider.Business.Practice.Location.Address.City.Name] and OP.Physician_Profile_State = NPPES.[Provider.Business.Practice.Location.Address.State.Name] and NPPES.[Physician_Profile_ID] = "" ')
 
 OPM <- OPM[!duplicated(OPM$Physician_Profile_ID),]  #remove duplicate PPI
@@ -482,18 +483,22 @@ OP_Matched <- OP[OP$NPI != "",]
 
 # *******************************************************************************************************************************************************************
 
+# Dump intermediate results
+
+NPPES_Matches <- NPPES[,c(1,29)]
+write.csv(NPPES_Matches,"~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412_matched.csv",row.names = FALSE)
+rm(NPPES_Matches)
+
+OP_Matches <- OP[,c(1,21)]
+write.csv(OP_Matches,"~/Dropbox/Pharma_Influence/Data/Open_Payments/OP_PH_PRFL_SPLMTL_P01172020_matched.csv",row.names = FALSE)
+rm(OP_Matches)
+
 OP_UnMatched <- OP[OP$NPI == "",]
 
-#OP_Spec <- read.csv("D:/muffly/data/Originals/match_data/OP_PH_PRFL_SPLMTL_P06292018_tax.csv", stringsAsFactors=FALSE)
-
-#OP_UnMatched <- sqldf('select OP_UnMatched.*, OP_Spec.Physician_Profile_Primary_Specialty from OP_UnMatched left outer join OP_Spec on OP_UnMatched.Physician_Profile_ID = OP_Spec.Physician_Profile_ID')
-#unMatchedOBGYN <- read.csv("D:/muffly/data/Originals/match_data/unMatchedOBGYN.csv", stringsAsFactors=FALSE)
-#unMatchedOBGYNx <- sqldf('select unMatchedOBGYN.*, NPPES.* from unMatchedOBGYN left outer join NPPES on unMatchedOBGYN.Physician_Profile_Last_Name = NPPES.[Provider.Last.Name..Legal.Name.]   and unMatchedOBGYN.Physician_Profile_Zipcode = NPPES.[Provider.Business.Practice.Location.Address.Postal.Code] and NPPES.[Physician_Profile_ID] = "" ')
-#write.csv(OP_Matched,"D:/muffly/data/Originals/match_data/OP_Matched.csv",row.names = FALSE)
-
-#
 # *************************************************************************************************
-# Clean up 
+# Match on PCND
+# *************************************************************************************************
+
 PCND <- read.csv("~/Dropbox/Pharma_Influence/Data/Physician_Compare/Physician_Compare_National_Downloadable_File.csv", stringsAsFactors=FALSE)
 PCNDx <- PCND # store copy for later
 #
