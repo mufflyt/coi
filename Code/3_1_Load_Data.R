@@ -277,3 +277,5 @@ rm(OP)
 
 write.csv(PaySum,"~/Dropbox/Pharma_Influence/Guido_Working_file/paymentSummary.csv", row.names = FALSE)
 
+rm(list=ls()) 
+gc()
