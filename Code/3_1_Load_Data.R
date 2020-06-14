@@ -1,13 +1,12 @@
 # Input
-# StudyGroupR3.csv [UPDATED 10/6/19]
+# StudyGroup.csv [from 2_Match_OP_NPPES_PCND
+# StudyGroup.csv [from excel fuzzymatching sheet: excel fuzzy match uses output from 2_Match_OP_NPPES_PCND ]
 # PartD_Prescriber_PUF_NPI_DRUG_13.txt -> PartD_Prescriber_PUF_NPI_DRUG_17.txt
 # OP_DTL_GNRL_PGYR2013_P06292018.csv -> OP_DTL_GNRL_PGYR2017_P06292018.csv
 
 # Output
 # Prescriber.csv
 # PaySum.csv
-
-#setwd("C:/Users/jguido/Dropbox (Personal)/Pharma_Influence/Guido_Working_file")
 
 # Installing
 install.packages("readr")
@@ -24,28 +23,27 @@ library("tidyverse")
 library("Hmisc")
 
 # Load matched data (study group - now R1 with addition of GOBA data)
-#StudyGroup <- read.csv("C:/Users/jguido/Dropbox (Personal)/Pharma_Influence/Guido_Working_file/StudyGroupR3.csv", stringsAsFactors=FALSE)
-StudyGroup <- read.csv("~/Dropbox/Pharma_Influence/Guido_Working_file/StudyGroupR3.csv", stringsAsFactors=FALSE)
+
+StudyGroup <- read.csv("~/Dropbox/Pharma_Influence/Guido_Working_file/StudyGroup.csv", stringsAsFactors=FALSE)
+StudyGroup_Fuzzy <- read.csv("~/Dropbox/Pharma_Influence/Guido_Working_file/StudyGroup_fuzzy.csv", stringsAsFactors=FALSE)
+StudyGroup <- StudyGroup <- merge(StudyGroup, StudyGroup_Fuzzy, all = TRUE)
+rm(StudyGroup_Fuzzy)
 
 #Load Prescriber
-#Prescriber_13 <- read.delim("D:/muffly/data/Originals/PartD_Prescriber_PUF_NPI_DRUG_13/PartD_Prescriber_PUF_NPI_DRUG_13.txt", stringsAsFactors=FALSE)
-Prescriber_13 <- read.delim("/Volumes/Projects/Pharma_Influence/Data/Medicare_Part_D/PartD_Prescriber_PUF_NPI_DRUG_13/PartD_Prescriber_PUF_NPI_DRUG_13.txt", stringsAsFactors=FALSE)
+
+Prescriber_13 <- read.delim("~/Dropbox/Pharma_Influence/Data/Medicare_Part_D/PartD_Prescriber_PUF_NPI_DRUG_13/PartD_Prescriber_PUF_NPI_DRUG_13.txt", stringsAsFactors=FALSE)
 Prescriber_13 <- sqldf('select Prescriber_13.* from Prescriber_13 join StudyGroup on Prescriber_13.NPI = StudyGroup.NPI')
 
-#Prescriber_14 <- read.delim("D:/muffly/data/Originals/PartD_Prescriber_PUF_NPI_DRUG_14/PartD_Prescriber_PUF_NPI_DRUG_14.txt", stringsAsFactors=FALSE)
-Prescriber_14 <- read.delim("/Volumes/Projects/Pharma_Influence/Data/Medicare_Part_D/PartD_Prescriber_PUF_NPI_DRUG_14/PartD_Prescriber_PUF_NPI_DRUG_14.txt", stringsAsFactors=FALSE)
+Prescriber_14 <- read.delim("~/Dropbox/Pharma_Influence/Data/Medicare_Part_D/PartD_Prescriber_PUF_NPI_DRUG_14/PartD_Prescriber_PUF_NPI_DRUG_14.txt", stringsAsFactors=FALSE)
 Prescriber_14 <- sqldf('select Prescriber_14.* from Prescriber_14 join StudyGroup on Prescriber_14.NPI = StudyGroup.NPI')
 
-#Prescriber_15 <- read.delim("D:/muffly/data/Originals/PartD_Prescriber_PUF_NPI_DRUG_15/PartD_Prescriber_PUF_NPI_DRUG_15.txt", stringsAsFactors=FALSE)
-Prescriber_15 <- read.delim("/Volumes/Projects/Pharma_Influence/Data/Medicare_Part_D/PartD_Prescriber_PUF_NPI_DRUG_15/PartD_Prescriber_PUF_NPI_DRUG_15.txt", stringsAsFactors=FALSE)
+Prescriber_15 <- read.delim("~/Dropbox/Pharma_Influence/Data/Medicare_Part_D/PartD_Prescriber_PUF_NPI_DRUG_15/PartD_Prescriber_PUF_NPI_DRUG_15.txt", stringsAsFactors=FALSE)
 Prescriber_15 <- sqldf('select Prescriber_15.* from Prescriber_15 join StudyGroup on Prescriber_15.NPI = StudyGroup.NPI')
 
-#Prescriber_16 <- read.delim("D:/muffly/data/Originals/PartD_Prescriber_PUF_NPI_DRUG_16/PartD_Prescriber_PUF_NPI_DRUG_16.txt", stringsAsFactors=FALSE)
-Prescriber_16 <- read.delim("/Volumes/Projects/Pharma_Influence/Data/PartD_Prescriber_PUF_NPI_DRUG_16/PartD_Prescriber_PUF_NPI_DRUG_16.txt", stringsAsFactors=FALSE)
+Prescriber_16 <- read.delim("~/Dropbox/Pharma_Influence/Data/Medicare_Part_D/PartD_Prescriber_PUF_NPI_DRUG_16/PartD_Prescriber_PUF_NPI_DRUG_16.txt", stringsAsFactors=FALSE)
 Prescriber_16 <- sqldf('select Prescriber_16.* from Prescriber_16 join StudyGroup on Prescriber_16.NPI = StudyGroup.NPI')
 
-#Prescriber_17 <- read.delim("D:/muffly/data/Originals/PartD_Prescriber_PUF_NPI_DRUG_17/PartD_Prescriber_PUF_NPI_DRUG_17.txt", stringsAsFactors=FALSE)
-Prescriber_17 <- read.delim("/Volumes/Projects/Pharma_Influence/Data/PartD_Prescriber_PUF_NPI_DRUG_17/PartD_Prescriber_PUF_NPI_DRUG_17.txt", stringsAsFactors=FALSE)
+Prescriber_17 <- read.delim("~/Dropbox/Pharma_Influence/Data/Medicare_Part_D/PartD_Prescriber_PUF_NPI_DRUG_17/PartD_Prescriber_PUF_NPI_DRUG_17.txt", stringsAsFactors=FALSE)
 Prescriber_17 <- sqldf('select Prescriber_17.* from Prescriber_17 join StudyGroup on Prescriber_17.NPI = StudyGroup.NPI')
 
 Prescriber_13$ProgramYear = 2013
@@ -65,31 +63,26 @@ rm(Prescriber_15)
 rm(Prescriber_16)
 rm(Prescriber_17)
 
-write.csv(Prescriber, "prescriber.csv", row.names = FALSE)
+write.csv(Prescriber, "~/Dropbox/Pharma_Influence/Guido_Working_file/prescriber.csv", row.names = FALSE)
 
 #Load OP
-#OP_13 <- read.csv("D:/muffly/data/Originals/PGYR13_P062918/OP_DTL_GNRL_PGYR2013_P06292018.csv",stringsAsFactors = FALSE)
-OP_13 <- read.csv("/Volumes/Projects/Pharma_Influence/Data/Open_Payments/PGYR13_P062918/OP_DTL_GNRL_PGYR2013_P01172020.csv", stringsAsFactors = FALSE)
+OP_13 <- read.csv("~/Dropbox/Pharma_Influence/Data/Open_Payments/OP_DTL_GNRL_PGYR2013_P01172020.csv", stringsAsFactors = FALSE)
 OP_13 <- sqldf('select OP_13.* from OP_13 join StudyGroup on OP_13.Physician_Profile_ID = StudyGroup.PPI' )
 OP_13 <- OP_13[OP_13$Name_of_Associated_Covered_Drug_or_Biological1 !="",]
 
-#OP_14 <- read.csv("D:/muffly/data/Originals/PGYR14_P062918/OP_DTL_GNRL_PGYR2014_P06292018.csv",stringsAsFactors = FALSE)
-OP_14 <- read.csv("/Volumes/Projects/Pharma_Influence/Data/Open_Payments/PGYR14_P062918/OP_DTL_GNRL_PGYR2014_P06292018.csv",stringsAsFactors = FALSE)
+OP_14 <- read.csv("~/Dropbox/Pharma_Influence/Data/Open_Payments/OP_DTL_GNRL_PGYR2014_P01172020.csv",stringsAsFactors = FALSE)
 OP_14 <- sqldf('select OP_14.* from OP_14 join StudyGroup on OP_14.Physician_Profile_ID = StudyGroup.PPI' )
 OP_14 <- OP_14[OP_14$Name_of_Associated_Covered_Drug_or_Biological1 !="",]
 
-#OP_15 <- read.csv("D:/muffly/data/Originals/PGYR15_P062918/OP_DTL_GNRL_PGYR2015_P06292018.csv",stringsAsFactors = FALSE)
-OP_15 <- read.csv("/Volumes/Projects/Pharma_Influence/Data/Open_Payments/PGYR15_P062918/OP_DTL_GNRL_PGYR2015_P06292018.csv",stringsAsFactors = FALSE)
+OP_15 <- read.csv("~/Dropbox/Pharma_Influence/Data/Open_Payments/OP_DTL_GNRL_PGYR2015_P01172020.csv",stringsAsFactors = FALSE)
 OP_15 <- sqldf('select OP_15.* from OP_15 join StudyGroup on OP_15.Physician_Profile_ID = StudyGroup.PPI' )
 OP_15 <- OP_15[OP_15$Name_of_Associated_Covered_Drug_or_Biological1 !="",]
 
-#OP_16 <- read.csv("D:/muffly/data/Originals/PGYR16_P062918/OP_DTL_GNRL_PGYR2016_P06292018.csv",stringsAsFactors = FALSE)
-OP_16 <- read.csv("/Volumes/Projects/Pharma_Influence/Data/Open_Payments/PGYR16_P062918/OP_DTL_GNRL_PGYR2016_P06292018.csv",stringsAsFactors = FALSE)
+OP_16 <- read.csv("~/Dropbox/Pharma_Influence/Data/Open_Payments/OP_DTL_GNRL_PGYR2016_P01172020.csv",stringsAsFactors = FALSE)
 OP_16 <- sqldf('select OP_16.* from OP_16 join StudyGroup on OP_16.Physician_Profile_ID = StudyGroup.PPI' )
 OP_16 <- OP_16[OP_16$Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1 =="Drug" | OP_16$Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1 =="Biological" ,]
 
-#OP_17 <- read.csv("D:/muffly/data/Originals/PGYR17_P062918/OP_DTL_GNRL_PGYR2017_P06292018.csv",stringsAsFactors = FALSE)
-OP_17 <- read.csv("/Volumes/Projects/Pharma_Influence/Data/Open_Payments/PGYR17_P062918/OP_DTL_GNRL_PGYR2017_P06292018.csv",stringsAsFactors = FALSE)
+OP_17 <- read.csv("~/Dropbox/Pharma_Influence/Data/Open_Payments/OP_DTL_GNRL_PGYR2017_P01172020.csv",stringsAsFactors = FALSE)
 OP_17 <- sqldf('select OP_17.* from OP_17 join StudyGroup on OP_17.Physician_Profile_ID = StudyGroup.PPI' )
 OP_17 <- OP_17[OP_17$Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1 =="Drug" | OP_17$Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1 =="Biological",]
 
@@ -278,5 +271,5 @@ PaySum <- merge(PaySum, PaySum1, all = TRUE)
 rm(PaySum1)
 rm(OP)
 
-write.csv(PaySum,"paymentSummary.csv", row.names = FALSE)
+write.csv(PaySum,"~/Dropbox/Pharma_Influence/Guido_Working_file/paymentSummary.csv", row.names = FALSE)
 
