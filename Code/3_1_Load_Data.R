@@ -7,6 +7,7 @@
 # Output
 # Prescriber.csv
 # PaySum.csv
+# StudyGroup_Final
 
 # Installing
 install.packages("readr")
@@ -27,6 +28,9 @@ library("Hmisc")
 StudyGroup <- read.csv("~/Dropbox/Pharma_Influence/Guido_Working_file/StudyGroup.csv", stringsAsFactors=FALSE)
 StudyGroup_Fuzzy <- read.csv("~/Dropbox/Pharma_Influence/Guido_Working_file/StudyGroup_fuzzy.csv", stringsAsFactors=FALSE)
 StudyGroup <- StudyGroup <- merge(StudyGroup, StudyGroup_Fuzzy, all = TRUE)
+
+write.csv(StudyGroup,"~/Dropbox/Pharma_Influence/Guido_Working_file/StudyGroup_Final.csv", row.names = FALSE)
+
 rm(StudyGroup_Fuzzy)
 
 #Load Prescriber
