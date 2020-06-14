@@ -23,12 +23,12 @@ PCND <- read.csv("https://www.dropbox.com/s/5az34whssb9x4i4/PCND.csv?raw=1", str
 
 # Load GOBA - consolidate on NPI and files we need (to remove dups)
 
-GOBA_unique <- read.csv("C:/Users/jguido/Dropbox (Personal)/Pharma_Influence/Guido_Working_file/GOBA_unique.csv", stringsAsFactors=FALSE)
+GOBA_unique <- read.csv("https://www.dropbox.com/s/ebawhoud51yrcgm/GOBA_unique.csv?raw=1", stringsAsFactors=FALSE)
 GOBA_unique <- GOBA_unique[!duplicated(GOBA_unique$NPI_Match),]
 
-Prescriber <- read.csv("C:/Users/jguido/Dropbox (Personal)/Pharma_Influence/Guido_Working_file/Prescriber.csv", stringsAsFactors=FALSE)
+Prescriber <- read.csv("https://www.dropbox.com/s/8oi0kxnxyo00f1k/Prescriber.csv?raw=1", stringsAsFactors=FALSE)
 
-paymentSummary <- read.csv("C:/Users/jguido/Dropbox (Personal)/Pharma_Influence/paymentSummary.csv", stringsAsFactors=FALSE)
+paymentSummary <- read.csv("https://www.dropbox.com/s/sw34j1tm86kwcib/paymentSummary.csv?raw=1", stringsAsFactors=FALSE)
 
 # summarize prescriber and payment data
 T1_pre <- sqldf('select npi,sum(bene_count), sum(total_claim_count),sum(total_day_supply), sum(total_drug_cost) from Prescriber group by npi')
