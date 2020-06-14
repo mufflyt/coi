@@ -17,9 +17,9 @@ library(Hmisc)
 
 #load files from prior processing (StudyGroup and PCND)
 
-StudyGroup <- read.csv("C:/Users/jguido/Dropbox (Personal)/Pharma_Influence/Guido_Working_file/StudyGroupR3.csv", stringsAsFactors=FALSE)
+StudyGroup <- read.csv("https://www.dropbox.com/s/mpw8hi8rrqnjarz/studygroupR3.csv?raw=1", stringsAsFactors=FALSE)
 
-PCND <- read.csv("C:/Users/jguido/Dropbox (Personal)/Pharma_Influence/Guido_Working_file/PCND.csv", stringsAsFactors=FALSE)
+PCND <- read.csv("https://www.dropbox.com/s/5az34whssb9x4i4/PCND.csv?raw=1", stringsAsFactors=FALSE)
 
 # Load GOBA - consolidate on NPI and files we need (to remove dups)
 
