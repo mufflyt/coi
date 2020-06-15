@@ -61,7 +61,6 @@ Prescriber$GenericName <- tolower(Prescriber$GenericName)
 Payment_Class <- read.csv("~/Dropbox/Pharma_Influence/Data/Category_Data/Payment_Class.csv", stringsAsFactors=FALSE)
 
 Prescription_Class <- read.csv("~/Dropbox/Pharma_Influence/Data/Category_Data/Prescription_Class.csv", stringsAsFactors=FALSE)
-ClassList <- sqldf('select Payment_Class.Class from Payment_Class group by Payment_Class.Class')
 
 ClassList <- sqldf('select Payment_Class.Class from Payment_Class group by Payment_Class.Class')
 
