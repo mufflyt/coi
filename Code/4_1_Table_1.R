@@ -52,3 +52,6 @@ T1$Age <- "NA"
 T1[!is.na(T1$GraduationYear),"Age"] = 2019 - T1[!is.na(T1$GraduationYear),"GraduationYear"]+ 26
 
 write.csv(T1, "~/Dropbox/Pharma_Influence/Guido_Working_file/T1.csv")
+
+rm(list=ls()) 
+gc()
