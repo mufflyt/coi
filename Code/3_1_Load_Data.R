@@ -27,6 +27,7 @@ library("Hmisc")
 
 StudyGroup <- read.csv("~/Dropbox/Pharma_Influence/Guido_Working_file/StudyGroup.csv", stringsAsFactors=FALSE)
 StudyGroup_Fuzzy <- read.csv("~/Dropbox/Pharma_Influence/Guido_Working_file/StudyGroup_fuzzy.csv", stringsAsFactors=FALSE)
+names(StudyGroup_Fuzzy)[2] <- "PPI"
 StudyGroup <- StudyGroup <- merge(StudyGroup, StudyGroup_Fuzzy, all = TRUE)
 
 write.csv(StudyGroup,"~/Dropbox/Pharma_Influence/Guido_Working_file/StudyGroup_Final.csv", row.names = FALSE)
