@@ -73,9 +73,9 @@ PaySum <- sqldf('select PaySum.*, StudyGroup.NPI from PaySum left outer join Stu
 Prescriber <- sqldf('select Prescriber.*, Prescription_Class.Class, Prescription_Class.Drug from Prescriber left outer join Prescription_Class on Prescriber.DrugName = Prescription_Class.DrugName')
 Prescriber <- Prescriber[!is.na(Prescriber$Class),]
 
-write_rds(StudyGroup, "StudyGroup.rds")
-write_rds(PaySum, "PaySum.rds"  )
-write_rds(Prescriber, "Prescriber.rds")
+write_rds(StudyGroup, "~/Dropbox/Pharma_Influence/Guido_Working_file/StudyGroup.rds")
+write_rds(PaySum, "~/Dropbox/Pharma_Influence/Guido_Working_file/PaySum.rds"  )
+write_rds(Prescriber, "~/Dropbox/Pharma_Influence/Guido_Working_file/Prescriber.rds")
 
 rm(list=ls()) 
 gc()
