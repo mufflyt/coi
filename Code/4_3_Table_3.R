@@ -25,3 +25,6 @@ PaySum_combined <- sqldf(' select PPI, Class, Drug, sum(TotalPay) as "TotalPay" 
 T3<-  (medIQR(TotalPay ~  Drug,PaySum_combined   ))
 
 write.csv(T3,"~/Dropbox/Pharma_Influence/Guido_Working_file/T3.csv")
+
+rm(list=ls()) 
+gc()

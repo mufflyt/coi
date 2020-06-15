@@ -17,10 +17,9 @@ library(Hmisc)
 # Load Data
 
 StudyGroup <- read.csv("~/Dropbox/Pharma_Influence/Guido_Working_file/StudyGroup_Final.csv", stringsAsFactors=FALSE)
+OP_Names <- read.csv("~/Dropbox/Pharma_Influence/Data/Open_Payments/OP_PH_PRFL_SPLMTL_P01172020.csv", header=TRUE, stringsAsFactors=FALSE)
 
-OP_Names <- read.csv("D:/muffly/data/Originals/PHPRFL_P062918/OP_PH_PRFL_SPLMTL_P06292018.csv", header=TRUE, stringsAsFactors=FALSE)
-
-Physician_Compare_National_Downloadable_File <- read.csv("C:/Users/jguido/Dropbox (Personal)/Pharma_Influence/Guido_Working_file/Physician_Compare_National_Downloadable_File.csv", stringsAsFactors=FALSE)
+Physician_Compare_National_Downloadable_File <- read.csv("~/Dropbox/Pharma_Influence/Data/Physician_Compare/Physician_Compare_National_Downloadable_File.csv", stringsAsFactors=FALSE)
 
 Physician_Compare_National_Downloadable_File <- sqldf(' select NPI from Physician_Compare_National_Downloadable_File group by NPI')
 
@@ -40,23 +39,24 @@ StudyGroup$PCNPI <- NULL
 
 # generate payment data (not broken by drug)
 
-OP_13 <- read.csv("D:/muffly/data/Originals/PGYR13_P062918/OP_DTL_GNRL_PGYR2013_P06292018.csv",stringsAsFactors = FALSE)
+#Load OP
+OP_13 <- read.csv("~/Dropbox/Pharma_Influence/Data/Open_Payments/OP_DTL_GNRL_PGYR2013_P01172020.csv", stringsAsFactors = FALSE)
 OP_13 <- sqldf('select OP_13.* from OP_13 join StudyGroup on OP_13.Physician_Profile_ID = StudyGroup.PPI' )
 OP_13 <- OP_13[OP_13$Name_of_Associated_Covered_Drug_or_Biological1 !="",]
 
-OP_14 <- read.csv("D:/muffly/data/Originals/PGYR14_P062918/OP_DTL_GNRL_PGYR2014_P06292018.csv",stringsAsFactors = FALSE)
+OP_14 <- read.csv("~/Dropbox/Pharma_Influence/Data/Open_Payments/OP_DTL_GNRL_PGYR2014_P01172020.csv",stringsAsFactors = FALSE)
 OP_14 <- sqldf('select OP_14.* from OP_14 join StudyGroup on OP_14.Physician_Profile_ID = StudyGroup.PPI' )
 OP_14 <- OP_14[OP_14$Name_of_Associated_Covered_Drug_or_Biological1 !="",]
 
-OP_15 <- read.csv("D:/muffly/data/Originals/PGYR15_P062918/OP_DTL_GNRL_PGYR2015_P06292018.csv",stringsAsFactors = FALSE)
+OP_15 <- read.csv("~/Dropbox/Pharma_Influence/Data/Open_Payments/OP_DTL_GNRL_PGYR2015_P01172020.csv",stringsAsFactors = FALSE)
 OP_15 <- sqldf('select OP_15.* from OP_15 join StudyGroup on OP_15.Physician_Profile_ID = StudyGroup.PPI' )
 OP_15 <- OP_15[OP_15$Name_of_Associated_Covered_Drug_or_Biological1 !="",]
 
-OP_16 <- read.csv("D:/muffly/data/Originals/PGYR16_P062918/OP_DTL_GNRL_PGYR2016_P06292018.csv",stringsAsFactors = FALSE)
+OP_16 <- read.csv("~/Dropbox/Pharma_Influence/Data/Open_Payments/OP_DTL_GNRL_PGYR2016_P01172020.csv",stringsAsFactors = FALSE)
 OP_16 <- sqldf('select OP_16.* from OP_16 join StudyGroup on OP_16.Physician_Profile_ID = StudyGroup.PPI' )
 OP_16 <- OP_16[OP_16$Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1 =="Drug" | OP_16$Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1 =="Biological" ,]
 
-OP_17 <- read.csv("D:/muffly/data/Originals/PGYR17_P062918/OP_DTL_GNRL_PGYR2017_P06292018.csv",stringsAsFactors = FALSE)
+OP_17 <- read.csv("~/Dropbox/Pharma_Influence/Data/Open_Payments/OP_DTL_GNRL_PGYR2017_P01172020.csv",stringsAsFactors = FALSE)
 OP_17 <- sqldf('select OP_17.* from OP_17 join StudyGroup on OP_17.Physician_Profile_ID = StudyGroup.PPI' )
 OP_17 <- OP_17[OP_17$Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1 =="Drug" | OP_17$Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1 =="Biological",]
 
@@ -111,6 +111,9 @@ T2 <- sqldf('select Nature_of_Payment_or_Transfer_of_Value, count(Nature_of_Paym
 
 T2 <- T2 [!is.na(T2$Nature_of_Payment_or_Transfer_of_Value),]
 
-write.csv(T2, "T2.csv")
-write.csv(OP,"AllPaymentData.csv")
-rm(OP)
+write.csv(T2, "~/Dropbox/Pharma_Influence/Guido_Working_file/T2.csv")
+write.csv(OP,"~/Dropbox/Pharma_Influence/Guido_Working_file/AllPaymentData.csv")
+
+rm(list=ls()) 
+gc()
+
