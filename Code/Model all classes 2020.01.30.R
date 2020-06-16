@@ -9,14 +9,14 @@ setwd("~/Dropbox/Pharma_Influence/Guido_Working_file/")
 
 
 # LOAD DATA-----------------------------------
-load_anti_inf <- read.csv(file = 'class_Anti_infective.csv', header = T)
-load_antichol <- read.csv(file = 'class_Anticholinergics_for_overactive_bladder.csv', header = T)
-load_antiviral <- read.csv(file = 'class_Antiviral.csv', header = T)
-load_bisph <- read.csv(file = 'class_Bisphosphonates.csv', header = T)
-load_hormone <- read.csv(file = 'class_Hormone_therapy_single_ingredient_therapy.csv', header = T)
-load_oral <- read.csv(file = 'class_Oral_Combined_Estrogen_and_Progestin_Products_for_Hormone_Therapy.csv', header = T)
-load_transderm <- read.csv(file = 'class_Transdermal_estrogen.csv', header = T)
-load_vaginal <- read.csv(file = 'class_Vaginal_Estrogen_Hormone_Therapy.csv', header = T)
+load_anti_inf <- read.csv(file = '~/Dropbox/Pharma_Influence/Guido_Working_file/class_Anti_infective.csv', header = T)
+load_antichol <- read.csv(file = '~/Dropbox/Pharma_Influence/Guido_Working_file/class_Anticholinergics_for_overactive_bladder.csv', header = T)
+load_antiviral <- read.csv(file = '~/Dropbox/Pharma_Influence/Guido_Working_file/class_Antiviral.csv', header = T)
+load_bisph <- read.csv(file = '~/Dropbox/Pharma_Influence/Guido_Working_file/class_Bisphosphonates.csv', header = T)
+load_hormone <- read.csv(file = '~/Dropbox/Pharma_Influence/Guido_Working_file/class_Hormone_therapy_single_ingredient_therapy.csv', header = T)
+load_oral <- read.csv(file = '~/Dropbox/Pharma_Influence/Guido_Working_file/class_Oral_Combined_Estrogen_and_Progestin_Products_for_Hormone_Therapy.csv', header = T)
+load_transderm <- read.csv(file = '~/Dropbox/Pharma_Influence/Guido_Working_file/class_Transdermal_estrogen.csv', header = T)
+load_vaginal <- read.csv(file = '~/Dropbox/Pharma_Influence/Guido_Working_file/class_Vaginal_Estrogen_Hormone_Therapy.csv', header = T)
 
 
 
