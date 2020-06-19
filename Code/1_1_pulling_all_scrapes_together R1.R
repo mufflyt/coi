@@ -1,5 +1,22 @@
-# Setup ----
-# Set libPaths.
+# Input
+# scraped data GOBA, resident in multiple dropbox .csv files
+
+# Functions
+# None
+
+# Processing Summary
+# - remove duplicates (based on GOBA userID)
+# - remove certstatus, subcertstatus1/2 which are either 'retired' or 'not currently certified'
+# - remove if state is blank
+# - remove if state is 'ON'
+# - create column 'year boarded' based on year of 'orig_sub' field
+
+# Intermediate Files
+# None
+
+# Output
+# ~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes.csv
+
 rm(list = setdiff(ls(), lsf.str()))
 
 # Loading

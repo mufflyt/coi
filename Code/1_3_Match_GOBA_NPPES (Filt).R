@@ -5,33 +5,54 @@
 # - filtered out NPI values from PRE_Match that have been matched (to prevent dups)
 #
 # 1. Input
-#
+
 # 1.1 PRE_Match: Prescriber Demographics (raw, unprocessed) ~/Dropbox/Pharma_Influence/Data/Medicare_Part_D/PartD_Prescriber_PUF_NPI_DRUG_Combined.csv
 # 1.2 GOB_Match: GOBA data, scrapped [ ] and then cleaned [ ] "~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_1.csv
 # 1.3 NOD_Match: NPPES data file (raw, unprocessed) "~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_1.csv
+
+# 2. Functions
+
+# 2.1 match1 - takes one input fields from each of two files, performs match, removed duplicates, updates datasets
+# 2.2 match2 - same as match1, but also requires state to be the same
+# 2.3 match3 - takes two input fields from each of two files, performs match, removed duplicates, updates datasets
+# 2.4 match4 - same as match3 but also requires state to be the same.
+
+# 3. Processing Summary
+#  
+# 3.1 Data Prep
+
+# 3.1.1 GOBA (GOB_Match)
+# - removed if not in 50 states + DC
+# - removed punctuation / non alpha charactors: (),.' and spaces
+# - created matching variables: Full.Name.1 (first, middle, last); Full.Name.2 (First, middle initial, last);
+#		Full.Name.3 (first, middle, last, suffix); Full.Name.4 (first, middle initial, last, suffix)
+# - removed any '-' character (doe-james -> doejames)
+ 
+# 3.1.2 NPPES (NOD_Match) 
+# - moved suffix (Jr, SR, I, II, III, IV) embedded in last name to suffix field 
+# - removed punctuation / non alpha charactors: (),.' and spaces
+# - removed any '-' character (doe-james -> doejames)
+# - removed 'NMN' string (appears to represent no middle name)
+# - created matching variables: Full.Name.1 (first, middle, last); Full.Name.2 (First, middle initial, last);
+#		Full.Name.3 (first, middle, last, suffix); Full.Name.4 (first, middle initial, last, suffix)
+# - filtered on taxonomy corresponding to OBGYN ( '%207V%', '%174000000X', '%390200000X%','%208D00000X%', '174400000X'
+
+# 3.2 Matching
 #
-# 2. Pre-match processing
+# 3.2.1 - GOBA and NPPES matched based on variations of fullname (middle initial / full middle name; with and without suffix)
+# 3.2.2 - remaining GOBA items (unmatched) matched on prescription data: (compares first, last, and state on each side; for GOBA uses 3 variations of last name)
+
+# 3.3 Setup for Fuzzy Matches
 #
-# 2.1 Prescriber (PRE_Match)
-#
-# 2.2 GOBA (GOB_Match)
-# 2.2.1 removed if not in 50 states + DC
+# 3.3.1 output files corresponding to unmatched GOBA and NPPES data are generated.  
+# 3.3.2 output files are fed into excel and fuzzy match done using microsoft fuzzy match tool.
 # 
-# 2.3 NPPES (NOD_Match) 
-# 2.3.1
-#
-# 3. Intermediate Files
-#
-# 3.1 Cleaned and Normalized GOBA data: ~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_2.csv
-# 3.2 Cleaned and Normalized NPPES: ~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412_1.csv
-# 3.3 Cleaned and Normalized NPPES, Filtered on OBGYN Taxonomy Codes: ~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412_2.csv
-#
-# 4. Functions
-#
-# 4.1 
-# 4.2 
-# 4.3 
-# 4.4 
+# 4. Intermediate Files
+
+# 4.1 Cleaned and Normalized GOBA data: ~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_2.csv
+# 4.2 Cleaned and Normalized NPPES: ~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412_1.csv
+# 4.3 Cleaned and Normalized NPPES, Filtered on OBGYN Taxonomy Codes: ~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412_2.csv
+
 #
 # 5. Output
 #

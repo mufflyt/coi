@@ -1,6 +1,35 @@
-# changes needed
-# filter out names without title
-#
+# Input
+# ~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes.csv
+# ~/Dropbox/Pharma_Influence/Data/Regions.csv
+
+
+# Functions
+# trap_suffix - looks for common name suffix (Jr, SR, I, II, III, IV) and splits into a seperate component
+#               based on a space delimeter. leaves the balance untouched ( Doe III) -> DOE, III
+# trap_title -  splits into two parts, based on comma delimeter.  first part is assumed to be full name
+#               second part is assumed to be the title string ( John K Doe, MD PHD -> "John K Doe", "MD PHD")
+# trap_compound - breaks compound name (defined as two character strings joined by a '-' into a left and 
+#                 right component ( doe-james -> doe, james)
+# fml - converts input stream into 3 parts (first, middle, last) based on space delimiter. 
+#       if there are more than 3 parts, 3rd and higher part are allocated to last name field
+
+# Processing Summary
+# - parses single name string into components:'First, Middle, Last, Last_Right, Last_Left, Title' by applying
+#   functions trap_title, fml, and trap_compound.
+# - cleans up data by removing leading and trailing spaces, periods
+# - converts to upper case
+# - splits off suffix from Last name field, places in 'suffix' field
+# - adds 'region' field based on input file defining states into regions
+
+# Intermediate Files
+# none
+
+# Output
+# ~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_1.csv
+
+# changes pending (needed)
+# 
+
 
 # Load required packages.
 library(geosphere)
