@@ -1,14 +1,39 @@
-# revisions 
-#
-# 060820 
-# - updated to indicate already matched in unfiltered NOD set so that duplicates are not generated
-# - updated to process rejectMI file (remove those matches)
+# 1. Inputs
 
+# 1.1 GOB_Match: GOBA data with matching NPI nums from 1_3
+#     "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/GOBA_Match_ALL.csv"
+# 1.2 Fuzzy_Match: output from processing of GOBA_Fuzzy and NOD_Fuzzy from 1_3 using excel workbook (microsoft fuzzy match tool) 
+#     ~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/Fuzzy_R1.csv
+# 1.3 RejectMI - list of rejected matches from 1.3 (first, last + state matches where MI is inconsistent)
+#     "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/Reject_MI.csv"    
+# 1.4 NOD_Match - from 1_3, normalized NPPES data, without filter on OBGYN taxonomy (large dataset)
+#     "~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412_1.csv"
 
-# start with GOB_Match and NOD_Match from 2_1_Match_GOBA_NOD
-# pull in fuzzy_R1.csv
-# update NOD and GOB datasets
-# match on full NPPES dataset
+# 2. Functions
+
+# 2.1 match2 - takes one input fields from each of two files, plus state, performs match, removed duplicates, updates datasets
+# 2.2 match4 - takes two input fields from each of two files, plus state, performs match, removed duplicates, updates datasets
+
+# Processing Summary
+# - up dates GOBA file with manual matches from Fuzzy_Match, 
+# - removes rejectMI matches from GOBA match file.
+# - matching of NPPES and GOBA on full.name fields repeated, using much larger NPPES data set (and requiring state to match)
+# - matching of NPPES and GOBA on first / last name fields repeated, using much larger NNPES data set (and recquiring matching city and state)
+# - fuzzy match input files generated (in case another fuzzy round is warrented)
+
+# Intermediate Files
+# none
+
+# Output
+# 
+# 5.1 GOBA_Match_NPPES_Matched:  "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/GOBA_Match_NPPES_Matched_1.csv"
+# 5.2 GOBA_Match_NPPES_UnMatched: "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/GOBA_Match_NPPES_UnMatched_1.csv"
+# 5.3 GOB_Match: "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/GOBA_Match_ALL_1.csv"
+# 5.4 NOD_Match:  "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/NOD_Match_ALL_1.csv"
+# 5.5 GOB_Fuzzy:  "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/GOBA_Fuzzy_1.csv"
+# 5.6 NOD_Fuzzy: "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/NOD_Fuzzy_1.csv"
+
+# changes pending (needed)
 #
 library("sqldf")
 library("RSQLite")
@@ -556,5 +581,5 @@ names(GOB_Fuzzy)[1] <- "GOB_ID"
 write.csv(GOB_Fuzzy, "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/GOBA_Fuzzy_1.csv",row.names = FALSE, na="")
 write.csv(NOD_Fuzzy, "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/NOD_Fuzzy_1.csv",row.names = FALSE, na="")
 
-`rm(list=ls()) 
+rm(list=ls()) 
 

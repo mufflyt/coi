@@ -1,4 +1,73 @@
-# dump NPPES file with NPI numbers
+# 1. Input
+
+# 1.1 NPPES - raw NPPES data file 
+#			  "~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412.csv"
+# 1.2 OP - raw Open payments demographic file
+#		   "~/Dropbox/Pharma_Influence/Data/Open_Payments/OP_PH_PRFL_SPLMTL_P01172020.csv"
+# 1.3 PCND - raw physician compare file
+#  			 "~/Dropbox/Pharma_Influence/Data/Physician_Compare/Physician_Compare_National_Downloadable_File.csv"
+# 1.4 GOBA - goba match file from 1_4 
+#			 "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/GOBA_Match_ALL_1.csv"
+
+# 2. Functions - none
+
+# 3. Processing Summary
+
+# 3.1 File prep
+# - building single taxonomy summary field for NPPES file (combine 15 taxonomy columns into single)
+# - drop non demographic fields from NPPES 
+# - drop non demographic fields from OP 
+
+# 3.2 match OP and NPPES file - (each time only keep unique matches) match on:
+#	- first, middle, last, suffix, address, city, state
+#	- first, last, suffix, address, city, state
+#	- first, last, address, city, state
+#	- first(NP alt first), last, address, city, state
+#	- first, last( NP alt last), address, city, state
+#	- first(OP alt first), last, address, city, state
+#	- first, last(OP alt last), address, city, state
+#	- first(OP alt first), last(OP alt last), address, city, state
+#	- first, last, suffix, address(NP alt address), city(NP alt city), state (NP alt state)
+#	- first, middle, last, suffix, city, state
+#	- first, middle, last, city, state
+#	- first, last, city, state
+#	- first, middle, last, suffix, zip
+#	- first, middle, last, zip
+#	- first, last, zip
+
+# 3.3 take unmatched OP file and match against PCND.  complication with PCND is it has dups .. so have to cycle through each city/state entry
+# - first, last, city, state
+# - first (alt first), last, city, state
+# - first, last (alt last), city, state
+
+# 3.4 check load PPI data into GOBA based on NPI/PPI cross references developed on OP matching
+
+# 4. Intermediate Files
+
+# 4.1 studygroup1 - PPI/NPI matches from OP/NPPES compare
+# 4.2 studygroup2 - PPI/NPI matches based on PCND
+# 4.3 studygroup3 - PPI/NPI matches based on GOBA
+# 4.4 StudyGroup_GOBA - NPI/PPI cross reference based on GOBA,
+#						"~/Dropbox/Pharma_Influence/Guido_Working_file/StudyGroup_GOBA.csv"
+# 4.5 StudyGroup_PCND - NPI/PPI cross reference based on PCND file
+#						~/Dropbox/Pharma_Influence/Guido_Working_file/StudyGroup_PCND.csv
+# 4.6 PCND_unmatched - PCND OBGYNs with no matches
+# 4.7 OP_Matched - OP file with matches 
+#					"~/Dropbox/Pharma_Influence/Guido_Working_file/OP_Matched.csv"
+# 4.8 OP_Unmatched - OP file - only non matches
+#					"~/Dropbox/Pharma_Influence/Guido_Working_file/OP_UnMatched.csv"
+# 4.9 OP_Unmatched_OBGYN - sames as 4.8, but filtered on OBGYNs
+#					"~/Dropbox/Pharma_Influence/Guido_Working_file/OP_UnMatched_OBGYN.csv"
+# 
+
+# 5. Output
+
+# 5.1 StudyGroup -  final cross reference of NPI/PPI data for OBGYNs based on OP, PCND, NPPES, and GOBA
+#					~/Dropbox/Pharma_Influence/Guido_Working_file/StudyGroup.csv
+
+
+# changes pending (needed)
+## dump NPPES file with NPI numbers
 
 #
 # Revisions
