@@ -909,3 +909,6 @@ Latest GOBA issues.xls - There are 71 people with the exact same first, middle, 
 
 85% matched from GOBA to PPI number.  
 # Add demographics with NPPES and PhysicianCompare.  
+
+
+Having issues with github so I downloaded the repository to my Documents folder.  
