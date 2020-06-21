@@ -273,7 +273,7 @@ based on code at https://www.r-bloggers.com/split-intermixed-names-into-first-mi
 * 1.2 GOB_Match: GOBA data, cleaned [ ] `~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_1.csv`
 * 1.3 NOD_Match: NPPES data file (raw, unprocessed) `~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_1.csv`, NOD stands for Nppes Obgyn Demographics.  ??
 
-#2. Functions
+# 2. Functions
 * 2.1 match1 - takes one input fields from each of two files, performs match, removed duplicates, updates datasets
 * 2.2 match2 - same as match1, but also requires state to be the same
 * 2.3 match3 - takes two input fields from each of two files, performs match, removed duplicates, updates datasets
@@ -284,8 +284,7 @@ based on code at https://www.r-bloggers.com/split-intermixed-names-into-first-mi
 * 3.1.1 GOBA (GOB_Match)
 + - removed if not in 50 states + DC
 + - removed punctuation / non alpha charactors: (),.' and spaces
-+ - created matching variables: Full.Name.1 (first, middle, last); Full.Name.2 (First, middle initial, last);
-+		Full.Name.3 (first, middle, last, suffix); Full.Name.4 (first, middle initial, last, suffix)
++ - created matching variables: Full.Name.1 (first, middle, last); Full.Name.2 (First, middle initial, last); Full.Name.3 (first, middle, last, suffix); Full.Name.4 (first, middle initial, last, suffix)
 + - removed any '-' character (doe-james -> doejames)
 
 * 3.1.2 NPPES (NOD_Match)
@@ -302,6 +301,66 @@ based on code at https://www.r-bloggers.com/split-intermixed-names-into-first-mi
 
 * 3.2 Matching
 * 3.2.1 - GOBA and NPPES matched based on variations of fullname (middle initial / full middle name; with and without suffix)
+
+* #match1 is a function where the input is created in a variable called matchString.  matchString is made up of multiple column names from GOBA, and NOD.  Then there is an inner join.  
+```r
+#fullname. 
+match1 <- function(Gmatch,Nmatch,MatchType,GOB_Match,NOD_Match){
+  
+  matchString <- paste('select GOB_Match.[ID] , GOB_Match.[Full.Name], NOD_Match.[NPI] from GOB_Match INNER JOIN NOD_Match on GOB_Match.',Gmatch,' = NOD_Match.',Nmatch, ' and NOD_Match.[GOB_ID] = "" and GOB_Match.[NPI] = "" ',sep="")
+  matches <- sqldf(matchString )
+```r
+
+```
+  dup_names <- data.frame(matches[duplicated(matches$Full.Name),2])
+  names(dup_names) = c("Full.Name")
+  dup_OP    <- data.frame(matches[duplicated(matches$NPI),3])
+  names(dup_OP) = c("PID")
+  dup_OP <- sqldf("select matches.[Full.Name] from matches inner join dup_OP on matches.[NPI] = dup_OP.[PID]")
+  dup_names <- merge(dup_names, dup_OP  , all=TRUE)
+  rm(dup_OP)
+  dup_names <- data.frame(dup_names[!duplicated(dup_names),])
+  names(dup_names) = c("Full.Name")
+  #mark dups
+  matches <- fn$sqldf('select matches.*, dup_names.[Full.Name] as dup_name  from matches LEFT OUTER JOIN dup_names on dup_names.[Full.Name] = matches.[Full.Name] ')
+  rm(dup_names)
+  #annotate and store
+
+  dup_set <- subset(matches, !is.na(matches$dup_name))
+  dup_set$dup_name <- NULL
+  
+  if (nrow(matches) > 0) {
+     
+  
+  matches$Type <- MatchType
+  matches <- subset(matches, is.na(matches$dup_name))
+  GOB_Match <- sqldf('select GOB_Match.*, matches.[ID] as m_ID, matches.[NPI] as m_NPI, matches.[Type] as m_Type from GOB_Match LEFT OUTER JOIN matches on GOB_Match.[ID] = matches.[ID]')
+  GOB_Match[!is.na(GOB_Match$m_ID),"NPI"] <-  GOB_Match[!is.na(GOB_Match$m_ID),"m_NPI"]
+  GOB_Match[!is.na(GOB_Match$m_ID),"Type"] <-  GOB_Match[!is.na(GOB_Match$m_ID),"m_Type"]
+  GOB_Match$m_ID<- NULL
+  GOB_Match$m_Type <- NULL
+  GOB_Match$m_NPI <- NULL
+  
+  NOD_Match <- sqldf('select NOD_Match.*, matches.[ID] as m_ID, matches.[NPI] as m_NPI, matches.[Type] as m_Type from NOD_Match LEFT OUTER JOIN matches on NOD_Match.[NPI] = matches.[NPI]')
+  NOD_Match[!is.na(NOD_Match$m_ID),"GOB_ID"] <-  NOD_Match[!is.na(NOD_Match$m_ID),"m_ID"]
+  NOD_Match[!is.na(NOD_Match$m_Type),"Type"] <-  NOD_Match[!is.na(NOD_Match$m_Type),"m_Type"]
+  NOD_Match$m_ID<- NULL
+  NOD_Match$m_NPI <- NULL
+  NOD_Match$m_Type <- NULL
+  
+  print( paste(MatchType, " ***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
+  
+  } else {
+    
+    print( paste(MatchType," ***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
+    
+  }
+    
+  return(list(GOB_Match,NOD_Match,nrow(matches)))
+}
+
+```
+
 * 3.2.2 - remaining GOBA items (unmatched) matched on prescription data: (compares first, last, and state on each side; for GOBA uses 3 variations of last name)
 
 * 3.3 Setup for Fuzzy Matches
@@ -312,9 +371,9 @@ based on code at https://www.r-bloggers.com/split-intermixed-names-into-first-mi
 * 4.1 Cleaned and Normalized GOBA data: ~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_2.csv
 * 4.2 Cleaned and Normalized NPPES: 
 + Read in: `NPPES <- read.csv(file = "~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412.csv",  colClasses = c(rep("character", 104), rep("NULL", 196)), header = TRUE)`
+
 * create full name field based on first, middle, last and suffix
-+ two versions based on middle and alternate middle, then two versions - with and without suffix
-+ total of four full names
++ two versions based on middle and alternate middle, then two versions - with and without suffix for a total of four full names
 + full.name,1 = first, middle, last
 + full.name.2 = first, middle, last_2, 
 + full.name.3 = first, middle initial, last
@@ -437,6 +496,9 @@ Counts are taken throughout the project.  Of note, `Physician_Profile_ID` is a u
 **Description**: Loads NPPES data (mainly demographics) and Open Payments data.  Joe used a great combination of Open Payments  names and NPPES names.  He even included the alternative last names.  Wow!  Baller!  Then he mixed the NPPES addressed with names.  I have to learn SQL code/sqldf and how to do this for sure! Takes many hours to run given the single core nature of R.  
 
 This is a great video on sqldf: https://youtu.be/s2oTUsAJfjI
+
+`# filter on Taxonomy
+NOD_Match <- sqldf("select NOD_Match.* from NOD_Match where NOD_Match.[TAX] like '%207V%' or NOD_Match.[TAX] like '%174000000X%' or NOD_Match.[TAX] like '%390200000X%' or NOD_Match.[TAX] like '%208D00000X%' or NOD_Match.[TAX] like '174400000X' ")`
 
 DPLYR CODE
 all_data %>% summarise(n_distinct(Medical_School))
