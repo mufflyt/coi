@@ -117,7 +117,7 @@ Drug class,	Medication
 * exploratory.io
 * delimit for PC. http://www.delimitware.com.  Opens huge ass files but does not work for Mac.  
 * XTabularor works for Mac.  https://www.bartastechnologies.com/products/xtabulator/.  I had to use this because R choked with it's one core and requiring everything in active memory.  
-* Git Large File Storage (https://git-lfs.github.com).  Install with ```r brew install git-lfs```
+* Git Large File Storage (https://git-lfs.github.com).  Install with ```r brew install git-lfs```.  See more below.  
 * COM Add ins: Fuzzy Look Up Add-In for Excel 1.3.0.0.  This was easier to use than R for fuzzy matching.  https://www.microsoft.com/en-us/download/details.aspx?id=15011.  The Fuzzy Lookup Add-In for Excel was developed by Microsoft Research and performs fuzzy matching of textual data in Microsoft Excel. It can be used to identify fuzzy duplicate rows within a single table or to fuzzy join similar rows between two different tables. The matching is robust to a wide variety of errors including spelling mistakes, abbreviations, synonyms and added/missing data. For instance, it might detect that the rows “Mr. Andrew Hill”, “Hill, Andrew R.” and “Andy Hill” all refer to the same underlying entity, returning a similarity score along with each match. Does NOT work with Mac.  
 
 ## Installation and use
@@ -197,30 +197,144 @@ ggplot2::ggsave(here("figs", "mpg_hp.png")) #save png to a figs folder
 
 ## Matching Overview
 * NPPES - NPI given so able to match with other databases with the key of NPI number
-* PCND - NPI given
+* PCND - NPI given so able to match with NPPES above
 * OP - NO NPI so we need to match based on name, address, state, alternate names, suffix, etc.  
-* GOBA - NO NPI
+* GOBA - NO NPI so we need to match based on name, city, state.  
 
 ## Scripts: purpose for searching for NPPES
 ### Path:  `/Pharma_Influence/Guido_Working_file`
 
-Due to the absence of a common variable, a two-step process linked Open Payment with Provider Utilization and Payment Data Public Use File. First, the Open Payments Database was linked to National Provider Identification database based on the physicians first and last name, city and state. Then Medicare Provider Utilization and Payment Data Public Use File was linked using the common variable NPI.  Prescriber groups that did not have prescriptive authority or were not eligible for payments from the pharmaceutical industry (e.g., nurse practitioners, physician assistants, and pharmacists) also were excluded. The final analytic file included physician name, gender, address, city, state, zip code, physician specialty, drug name, total drug cost, total days’ supply for the drug, total amount of payments received and amount of payment received by individual manufacturers.  
+Due to the absence of a common variable, a two-step process linked Open Payment with Provider Utilization and Payment Data Public Use File. First, the Open Payments Database was linked to National Provider Identification database based on the physicians first and last name, city and state. Then Medicare Provider Utilization and Payment Data Public Use File was linked using the common variable NPI.  Prescriber groups that did not have prescriptive authority or were not eligible for payments from the pharmaceutical industry (e.g., nurse practitioners, physician assistants, and pharmacists) also were excluded. The final analytic file included physician name, gender, address, city, state, zip code, physician specialty, drug name, total drug cost, total days’ supply for the drug, total amount of payments received and amount of payment received by individual manufacturers.  This work was done by the amazing Joe Guido.  
+
+Each file stands independently.  It installs the programs needed, writes the output to disk, and cleans up all the data in the Viewer at the end.  Very clean.  
+```r
+#cleanup and write output
+GOBA_all_a_dataframes_1 <- df
+rm(df)
+rm(GOBA_all_a_dataframes)
+rm(Regions)
+
+write.csv(GOBA_all_a_dataframes_1,"~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_1.csv",row.names = FALSE, na="")
+
+rm(list=ls()) 
+gc()
+```
 
 ### Matching Physician Names to Open Payments Data Process
-### `00_Pulling all scrapes together.R`
-**Description**: Pulls data from disparate sources to create the one true list of GOBA.  It merges all the data together that has a unique id number `userid`.  Then the data is run through the NPPES API system (not RSocrata, bummer) to find a matching NPI number because there is no matching key between the two.  I need to figure how to do multiple rounds like in the original work that Joe did.  
+### `1_1_pulling_all_scrapes_togetherR1.R`
+**Description**: Pulls data from disparate sources to create the one true list.  It merges all the data together that has a unique id number `userid`.  
 
-**Use**: `source("00_Pulling all scrapes together.R")` 
+**Use**: `source("1_1_pulling_all_scrapes_togetherR1.R")` 
 
-**Input**: Get data off all machines first.  Remember that is is named `Physician_x to y with Sys.time.csv`.  
+**Input**: All data is linked to the location on-line with Dropbox.  Remember that is is named with the format: `Physician_x to y with Sys.time.csv`.  
 
 **Output**: 
-`readr::write_csv("~/Dropbox/Pharma_Influence/Data/GOBA.csv")`
+```r readr::write_csv(all_bound_together, "~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes.csv")```.  We start with a list of OBGYN physicians and the year that they were boarded called all_bound_together.csv.  The data is filtered for providers who are retired, not in the United States.
+
+### `1_2_GOBA_Prep.R`
+**Description**: These are some bespoke functions to get the first, middle, and last names off.  
+* trap_suffix - function to strip off everything after the first comma .  looks for common name suffix (Jr, SR, I, II, III, IV) and splits into a seperate component based on a space delimeter. leaves the balance untouched (Doe III) -> DOE, III
+
+* trap_title -  splits into two parts, based on comma delimeter.  first part is assumed to be full name second part is assumed to be the title string ( John K Doe, MD PHD -> "John K Doe", "MD PHD")
+```r
+df[,c("NamePart","Title")] <-  df$name %>% trap_title
+```
+
+* trap_compound - function to strip left and right part of hyphenated last name.  breaks compound name (defined as two character strings joined by a '-' into a left and right component ( doe-james -> doe, james)
+```r
+df[,c("Last_Left","Last_Right")] <- df$Last %>% trap_compound
+```
+* fml - fml is First, Middle, Last name.  function to parse name into first, middle and last.  If more than 3 segments, joins second through next to last with '-'.  converts input stream into 3 parts (first, middle, last) based on space delimiter.  if there are more than 3 parts, 3rd and higher part are allocated to last name field.  from [slightly modified, changed collapse character to space]  https://www.r-bloggers.com/split-intermixed-names-into-first-middle-and-last/.  
+```r
+df[,c("First","Middle","Last")] <- df$NamePart %>% fml
+```
+We could re-use this for other name matching problems.  
+
+**Processing Summary:**
+* - parses single name string into components:'First, Middle, Last, Last_Right, Last_Left, Title' by applying functions `trap_title`, `fml`, and `trap_compound`.
+* - cleans up data by removing leading and trailing spaces, periods
+* - converts to upper case
+* - splits off suffix from Last name field, places in 'suffix' field
+* - adds 'region' field based on input file defining states into ACOG Districts
+
+based on code at https://www.r-bloggers.com/split-intermixed-names-into-first-middle-and-last/
+
+**Use**: `source("1_2_GOBA_Prep.R")` 
+
+**Input**: `GOBA_all_a_dataframes.csv`.  This is a list of OBGYN names from a web search.  
+
+**Output**: `~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_1.csv`.
+
+### `1_3_Match_GOBA_NPPES (Filt).R` 
+**Description**:  This is some real baller code that Joe Guido created 10000%.  Amazing.  
+
+# 1.1 PRE_Match: Prescriber Data File is known as PRE.  Prescriber Demographics (raw, unprocessed) 
+`~/Dropbox/Pharma_Influence/Data/Medicare_Part_D/PartD_Prescriber_PUF_NPI_DRUG_Combined.csv`
+* 1.2 GOB_Match: GOBA data, cleaned [ ] `~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_1.csv`
+* 1.3 NOD_Match: NPPES data file (raw, unprocessed) `~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_1.csv`, NOD stands for Nppes Obgyn Demographics.  ??
+
+#2. Functions
+* 2.1 match1 - takes one input fields from each of two files, performs match, removed duplicates, updates datasets
+* 2.2 match2 - same as match1, but also requires state to be the same
+* 2.3 match3 - takes two input fields from each of two files, performs match, removed duplicates, updates datasets
+* 2.4 match4 - same as match3 but also requires state to be the same.
+
+# 3. Processing Summary
+* 3.1 Data Prep
+* 3.1.1 GOBA (GOB_Match)
++ - removed if not in 50 states + DC
++ - removed punctuation / non alpha charactors: (),.' and spaces
++ - created matching variables: Full.Name.1 (first, middle, last); Full.Name.2 (First, middle initial, last);
++		Full.Name.3 (first, middle, last, suffix); Full.Name.4 (first, middle initial, last, suffix)
++ - removed any '-' character (doe-james -> doejames)
+
+* 3.1.2 NPPES (NOD_Match)
++ - moved suffix (Jr, SR, I, II, III, IV) embedded in last name to suffix field
++ - removed punctuation / non alpha charactors: (),.' and spaces
++ - removed any '-' character (doe-james -> doejames)
++ - removed 'NMN' string (appears to represent no middle name)
++ - created matching variables: 
++ Full.Name.1 (first, middle, last); `GOB_Match$Full.Name.1 <- (paste(GOB_Match$First, GOB_Match$Middle,GOB_Match$Last, sep=" "))`
++ Full.Name.2 (First, middle initial, last);`GOB_Match$Full.Name.2 <- (paste(GOB_Match$First, GOB_Match$Middle,GOB_Match$Last, GOB_Match$Full.Name.Suffix, sep=" "))`
++ Full.Name.3 (first, middle, last, suffix); `GOB_Match$Full.Name.3 <- (paste(GOB_Match$First, substr(GOB_Match$Middle,1,1), GOB_Match$Last,sep=" "))`
++ Full.Name.4 (first, middle initial, last, suffix)`GOB_Match$Full.Name.4 <- (paste(GOB_Match$First, substr(GOB_Match$Middle,1,1), GOB_Match$Last, GOB_Match$Full.Name.Suffix, sep=" "))`
++ - filtered on taxonomy corresponding to OBGYN ( '%207V%', '%174000000X', '%390200000X%','%208D00000X%', '174400000X'
+
+* 3.2 Matching
+* 3.2.1 - GOBA and NPPES matched based on variations of fullname (middle initial / full middle name; with and without suffix)
+* 3.2.2 - remaining GOBA items (unmatched) matched on prescription data: (compares first, last, and state on each side; for GOBA uses 3 variations of last name)
+
+* 3.3 Setup for Fuzzy Matches
+* 3.3.1 output files corresponding to unmatched GOBA and NPPES data are generated.
+* 3.3.2 output files are fed into excel and fuzzy match done using microsoft fuzzy match tool.
+
+# 4. Intermediate Files
+* 4.1 Cleaned and Normalized GOBA data: ~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_2.csv
+* 4.2 Cleaned and Normalized NPPES: 
++ Read in: `NPPES <- read.csv(file = "~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412.csv",  colClasses = c(rep("character", 104), rep("NULL", 196)), header = TRUE)`
+* create full name field based on first, middle, last and suffix
++ two versions based on middle and alternate middle, then two versions - with and without suffix
++ total of four full names
++ full.name,1 = first, middle, last
++ full.name.2 = first, middle, last_2, 
++ full.name.3 = first, middle initial, last
++ full.name.4 = first, middle initian, last_2
+`~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412_1.csv`
+
+* 4.3 Cleaned and Normalized NPPES, Filtered on OBGYN Taxonomy Codes: `~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412_2.csv`
+
+# 5. Output
+* 5.1 GOBA_Match_NPPES_Matched:  "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/GOBA_Match_NPPES_Matched.csv"
+* 5.2 GOBA_Match_NPPES_UnMatched: "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/GOBA_Match_NPPES_UnMatched.csv"
+* 5.3 GOB_Match: "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/GOBA_Match_ALL.csv"
+* 5.4 NOD_Match:  "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/NOD_Match_ALL.csv"
+* 5.5 GOB_Fuzzy:  "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/GOBA_Fuzzy.csv"
+* 5.6 NOD_Fuzzy: "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/NOD_Fuzzy.csv"
 
 
-### `0_Data_Prep.R`
+### `0_Data_Prep.R` - Deprecated 
 
-**Description**: First thing to run when starting.  THIS SHOULD RUN OVERNIGHT.  It installs and loads the libraries.  This takes hours....  After that it does some significant data cleaning and writes a file to the same folder with the name underscore 2.  On May 3, 2020 I had the nutz idea of trying to get the most recent data using APIs instead of downloading the individual files.  APIs are capable of providing data that is refreshed much more often than you can achieve with pulling, cleaning, and loading files.  This will allow for less storage of data.  The API also pulls from the "source" so we are always getting the straight data.  That being said it takes forever to get the data from the APIs so I switched back to files saved to an external drive.  
+**Deprecated Description**: First thing to run when starting.  THIS SHOULD RUN OVERNIGHT.  It installs and loads the libraries.  This takes hours....  After that it does some significant data cleaning and writes a file to the same folder with the name underscore 2.  On May 3, 2020 I had the nutz idea of trying to get the most recent data using APIs instead of downloading the individual files.  APIs are capable of providing data that is refreshed much more often than you can achieve with pulling, cleaning, and loading files.  This will allow for less storage of data.  The API also pulls from the "source" so we are always getting the straight data.  That being said it takes forever to get the data from the APIs so I switched back to files saved to an external drive.  
 
 API with Documentation:
 * Physician Compare with a helpful `RSocrata` code snippet - https://dev.socrata.com/foundry/data.medicare.gov/mj5m-pzi6
@@ -277,11 +391,11 @@ GOBA: (no suffixes or
 * GOBA.full.name.1
 * GOBA.full.name.state
 
-**Use**: `source("0_Data_Prep.R")` 
+**Deprecated Use**: `source("0_Data_Prep.R")` 
 
-**Input**: None.  This takes raw data from the APIS and originally external hard drives `/Volumes/Pharma_Influence/Data` loads it and selects only the columns needed.  This is especially important with the NPPES file.  It is HUGE!  I cleaned the GOBA_unique.csv file making it unique NPI and GOBA_ID numbers.  I also added the ACOG districts.  
+**Deprecated Input**: None.  This takes raw data from the APIS and originally external hard drives `/Volumes/Pharma_Influence/Data` loads it and selects only the columns needed.  This is especially important with the NPPES file.  It is HUGE!  I cleaned the GOBA_unique.csv file making it unique NPI and GOBA_ID numbers.  I also added the ACOG districts.  
 
-**Output**: 
+**Deprecated  Output**: 
 readr::write_csv(PCND, "/Volumes/Projects/Pharma_Influence/Data/Physician_Compare/Physician_Compare_National_Downloadable_File2.csv"
 "/Volumes/Projects/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412_2.csv"
 
