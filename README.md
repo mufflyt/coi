@@ -496,111 +496,7 @@ https://www.google.com/webhp?tab=iw
 * this file generates NPI to PPI cross reference.  NPI list is from PCND OBGYN's and GOBA OBGYNs
 
 
-
-
-### `0_Data_Prep.R` - Deprecated 
-
-**Deprecated Description**: First thing to run when starting.  THIS SHOULD RUN OVERNIGHT.  It installs and loads the libraries.  This takes hours....  After that it does some significant data cleaning and writes a file to the same folder with the name underscore 2.  On May 3, 2020 I had the nutz idea of trying to get the most recent data using APIs instead of downloading the individual files.  APIs are capable of providing data that is refreshed much more often than you can achieve with pulling, cleaning, and loading files.  This will allow for less storage of data.  The API also pulls from the "source" so we are always getting the straight data.  That being said it takes forever to get the data from the APIs so I switched back to files saved to an external drive.  
-
-API with Documentation:
-* Physician Compare with a helpful `RSocrata` code snippet - https://dev.socrata.com/foundry/data.medicare.gov/mj5m-pzi6
-* Open Payments Overview of all available data - https://openpaymentsdata-origin.cms.gov/dataset/Open-Payments-for-Developers/ap6w-xznw
-* Open Payments Physician Profile Data also uses `RSocrata` package - https://dev.socrata.com/foundry/openpaymentsdata.cms.gov/tr8n-5p4d
-
-Do several rounds of matching OP Physician Demographics `OP_Summary` name to NPPES database `NPPES`.  These are the name variations tried:
-* two versions based on middle and alternate middle, then two versions - with and without suffix
-
-[![Name Matching challenges to accurate and consistent matching](https://www.rosette.com/wp-content/uploads/2017/12/NameMatchingMethods-Graphic1-v1.svg)](https://www.rosette.com/wp-content/uploads/2017/12/NameMatchingMethods-Graphic1-v1.svg) 
-
-Gems that we found last time were:
-* The NPI and OP addresses likely were pulled from the same dataset because they are very similar.  
-* There are some missing components in people who go by their first initial.  Initials and Nicknames.  
-* Many of the different databases have out of order names.  
-
-OP Physician Demographics :
-* OP.full.name.1 = first, middle, last
-* OP.full.name.2 = first, middle, last, suffix
-* OP.full.name.3 = first2, middle2, last2 (all alternative/maiden/married name options)
-* OP.full.name.4 = first2, middle2, last2, suffix2 (all alternative options)
-* OP.full.name.state
-
-NPPES:  
-* nppes.full.name.1
-* nppes.full.name.2
-* nppes.full.name.3 (use alternative/maiden/married name options)
-* nppes.full.name.state
-
-Rounds to match OP Physician Demographics to NPPES:  (originally from `2_3_0_GOB_NPPES_Match.R`)
-* Round 1: match on OP.full.name.1 / nppes.full.name.1 
-* Round 2: match on OP.full.name.1 / nppes.full.name.2 
-* Round 3: match on OP.full.name.1 / nppes.full.name.3 
-* Round 5: match on OP.full.name.2 / nppes.full.name.1
-* Round 6: match on OP.full.name.2 / nppes.full.name.2
-* Round 7: match on OP.full.name.2 / nppes.full.name.3
-* Round 9: match on OP.full.name.3 / nppes.full.name.1 
-* Round 10: match on OP.full.name.3 / nppes.full.name.2 
-* Round 11: match on OP.full.name.3 / nppes.full.name.3 
-* Round 13: match on OP.full.name.4 / nppes.full.name.1 
-* Round 14: match on OP.full.name.4 / nppes.full.name.2 
-* Round 15: match on OP.full.name.4 / nppes.full.name.3 
-* Round 17: match on OP.full.name.1 / nppes.full.name.1 
-* Round 18: match on OP.full.name.1 / nppes.full.name.2 
-* Round 19: match on OP.full.name.1 / nppes.full.name.3 
-* Round 21: match on OP.full.name.1 / nppes.full.name.1 + state #did not do the state
-* Round 22: match on OP.full.name.1 / nppes.full.name.2 + State
-* Round 23: match on OP.full.name.1 / nppes.full.name.2 + State
-* Round 25: match on OP.full.name.2 / nppes.full.name.1 State
-* Round 26: match on OP.full.name.2 / nppes.full.name.2 State
-*. There are more....
-
-GOBA: (no suffixes or 
-* GOBA.full.name.1
-* GOBA.full.name.state
-
-**Deprecated Use**: `source("0_Data_Prep.R")` 
-
-**Deprecated Input**: None.  This takes raw data from the APIS and originally external hard drives `/Volumes/Pharma_Influence/Data` loads it and selects only the columns needed.  This is especially important with the NPPES file.  It is HUGE!  I cleaned the GOBA_unique.csv file making it unique NPI and GOBA_ID numbers.  I also added the ACOG districts.  
-
-**Deprecated  Output**: 
-readr::write_csv(PCND, "/Volumes/Projects/Pharma_Influence/Data/Physician_Compare/Physician_Compare_National_Downloadable_File2.csv"
-"/Volumes/Projects/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412_2.csv"
-
-
-### `1_Match PCND with OP.R`
-**Description**: The goal of this file and the `1_Match_OP_NPPES_PCND.R` are to create a crosswalk between NPI and PPI numbers. This has nothing to do with payments and only uses the Physician summary data from open payments. 
-
-Steps to get ready for matching the full names:
-* keep only unique NPI numbers
-* Change first, middle, last names, and alternative names to title text
-* Change NA to "" so no names are created as Tyler NA
-* Impute NA to "" for middle names so don't get Tyler NA Muffly
-* str_clean all name fields
-* Remove all punctuation from state name
-* Filter to include only states + DC + PR: 
-* keep only unique NPI numbers again
-* Split names into: first, middle, last, suffix
-* Unite to create: full.name.1 that is first, middle, last
-* Unite to create: full.name. that is first, middle, last, suffix (II, III, Jr.). There were no suffixes or alternative names for PCND
-* Unite to create: full.name. that is other first, other middle, other last name
-* Unite to create: full.name.2 that is first, middle, last, state name
-* Unite to create: full.name.3 that is first line address, state name, last name (I suspect that PCND and NPPES use same address)
-
-These files are numbered in ordered of how they are to be used "1_", then "2_", then "3_".Take the Physician_Compare_National_Downloadable_File.csv (abbreviated as PCND) and filters out APO/territories and selects the specialty of interest as `c("GYNECOLOGICAL ONCOLOGY", "OBSTETRICS/GYNECOLOGY"))` for primary and secondary specialties using the baller move of '|'.  The SQL codes removes duplicate NPI numbers.  Open Payment data is loaded from `OP_PH_PRFL_SPLMTL_P06282019.csv`.  All data is changed to lower case and `!=" "`.  Then the merge process starts based on 
-* first, last, city, state creates matching payments (MP).  
-* check for matches using address
-Counts are taken throughout the project.  Of note, `Physician_Profile_ID` is a unique identificaiton number for Open Payments doctors.  
-
-**Use**:   `source("1_Match PCND with OP.R")` 
-
-**Output**: 
-* `studygroupR2.csv` - Matching payments data is all matched based on the above criteria and written out.  
-* `PCND.csv` - Physician compare data left joined with the `MP` so this has the demographics of the doctors who had matching payments.  
-* `StudyGroupR2.rds` - 'MP' dataframe is saved so this is a list of the physicians matched with payments.  
-
-
-### `1_Match_OP_NPPES_PCND.R`
-
-**Description**: Loads NPPES data (mainly demographics) and Open Payments data.  Joe used a great combination of Open Payments  names and NPPES names.  He even included the alternative last names.  Wow!  Baller!  Then he mixed the NPPES addressed with names.  I have to learn SQL code/sqldf and how to do this for sure! Takes many hours to run given the single core nature of R.  
+I have to learn SQL code/sqldf and how to do this for sure! Takes many hours to run given the single core nature of R.  
 
 This is a great video on sqldf: https://youtu.be/s2oTUsAJfjI
 
@@ -617,70 +513,6 @@ sqldf("SELECT COUNT(DISTINCT Medical_School) from all_data")
 
 [![Reference about the types of database left outer joins we will do here](https://i.stack.imgur.com/S3WMq.jpg)](https://i.stack.imgur.com/S3WMq.jpg) 
 
-Matching via multiple rounds:
-* Round 1: First, middle, last, suffix, address, city, state
-* Round 2: First, last, suffix, address, city, state
-* Round 3: First, last, address, city, state
-* Round 4: OP First NP AltFirst, last, address, city, state
-* Round 5: First, OP last NP AltLast , address, city, state
-* Round 6: OP Alt First NP First, last,address, city, state
-* Round 7: First, OP Altlast NP last,address, city, state
-* Round 8: OP altFirst NP First, OP Altlast NP last,address, city, state
-* Round 9: First, last, NP Altaddress, NP Altcity, NP Altstate
-* Round 10: First, middle, last, suffix, city, state
-* Round 11: First, middle, last, city, state
-* Round 12: First, last, city, state
-* Round 13: First, middle, last, suffix, zip 
-* Round 14: First, middle, last, zip
-* Round 15: First, last, zip 
-
-Following this Hurculean effort Joe then matched the remaining with Physician Compare Download File (PCND).  Payment data was loaded and matching of the demographics from above (NPPES) was done with the PCND file.  
-
-Matching via multiple rounds:
-* Round 1: first, last, city, state
-* Round 2: ALT Last
-* Round 3: ALT First
-* Round 4: ALT First ALT Last
-Update OP with matched based on PCND, add specialty, filter on OBGYN (i.e., build list of unmatched OBGYN in OP)
-
-**Output**: `write.csv(OP_UnMatched,"OP_UnMatched.csv", row.names = FALSE)`
-`write.csv(OP_UnMatched_OBGYN,"OP_UnMatched_OBGYN.csv", row.names = FALSE)`
-
-
-### `Unfiltered_Match.R`
-
-**Description**: There are going to be a few rounds of physician name matching to Open Payments data.  
-Round 1:
-* `Prescriber_Name$MatchNMIZip` is a match based on first name, last name and zip code.
-* `Prescriber_Name$MatchNMI` is first name and last name.  
-* `Prescriber_Name$MatchMI` is the first name, middle initial, and last name.  
-
-Round 2:
-* no middle initial
-
-**Use**: `source(".R")` 
-
-**Input**: The file builds everything it needs from scratch without requiring inputs.  
-
-**Output**: 
-* Prescriber_Name_Matched_unfil.csv
-* Prescriber_Name_UnMatched_unfil.csv
-
-
-
-
-### `2_Load_Data.R`
-
-**Description**: Files starts with `StudyGroupR3.csv` defined as `StudyGroup` and I don't know where this comes from.  Reads in data for all years by reading txt file from the internet: `PartD_Prescriber_PUF_NPI_DRUG_xx.txt`.  Merge all the years of Prescriber Drug information together.  Read in the open payments data that was processed before:  `OP_DTL_GNRL_PGYR2017_P0629xxx.csv`.  Corrects the column names across all years.  `PaySum5` aggregates dollar amounts.  
-
-**Use**: `source("2_Load_Data.R")` 
-
-**Input**: 
-* `StudyGroupR3.csv` - Crosswalk of NPI number and matching PPI number from Open Payments.  I don't know where this came from.  
-* `PartD_Prescriber_PUF_NPI_DRUG_13.txt -> PartD_Prescriber_PUF_NPI_DRUG_17.txt`
-* `OP_DTL_GNRL_PGYR2013_P06292018.csv -> OP_DTL_GNRL_PGYR2017_P06292018.csv`
-
-**Output**: `paymentSummary.csv` has the `Physician_Profile_ID` listed then the drug of interest (e.g. `NDC_of_Associated_Covered_Drug_or_Biological`) that doctor prescribed and how much they received in payments from that pharmaceutical company.  Very useful!
 
 
 ### `3_Buld_Output R1.R`
@@ -707,20 +539,6 @@ Round 2:
 
 ### Adding Physician Demographics
 Covariables included gender, American Board of Obstetrics and Gynecology-approved (ABOG) subspecialty (general OBGYNs, female pelvic medicine and reconstructive surgeons, gynecologic oncologists, maternal-fetal medicine specialists, and reproductive endocrinology and infertility specialists), ACOG region, overall physician volume of prescribing and prescribing volume in the same therapeutic class.  The overall prescribing volume of a physician was calculated as the total days’ supply of all drugs of any category prescribed by that physician.  A log of overall prescribing volume of a physician and the therapeutic class prescribing volume were used for improved model specifications.  Secondary analyses tested the association of payment from the manufacturer of the selected drug with the primary outcome. 
-
-### GOBA
-**Description**: Pulls GOBA data from multiple time frames into one csv file that can be used.  Raw data are stored at `Dropbox, workforce, scraper, Scraper_results_2019` and are linked by URL to the code.  
-
-**Use**: `source("pulling_all_scrapes_together.R")` 
-
-**Output**:  
-**Output**:  
-
-
-### `GOBA_Compare.R`
-
-**Description**: Takes a file called `GOBA_unique.csv` of NPI numbers and merges it withe demographic data from `Physician Compare`.  Most importantly, `GOBA_unique.csv` can be matched to get subspecialties `GOBA_Cert`from the NPI.  
-**Output**: Puts out a file called: "GOBA_Compare.csv". 
 
 ### `API access for NPPES.R`
 
@@ -768,41 +586,6 @@ head(locations)
 dim(locations)  
 View(locations)
 ```
-
-### `OP_PPI_Specialties.R`
-**Description**: Merges all years of the open payments data and selects the PPI (`Physician_Profile_ID`) and Physician Specialty from all years of open payments.  
-
-**Use**: `source("OP_PPI_Specialties.R")` 
-
-**Input**: `OP_DTL_GNRL_PGYR2013_P062920xx.csv`?Not sure?
-
-**Output**: `write.csv(OPx_SP,"OP_AllSpecialty.csv", row.names = FALSE)`. `write.csv(OPx_SP,"OP_AllSpecialty.csv", row.names = FALSE)` generates file to determine the specialty of every physician who received an open payment: `Physician_Profile_ID`, and `Physician_Specialty`.  
-
-### Aggregating Statistics
-### `OutputForStats.R`
-**Description**: Removes physicians not practicing in the United States.  Remove physicians who do not accept Medicaid.  Physician Compare docs are all the physicians who accept Medicare.  Load the drug class data.  
-```r
-filter(StudyGroup, Physician_Profile_State %nin% c("GU", "VI", "ZZ", "AP", "AE")
-```
-
-**Use**: `source(".R")` 
-
-**Input**: `Prescriber.csv`, `paymentSummary.csv`, `StudyGroupR1.csv`, `OP_PH_PRFL_SPLMTL_P06292018.csv`, `Physician_Compare_National_Downloadable_File.csv`, 
-
-**Output**: `StudyGroup.rds`, `PaySum.rds`, `Prescriber.rds`.  
-
-
-### `Table 2 R1.R`
-
-**Description**: Creates Table 2.  
-
-**Use**: `source("Table 2 R1.R")` 
-
-**Input**: Brings in all data needed from within the file.  Self-contained.  
-
-**Output**: ```r write.csv(T2, "T2.csv"), write.csv(OP,"AllPaymentData.csv") ```
-
-
 
 ### Start the Modeling!
 A Poisson model will be used instead of a zero inflation model. Outcome of the model will be cumulative pay. The deliverable will be a graph of each drug with number of scripts on the Y-axis and dollars from the drug company on the X-axis.  IF the line goes up and to the right then we see a positive relationship between drugs and dollars from the drug company.   
@@ -856,6 +639,7 @@ drugtinidazole      9.86899   5.97936  14.55711    1.792 <2e-04 ***
 Cpay                0.01275  -0.01127   0.04089  867.046  0.339    
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+```
 
 [![Random Trace Plot of Anti-Infectives](https://github.com/mufflyt/coi/blob/master/random%20effects%20trace%20plot%20of%20anti_inf_VCV.png?raw=true)](https://github.com/mufflyt/coi/blob/master/random%20effects%20trace%20plot%20of%20anti_inf_VCV.png?raw=true)
 
@@ -863,7 +647,6 @@ Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’
 
 Tinidazole (dat_anti_inf,2) as a treatment for Bacterial vaginosis.  Y-axis is dollars to the physician form the manufacturer of tinidazole and X-axis is number of prescriptions.  Tinidazole does start increasing to meaningful numbers ($1,500, 30 rx).  
 [![Prescriptions vs. Contributions to MD](https://github.com/mufflyt/coi/blob/master/tinidazole.png?raw=true)](https://github.com/mufflyt/coi/blob/master/tinidazole.png?raw=true)
-```
 
 ### Matching Physician Names to Open Payments Data Process
 Adjust the analysis based on:
@@ -878,19 +661,6 @@ Adjust the analysis based on:
 * Total amount of dollars that the physician received in Open Payments?
 * A particular type of Open Payment (food, consulting, travel, etc.)?
 
-
-TEMPLATE
-### Matching Physician Names to Open Payments Data Process
-### `.R`
-
-**Description**: 
-
-**Use**: `source(".R")` 
-
-**Input**: 
-
-
-**Output**: 
 
 ### STROBE study
 The study was written using the STROBE checklist:
@@ -1195,3 +965,69 @@ Latest GOBA issues.xls - There are 71 people with the exact same first, middle, 
 
 
 Having issues with github so I downloaded the repository to my Documents folder.  
+
+Matching via multiple rounds:
+* Round 1: First, middle, last, suffix, address, city, state
+* Round 2: First, last, suffix, address, city, state
+* Round 3: First, last, address, city, state
+* Round 4: OP First NP AltFirst, last, address, city, state
+* Round 5: First, OP last NP AltLast , address, city, state
+* Round 6: OP Alt First NP First, last,address, city, state
+* Round 7: First, OP Altlast NP last,address, city, state
+* Round 8: OP altFirst NP First, OP Altlast NP last,address, city, state
+* Round 9: First, last, NP Altaddress, NP Altcity, NP Altstate
+* Round 10: First, middle, last, suffix, city, state
+* Round 11: First, middle, last, city, state
+* Round 12: First, last, city, state
+* Round 13: First, middle, last, suffix, zip 
+* Round 14: First, middle, last, zip
+* Round 15: First, last, zip 
+
+Following this Hurculean effort Joe then matched the remaining with Physician Compare Download File (PCND).  Payment data was loaded and matching of the demographics from above (NPPES) was done with the PCND file.  
+
+Matching via multiple rounds:
+* Round 1: first, last, city, state
+* Round 2: ALT Last
+* Round 3: ALT First
+* Round 4: ALT First ALT Last
+Update OP with matched based on PCND, add specialty, filter on OBGYN (i.e., build list of unmatched OBGYN in OP)
+
+**Output**: `write.csv(OP_UnMatched,"OP_UnMatched.csv", row.names = FALSE)`
+`write.csv(OP_UnMatched_OBGYN,"OP_UnMatched_OBGYN.csv", row.names = FALSE)`
+
+
+### `Unfiltered_Match.R`
+
+**Description**: There are going to be a few rounds of physician name matching to Open Payments data.  
+Round 1:
+* `Prescriber_Name$MatchNMIZip` is a match based on first name, last name and zip code.
+* `Prescriber_Name$MatchNMI` is first name and last name.  
+* `Prescriber_Name$MatchMI` is the first name, middle initial, and last name.  
+
+Round 2:
+* no middle initial
+
+**Use**: `source(".R")` 
+
+**Input**: The file builds everything it needs from scratch without requiring inputs.  
+
+**Output**: 
+* Prescriber_Name_Matched_unfil.csv
+* Prescriber_Name_UnMatched_unfil.csv
+
+
+
+
+### `2_Load_Data.R`
+
+**Description**: Files starts with `StudyGroupR3.csv` defined as `StudyGroup` and I don't know where this comes from.  Reads in data for all years by reading txt file from the internet: `PartD_Prescriber_PUF_NPI_DRUG_xx.txt`.  Merge all the years of Prescriber Drug information together.  Read in the open payments data that was processed before:  `OP_DTL_GNRL_PGYR2017_P0629xxx.csv`.  Corrects the column names across all years.  `PaySum5` aggregates dollar amounts.  
+
+**Use**: `source("2_Load_Data.R")` 
+
+**Input**: 
+* `StudyGroupR3.csv` - Crosswalk of NPI number and matching PPI number from Open Payments.  I don't know where this came from.  
+* `PartD_Prescriber_PUF_NPI_DRUG_13.txt -> PartD_Prescriber_PUF_NPI_DRUG_17.txt`
+* `OP_DTL_GNRL_PGYR2013_P06292018.csv -> OP_DTL_GNRL_PGYR2017_P06292018.csv`
+
+**Output**: `paymentSummary.csv` has the `Physician_Profile_ID` listed then the drug of interest (e.g. `NDC_of_Associated_Covered_Drug_or_Biological`) that doctor prescribed and how much they received in payments from that pharmaceutical company.  Very useful!
+
