@@ -302,16 +302,17 @@ based on code at https://www.r-bloggers.com/split-intermixed-names-into-first-mi
 * 3.2 Matching
 * 3.2.1 - GOBA and NPPES matched based on variations of fullname (middle initial / full middle name; with and without suffix)
 
-* #match1 is a function where the input is created in a variable called matchString.  matchString is made up of multiple column names from GOBA, and NOD.  Then there is an inner join.  
+* match1 is a function where the input is created in a variable called matchString.  matchString is made up of multiple column names from GOBA, and NOD.  Then there is an inner join.  
 ```r
 #fullname. 
 match1 <- function(Gmatch,Nmatch,MatchType,GOB_Match,NOD_Match){
   
   matchString <- paste('select GOB_Match.[ID] , GOB_Match.[Full.Name], NOD_Match.[NPI] from GOB_Match INNER JOIN NOD_Match on GOB_Match.',Gmatch,' = NOD_Match.',Nmatch, ' and NOD_Match.[GOB_ID] = "" and GOB_Match.[NPI] = "" ',sep="")
   matches <- sqldf(matchString )
-```r
-
-```
+ ```
+ 
+* Joe: I am not sure what "PID" stands for here.  
+ ```r
   dup_names <- data.frame(matches[duplicated(matches$Full.Name),2])
   names(dup_names) = c("Full.Name")
   dup_OP    <- data.frame(matches[duplicated(matches$NPI),3])
@@ -328,9 +329,11 @@ match1 <- function(Gmatch,Nmatch,MatchType,GOB_Match,NOD_Match){
 
   dup_set <- subset(matches, !is.na(matches$dup_name))
   dup_set$dup_name <- NULL
-  
+```
+
+* If there are multiple matches then do a LEFT OUTER JOIN.  
+```r
   if (nrow(matches) > 0) {
-     
   
   matches$Type <- MatchType
   matches <- subset(matches, is.na(matches$dup_name))
@@ -349,7 +352,9 @@ match1 <- function(Gmatch,Nmatch,MatchType,GOB_Match,NOD_Match){
   NOD_Match$m_Type <- NULL
   
   print( paste(MatchType, " ***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
-  
+  ```
+ * If there is a perfect match then print the result in real-time.  
+  ```r
   } else {
     
     print( paste(MatchType," ***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
@@ -358,7 +363,6 @@ match1 <- function(Gmatch,Nmatch,MatchType,GOB_Match,NOD_Match){
     
   return(list(GOB_Match,NOD_Match,nrow(matches)))
 }
-
 ```
 
 * 3.2.2 - remaining GOBA items (unmatched) matched on prescription data: (compares first, last, and state on each side; for GOBA uses 3 variations of last name)
@@ -389,6 +393,42 @@ match1 <- function(Gmatch,Nmatch,MatchType,GOB_Match,NOD_Match){
 * 5.4 NOD_Match:  "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/NOD_Match_ALL.csv"
 * 5.5 GOB_Fuzzy:  "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/GOBA_Fuzzy.csv"
 * 5.6 NOD_Fuzzy: "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/NOD_Fuzzy.csv"
+
+### `1_4_Match_GOBA_NPPES (UnFilt).R` 
+**Description**: 
+* 1.1 GOB_Match: GOBA data with matching NPI nums from 1_3:      "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/GOBA_Match_ALL.csv"
+* 1.2 Fuzzy_Match: output from processing of GOBA_Fuzzy and NOD_Fuzzy from 1_3 using excel workbook (microsoft fuzzy match tool): "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/Fuzzy_R1.csv"
+* 1.3 RejectMI - list of rejected matches from 1.3 (first, last + state matches where MI is inconsistent):  "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/Reject_MI.csv"    
+* 1.4 NOD_Match - from 1_3, normalized NPPES data, without filter on OBGYN taxonomy (large dataset): "~/Dropbox/Pharma_Influence/Data/NPPES_Data_Dissemination_April_2020/npidata_pfile_20050523-20200412_1.csv"
+
+# 2. Functions
+* 2.1 match2 - takes one input fields from each of two files, plus state, performs match, removed duplicates, updates datasets
+* 2.2 match4 - takes two input fields from each of two files, plus state, performs match, removed duplicates, updates datasets
+
+# Processing Summary
+* - Remove NAs,
+* - up dates GOBA file with manual matches from Fuzzy_Match, 
+* - removes rejectMI matches from GOBA match file (rejected by middle initial, rejectMI)
+* - Saves new list of matches to `GOBA_Match_NPPES`
+* - load NOD file without Taxonomy filter
+* - matching of NPPES and GOBA on full.name fields repeated, using much larger NPPES data set (and requiring state to match)
+* - matching of NPPES and GOBA on first / last name fields repeated, using much larger NNPES data set (and recquiring matching city and state)
+* - fuzzy match input files generated (in case another fuzzy round is warrented)
+
+# Intermediate Files
+* none
+
+# Output 
+* 5.1 GOBA_Match_NPPES_Matched: "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/GOBA_Match_NPPES_Matched_1.csv"
+* 5.2 GOBA_Match_NPPES_UnMatched: "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/GOBA_Match_NPPES_UnMatched_1.csv"
+* 5.3 GOB_Match: "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/GOBA_Match_ALL_1.csv"
+* 5.4 NOD_Match:  "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/NOD_Match_ALL_1.csv"
+* 5.5 GOB_Fuzzy:  "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/GOBA_Fuzzy_1.csv"
+* 5.6 NOD_Fuzzy: "~/Dropbox/Pharma_Influence/Guido_Working_file/GOBA_Match_NPPES/NOD_Fuzzy_1.csv"
+
+Runs matching in a while loop.  
+https://www.google.com/webhp?tab=iw
+![While loop for R](path-to-image-here)
 
 
 ### `0_Data_Prep.R` - Deprecated 
