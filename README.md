@@ -20,6 +20,9 @@ Muffly, Archer, Guido, Ferber, Schwarz
 )
 * [Propublica Methodology](https://projects.propublica.org/graphics/d4dpartd-methodology)
 
+* [Excellent paper 1](https://github.com/mufflyt/coi/blob/dev_01/Association%20of%20Industry%20Payments%20to%20Physicians%20With%20the%20Prescribing%20of%20Brand-name%20Statins%20in%20Massachusetts.pdf)
+
+* 
 
 Drug and Payments Data pull and preparation: This retrospective, cross-sectional study linked two large, publicly available datasets for 2013 to 2018: the Open Payment Database General Payments and the Medicare Part D Prescriber Public Use Files.  
 ==========
