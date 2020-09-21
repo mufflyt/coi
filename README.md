@@ -271,6 +271,247 @@ based on code at https://www.r-bloggers.com/split-intermixed-names-into-first-mi
 ### `1_3_Match_GOBA_NPPES (Filt).R` 
 **Description**:  This is some real baller code that Joe Guido created 10000%.  Amazing.  
 
+Merges the GOBA data with the NPPES data.  
+
+GOBA Data prep:
+* - removed if not in 50 states + DC
+* - removed punctuation / non alpha charactors: (),.' and spaces
+* - created matching variables: Full.Name.1 (first, middle, last); Full.Name.2 (First, middle initial, last);
+		Full.Name.3 (first, middle, last, suffix); Full.Name.4 (first, middle initial, last, suffix)
+* - removed any '-' character (doe-james -> doejames)
+
+NPPES Data prep:
+* - moved suffix (Jr, SR, I, II, III, IV) embedded in last name to suffix field 
+* - removed punctuation / non alpha charactors: (),.' and spaces
+* - removed any '-' character (doe-james -> doejames)
+* - removed 'NMN' string (appears to represent no middle name)
+* - created matching variables: Full.Name.1 (first, middle, last); Full.Name.2 (First, middle initial, last);
+		Full.Name.3 (first, middle, last, suffix); Full.Name.4 (first, middle initial, last, suffix)
+*- filtered on taxonomy corresponding to OBGYN ( '%207V%', '%174000000X', '%390200000X%','%208D00000X%', '174400000X'
+
+##### Names to match on
+* create full name field based on first, middle, last and suffix
+* two versions based on middle and alternate middle, then two versions - with and without suffix
+* total of four full names
+* full.name,1 = first, middle, last
+* full.name.2 = first, middle, last_2, 
+* full.name.3 = first, middle initial, last
+* full.name.4 = first, middle initial, last_2
+
+##### Function to do the actual matching
+```r
+#fullname
+match1 <- function(Gmatch,Nmatch,MatchType,GOB_Match,NOD_Match){
+  
+  matchString <- paste('select GOB_Match.[ID] , GOB_Match.[Full.Name], NOD_Match.[NPI] from GOB_Match INNER JOIN NOD_Match on GOB_Match.',Gmatch,' = NOD_Match.',Nmatch, ' and NOD_Match.[GOB_ID] = "" and GOB_Match.[NPI] = "" ',sep="")
+  matches <- sqldf(matchString )
+
+  dup_names <- data.frame(matches[duplicated(matches$Full.Name),2])
+  names(dup_names) = c("Full.Name")
+  dup_OP    <- data.frame(matches[duplicated(matches$NPI),3])
+  names(dup_OP) = c("PID")
+  dup_OP <- sqldf("select matches.[Full.Name] from matches inner join dup_OP on matches.[NPI] = dup_OP.[PID]")
+  dup_names <- merge(dup_names, dup_OP  , all=TRUE)
+  rm(dup_OP)
+  dup_names <- data.frame(dup_names[!duplicated(dup_names),])
+  names(dup_names) = c("Full.Name")
+  #mark dups
+  matches <- fn$sqldf('select matches.*, dup_names.[Full.Name] as dup_name  from matches LEFT OUTER JOIN dup_names on dup_names.[Full.Name] = matches.[Full.Name] ')
+  rm(dup_names)
+  #annotate and store
+
+  dup_set <- subset(matches, !is.na(matches$dup_name))
+  dup_set$dup_name <- NULL
+  
+  if (nrow(matches) > 0) {
+     
+  
+  matches$Type <- MatchType
+  matches <- subset(matches, is.na(matches$dup_name))
+  GOB_Match <- sqldf('select GOB_Match.*, matches.[ID] as m_ID, matches.[NPI] as m_NPI, matches.[Type] as m_Type from GOB_Match LEFT OUTER JOIN matches on GOB_Match.[ID] = matches.[ID]')
+  GOB_Match[!is.na(GOB_Match$m_ID),"NPI"] <-  GOB_Match[!is.na(GOB_Match$m_ID),"m_NPI"]
+  GOB_Match[!is.na(GOB_Match$m_ID),"Type"] <-  GOB_Match[!is.na(GOB_Match$m_ID),"m_Type"]
+  GOB_Match$m_ID<- NULL
+  GOB_Match$m_Type <- NULL
+  GOB_Match$m_NPI <- NULL
+  
+  NOD_Match <- sqldf('select NOD_Match.*, matches.[ID] as m_ID, matches.[NPI] as m_NPI, matches.[Type] as m_Type from NOD_Match LEFT OUTER JOIN matches on NOD_Match.[NPI] = matches.[NPI]')
+  NOD_Match[!is.na(NOD_Match$m_ID),"GOB_ID"] <-  NOD_Match[!is.na(NOD_Match$m_ID),"m_ID"]
+  NOD_Match[!is.na(NOD_Match$m_Type),"Type"] <-  NOD_Match[!is.na(NOD_Match$m_Type),"m_Type"]
+  NOD_Match$m_ID<- NULL
+  NOD_Match$m_NPI <- NULL
+  NOD_Match$m_Type <- NULL
+  
+  print( paste(MatchType, " ***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
+  
+  } else {
+    
+    print( paste(MatchType," ***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
+    
+  }
+    
+  return(list(GOB_Match,NOD_Match,nrow(matches)))
+}
+
+# fullname state
+match2 <- function(Gmatch,Nmatch,MatchType,GOB_Match,NOD_Match){
+  
+  matchString <- paste('select GOB_Match.[ID] , GOB_Match.[Full.Name], NOD_Match.[NPI] from GOB_Match INNER JOIN NOD_Match on GOB_Match.',Gmatch,' = NOD_Match.',Nmatch, ' and GOB_Match.[State] = NOD_Match.[State] and NOD_Match.[GOB_ID] = "" and GOB_Match.[NPI] = "" ',sep="")
+  matches <- sqldf(matchString )
+  
+  dup_names <- data.frame(matches[duplicated(matches$Full.Name),2])
+  names(dup_names) = c("Full.Name")
+  dup_OP    <- data.frame(matches[duplicated(matches$NPI),3])
+  names(dup_OP) = c("PID")
+  dup_OP <- sqldf("select matches.[Full.Name] from matches inner join dup_OP on matches.[NPI] = dup_OP.[PID]")
+  dup_names <- merge(dup_names, dup_OP  , all=TRUE)
+  rm(dup_OP)
+  dup_names <- data.frame(dup_names[!duplicated(dup_names),])
+  names(dup_names) = c("Full.Name")
+  #mark dups
+  matches <- fn$sqldf('select matches.*, dup_names.[Full.Name] as dup_name  from matches LEFT OUTER JOIN dup_names on dup_names.[Full.Name] = matches.[Full.Name] ')
+  rm(dup_names)
+  #annotate and store
+  
+  dup_set <- subset(matches, !is.na(matches$dup_name))
+  dup_set$dup_name <- NULL  
+  
+  if (nrow(matches) > 0) {
+  
+    matches$Type <- MatchType   
+  
+    matches <- subset(matches, is.na(matches$dup_name))
+    
+  GOB_Match <- sqldf('select GOB_Match.*, matches.[ID] as m_ID, matches.[NPI] as m_NPI, matches.[Type] as m_Type from GOB_Match LEFT OUTER JOIN matches on GOB_Match.[ID] = matches.[ID]')
+  GOB_Match[!is.na(GOB_Match$m_ID),"NPI"] <-  GOB_Match[!is.na(GOB_Match$m_ID),"m_NPI"]
+  GOB_Match[!is.na(GOB_Match$m_ID),"Type"] <-  GOB_Match[!is.na(GOB_Match$m_ID),"m_Type"]
+  GOB_Match$m_ID<- NULL
+  GOB_Match$m_Type <- NULL
+  GOB_Match$m_NPI <- NULL
+  
+  NOD_Match <- sqldf('select NOD_Match.*, matches.[ID] as m_ID, matches.[NPI] as m_NPI, matches.[Type] as m_Type from NOD_Match LEFT OUTER JOIN matches on NOD_Match.[NPI] = matches.[NPI]')
+  NOD_Match[!is.na(NOD_Match$m_ID),"GOB_ID"] <-  NOD_Match[!is.na(NOD_Match$m_ID),"m_ID"]
+  NOD_Match[!is.na(NOD_Match$m_Type),"Type"] <-  NOD_Match[!is.na(NOD_Match$m_Type),"m_Type"]
+  NOD_Match$m_ID<- NULL
+  NOD_Match$m_NPI <- NULL
+  NOD_Match$m_Type <- NULL
+  
+  print( paste(MatchType, " ***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
+  
+  } else {
+    print( paste(MatchType," ***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
+  }
+  return(list(GOB_Match,NOD_Match,nrow(matches)))
+}
+
+# first last
+match3 <- function(Gmatch,Nmatch, Gmatch1,Nmatch1,MatchType,GOB_Match,NOD_Match){
+  
+  matchString <- paste('select GOB_Match.[ID] , GOB_Match.[Full.Name], NOD_Match.[NPI] from GOB_Match INNER JOIN NOD_Match on GOB_Match.',Gmatch,' = NOD_Match.',Nmatch,' and GOB_Match.',Gmatch1, ' = NOD_Match.',Nmatch1 , ' and NOD_Match.[GOB_ID] = "" and GOB_Match.[NPI] = "" ',sep="")
+  matches <- sqldf(matchString )
+  
+  dup_names <- data.frame(matches[duplicated(matches$Full.Name),2])
+  names(dup_names) = c("Full.Name")
+  dup_OP    <- data.frame(matches[duplicated(matches$NPI),3])
+  names(dup_OP) = c("PID")
+  dup_OP <- sqldf("select matches.[Full.Name] from matches inner join dup_OP on matches.[NPI] = dup_OP.[PID]")
+  dup_names <- merge(dup_names, dup_OP  , all=TRUE)
+  rm(dup_OP)
+  dup_names <- data.frame(dup_names[!duplicated(dup_names),])
+  names(dup_names) = c("Full.Name")
+  #mark dups
+  matches <- fn$sqldf('select matches.*, dup_names.[Full.Name] as dup_name  from matches LEFT OUTER JOIN dup_names on dup_names.[Full.Name] = matches.[Full.Name] ')
+  rm(dup_names)
+  #annotate and store
+  
+  dup_set <- subset(matches, !is.na(matches$dup_name))
+  dup_set$dup_name <- NULL
+
+  if (nrow(matches) > 0) {
+    
+    matches$Type <- MatchType 
+    
+    matches <- subset(matches, is.na(matches$dup_name))
+  
+  GOB_Match <- sqldf('select GOB_Match.*, matches.[ID] as m_ID, matches.[NPI] as m_NPI, matches.[Type] as m_Type from GOB_Match LEFT OUTER JOIN matches on GOB_Match.[ID] = matches.[ID]')
+  GOB_Match[!is.na(GOB_Match$m_ID),"NPI"] <-  GOB_Match[!is.na(GOB_Match$m_ID),"m_NPI"]
+  GOB_Match[!is.na(GOB_Match$m_ID),"Type"] <-  GOB_Match[!is.na(GOB_Match$m_ID),"m_Type"]
+  GOB_Match$m_ID<- NULL
+  GOB_Match$m_Type <- NULL
+  GOB_Match$m_NPI <- NULL
+  
+  NOD_Match <- sqldf('select NOD_Match.*, matches.[ID] as m_ID, matches.[NPI] as m_NPI, matches.[Type] as m_Type from NOD_Match LEFT OUTER JOIN matches on NOD_Match.[NPI] = matches.[NPI]')
+  NOD_Match[!is.na(NOD_Match$m_ID),"GOB_ID"] <-  NOD_Match[!is.na(NOD_Match$m_ID),"m_ID"]
+  NOD_Match[!is.na(NOD_Match$m_Type),"Type"] <-  NOD_Match[!is.na(NOD_Match$m_Type),"m_Type"]
+  NOD_Match$m_ID<- NULL
+  NOD_Match$m_NPI <- NULL
+  NOD_Match$m_Type <- NULL
+  
+  print( paste(MatchType, " ***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
+  
+  } else {
+    
+    print( paste(MatchType, " ***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
+    
+  }
+  return(list(GOB_Match,NOD_Match,nrow(matches)))
+}
+
+# first, last, state
+match4 <- function(Gmatch,Nmatch, Gmatch1,Nmatch1,MatchType,GOB_Match,NOD_Match){
+  
+  matchString <- paste('select GOB_Match.[ID] , GOB_Match.[Full.Name], NOD_Match.[NPI] from GOB_Match INNER JOIN NOD_Match on GOB_Match.',Gmatch,' = NOD_Match.',Nmatch,' and GOB_Match.',Gmatch1, ' = NOD_Match.',Nmatch1 , ' and NOD_Match.[GOB_ID] = "" and GOB_Match.[NPI] = "" and GOB_Match.[State] = NOD_Match.[State]',sep="")
+  matches <- sqldf(matchString )
+  
+  dup_names <- data.frame(matches[duplicated(matches$Full.Name),2])
+  names(dup_names) = c("Full.Name")
+  dup_OP    <- data.frame(matches[duplicated(matches$NPI),3])
+  names(dup_OP) = c("PID")
+  dup_OP <- sqldf("select matches.[Full.Name] from matches inner join dup_OP on matches.[NPI] = dup_OP.[PID]")
+  dup_names <- merge(dup_names, dup_OP  , all=TRUE)
+  rm(dup_OP)
+  dup_names <- data.frame(dup_names[!duplicated(dup_names),])
+  names(dup_names) = c("Full.Name")
+  #mark dups
+  matches <- fn$sqldf('select matches.*, dup_names.[Full.Name] as dup_name  from matches LEFT OUTER JOIN dup_names on dup_names.[Full.Name] = matches.[Full.Name] ')
+  rm(dup_names)
+  #annotate and store
+  
+  dup_set <- subset(matches, !is.na(matches$dup_name))
+  dup_set$dup_name <- NULL
+  
+  if (nrow(matches) > 0) {
+  
+    matches$Type <- MatchType   
+  matches <- subset(matches, is.na(matches$dup_name))
+  
+  GOB_Match <- sqldf('select GOB_Match.*, matches.[ID] as m_ID, matches.[NPI] as m_NPI, matches.[Type] as m_Type from GOB_Match LEFT OUTER JOIN matches on GOB_Match.[ID] = matches.[ID]')
+  GOB_Match[!is.na(GOB_Match$m_ID),"NPI"] <-  GOB_Match[!is.na(GOB_Match$m_ID),"m_NPI"]
+  GOB_Match[!is.na(GOB_Match$m_ID),"Type"] <-  GOB_Match[!is.na(GOB_Match$m_ID),"m_Type"]
+  GOB_Match$m_ID<- NULL
+  GOB_Match$m_Type <- NULL
+  GOB_Match$m_NPI <- NULL
+  
+  NOD_Match <- sqldf('select NOD_Match.*, matches.[ID] as m_ID, matches.[NPI] as m_NPI, matches.[Type] as m_Type from NOD_Match LEFT OUTER JOIN matches on NOD_Match.[NPI] = matches.[NPI]')
+  NOD_Match[!is.na(NOD_Match$m_ID),"GOB_ID"] <-  NOD_Match[!is.na(NOD_Match$m_ID),"m_ID"]
+  NOD_Match[!is.na(NOD_Match$m_Type),"Type"] <-  NOD_Match[!is.na(NOD_Match$m_Type),"m_Type"]
+  NOD_Match$m_ID<- NULL
+  NOD_Match$m_NPI <- NULL
+  NOD_Match$m_Type <- NULL
+  
+  print( paste(MatchType, " ***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
+  
+} else {
+  
+  print( paste(MatchType, " ***** ",nrow(matches)," match rows","***** ",nrow(dup_set)," duplicate rows"))
+  
+}
+  return(list(GOB_Match,NOD_Match,nrow(matches)))
+}
+```
+
+
+
 # 1.1 PRE_Match: Prescriber Data File is known as PRE.  Prescriber Demographics (raw, unprocessed) 
 `~/Dropbox/Pharma_Influence/Data/Medicare_Part_D/PartD_Prescriber_PUF_NPI_DRUG_Combined.csv`
 * 1.2 GOB_Match: GOBA data, cleaned [ ] `~/Dropbox/Pharma_Influence/Data/GOBA/GOBA_all_a_dataframes_1.csv`
