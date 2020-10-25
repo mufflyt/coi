@@ -1275,3 +1275,17 @@ Round 2:
 
 **Output**: `paymentSummary.csv` has the `Physician_Profile_ID` listed then the drug of interest (e.g. `NDC_of_Associated_Covered_Drug_or_Biological`) that doctor prescribed and how much they received in payments from that pharmaceutical company.  Very useful!
 
+
+
+
+
+
+
+##########################################################
+# Association of Industry Payments to Physicians With the Prescribing of Brand-name Statins in Massachusetts.pdf
+"Claims counts including refills were available for each of the drugs, with generic and brand-name versions reported separately."  
+
+# Propublica
+"To determine how often physicians prescribed brand-name drugs, ProPublica calculated a variable named “p brand,” which is a physician’s brand-name claim count in Part D divided by his or her total claim count." p_brand can be found by dividing the 'brand_claim_count' by the 'total_claim_count' found in the Provider Summary Table where each physicians is a row and you can get his/her data.  https://data.cms.gov/Medicare-Part-D/Medicare-Provider-Utilization-and-Payment-Data-Par/qywy-pajd/data
+
+What drugs are generic and what drugs are brand name only?  Oxybutynin vs. Mirabegron.  
