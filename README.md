@@ -62,6 +62,28 @@ taxonomy_codes <- c("207V00000X", #Blank, general obgyn
 * [NPPES, NPPES Data Dissemination](https://download.cms.gov/nppes/NPI_Files.html) #downloaded April 30, 2020.  The issue is that without an API we can't pick and choose data.  The file is HUGE at 7 GB so it is hard to have R load it all in RAM with read.csv and filter it on one core without getting errors.  I'm trying to find a package successfully to load the data but may need to edit it in Excel beforehand prn.  
 * [Federal Office of Rural Health Policy (FORHP) Data Files for rural vs. urban by zip code](https://www.hrsa.gov/sites/default/files/hrsa/ruralhealth/aboutus/definition/nonmetrocountiesandcts2016.xlsx), In the interest of making information on the FORHP Rural Areas more easily usable for Researchers and other Government Agencies, FORHP has created a crosswalk of ZIP Codes identifying the set of Non-Metro Counties and rural Census Tracts (CTs) that comprise rural areas as defined by FORHP. This Excel file contains Non-Metro Counties (Micropolitan and non-core based counties.  
 
+=============================
+# October 2021 Data Work
+
+https://www.dropbox.com/sh/9epvva66oeg7ygf/AAB73sUFEGKbJ4jHX9rxWtdca?dl=0
+Joe and I finished rerunning stats using updated Open Payment and Part D data.  This directory also contains the update to the Open Payment to NPI matching (files OP_matched and OP_Unmatched).  We matched 1,042,617 out of 1,096,286 individuals (95.1%).  This is the best that we can do without a hand search.  The data includes the years of 2013 to 2019.  Open Payments is available through 2020 but the Part D data does not go that far.  
+
+* AllPaymentData.csv - A huge file that is too big to be read in by excel of all general payments.
+class_xyz.csv - Each of the class files have a list of NPI numbers, year, with payments for specific drugs (Pay_drug_x) and the number of drugs prescribed (Pre_drug_x).
+* OP Matching - We did the last match of open payments to NPI numbers in January 2021.  Please see the tab data 202110_matched, 202110_unmatched for the names, NPI, and Open Payments ID (Physician_Profile_ID).  
+* paymentSummary.csv - Physician_Profile_ID, medication name
+* PaySum_wClass - PPI is the Physician_Profile_ID and the NPI number who prescribed the data.  
+* prescriber.csv - NPI of prescribing physician, drug name, total beneficiaries, total claims, BY YEAR.  
+* prescriber_2.csv - NPI of prescribing physician, drug name, total beneficiaries, total claims.  
+* Prescriber_wClass.csv - NPI number of prescriber for every drug.  Each row is a drug and a year.  
+
+Tables
+
+* T1.csv - Physician demographics for prescribers with NPI and PPI crosswalk.  Data from GOBA, PCND (Physician Compare), Age, sum of open payments to physician.  
+* T2.csv - Data table with sum of payments by category.  
+* T3.csv - Median (50th percentile), quartile 1 (25th percentile), quartile 3 (75th percentile) of payments for each drug.  
+
+=============================
 Our goal is to create a Venn diagram of who has payments and who we matched up with or how many OBGYNs we were able to identify:
 ```r
 install.packages("stringdist")
